@@ -215,3 +215,5 @@ body.reporting .panel.right, body.reporting .panel.left { opacity: 0; pointer-ev
   .report .actions { flex-direction: column; }
   .credit-line { display: none; }
 }
+.legend-row { display: flex; gap: 14px; font-size: 10.5px; color: var(--muted); margin-top: 2px; flex-wrap: wrap; }
+.legend-row i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; box-shadow: 0 0 8px currentColor; }

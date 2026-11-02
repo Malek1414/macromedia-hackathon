@@ -80,7 +80,13 @@ function glow(css) {
   return c;
 }
 
-const RED = '#ff3b4e', GREEN = '#3ee08f', AMBER = '#ffb020';
+const RED = '#ff3b4e', GREEN = '#3ee08f', AMBER = '#ffb020', HEAT = '#ff6a1a';
+// Regions where extra warming hits hardest (heat and drought). They grow and glow as the planet warms.
+const HEAT_ZONES = [
+  [13, 2, 'Sahel'], [25, 45, 'Arabian Peninsula'], [27, 78, 'North India'], [30, 70, 'Indus Valley'],
+  [33, 44, 'Iraq'], [-23, 133, 'Central Australia'], [33, -112, 'US Southwest'], [24, -102, 'Northern Mexico'],
+  [38, -4, 'Iberia'], [-10, -42, 'Brazil Northeast'], [-25, 25, 'Southern Africa'], [45, 63, 'Central Asia'],
+];
 function currentRun() {
   const r = state.results[state.mode];
   return r ? r[state.which] : null;
@@ -152,6 +158,21 @@ function drawGlobe() {
           },
         });
       }
+    }
+  }
+
+  // Heat stress: orange zones that spread with every tenth of a degree above 1.5 °C.
+  const stress = Math.max(0, row.warmingC - 1.45);
+  if (stress > 0) {
+    for (const [lat, lon] of HEAT_ZONES) {
+      const r = 150_000 + stress * 900_000;
+      entities.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(lon, lat),
+        ellipse: {
+          semiMajorAxis: r, semiMinorAxis: r * 0.8, height: 0,
+          material: Cesium.Color.fromCssColorString(HEAT).withAlpha(Math.min(0.42, 0.08 + stress * 0.3)),
+        },
+      });
     }
   }
 
