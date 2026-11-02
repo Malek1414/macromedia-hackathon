@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.*
+.DS_Store
+pitch/*/takes/
+pitch/*/demo/
+pitch/*/render/
+*.mov
+*.mp4

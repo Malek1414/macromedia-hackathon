@@ -1,0 +1,90 @@
+{
+  "pass": true,
+  "personas": {
+    "gtm": {
+      "answers": {
+        "who": "young people today who will still be alive in 2076 and have to live with decisions being made now about AI and governance",
+        "broken": "arguments about letting AI run things are loud, one-sided, and never show where a choice actually leads, so people have opinions but not odds",
+        "changed": "a tool called AI Runs the Planet that gives an AI (or a test audience) a budget of 360 points across six levers to simulate thousands of futures to 2076, showing best case, most likely, and worst case outcomes with disaster and breakthrough markers",
+        "proof": "the AI's allocation kept 92% of simulated futures below 2 degrees but resulted in 31 million people displaced by sea in the most likely future, versus a test audience's people-first allocation that only displaced 8 million but kept none of its futures below 2 degrees",
+        "lost": []
+      },
+      "grades": {
+        "who": {
+          "ok": true,
+          "why": "matches: young people alive in 2076 living with AI governance decisions"
+        },
+        "broken": {
+          "ok": true,
+          "why": "matches: debate is opinion-based, no visibility into odds/outcomes of choices"
+        },
+        "changed": {
+          "ok": true,
+          "why": "matches: same-budget AI/audience simulation to 2076 with best/likely/worst outcomes"
+        },
+        "proof": {
+          "ok": true,
+          "why": "matches: 92% below 2°C but 31 million displaced by sea in most likely future"
+        }
+      },
+      "ok": 4
+    },
+    "community": {
+      "answers": {
+        "who": "young people today who will still be living in the world in 2076, and anyone wanting to weigh in on how the planet's future is decided",
+        "broken": "people argue online about letting AI run governments but nobody has actual odds or data, and headlines are loud, one-sided, and don't show where a choice leads",
+        "changed": "a tool called AI Runs the Planet gives an AI the same budget as regular people (360 points across six levers: clean energy, carbon price, sea walls, food, working together, and tech), simulates thousands of futures to 2076, and shows the best case, most likely case, and scariest case so people can see odds before decisions are made, and compare AI's choices versus their own",
+        "proof": "the AI kept 92% of simulated futures below 2 degrees but only put 1 point into coastal protection, leading to 31 million people displaced by the sea in its most likely future; a test audience spending the same budget on people first only had 8 million displaced, but none of their futures stayed below 2 degrees",
+        "lost": []
+      },
+      "grades": {
+        "who": {
+          "ok": true,
+          "why": "captures people alive in 2076 starting with young people"
+        },
+        "broken": {
+          "ok": true,
+          "why": "captures opinions/headlines without odds of outcomes"
+        },
+        "changed": {
+          "ok": true,
+          "why": "captures same budget, thousands of futures to 2076, best/likely/worst shown"
+        },
+        "proof": {
+          "ok": true,
+          "why": "captures 92% below 2C, 1 point to coastal, 31M displaced in likely future"
+        }
+      },
+      "ok": 4
+    },
+    "founder": {
+      "answers": {
+        "who": "young people today who will still be alive in 2076 and will live with decisions made now about AI and governance/climate policy",
+        "broken": "online debates about letting AI run governments are loud, one-sided, and based on opinion, with no visibility into the actual odds or consequences of a choice",
+        "changed": "a tool called AI Runs the Planet that gives an AI the same 360-point budget across six levers (clean energy, carbon price, sea walls, food, working together, and tech) as people get, simulates thousands of futures to 2076, and shows best/likely/worst outcomes so people can see odds before deciding, and compare the AI's choices to their own",
+        "proof": "the AI's allocation kept 92% of simulated futures below 2 degrees but only put 1 point into coastal protection, leading to 31 million people displaced by the sea in its most likely future; a test audience that prioritized people instead had only 8 million displaced but no futures stayed below 2 degrees",
+        "lost": []
+      },
+      "grades": {
+        "who": {
+          "ok": true,
+          "why": "captures young people alive in 2076 living with these decisions"
+        },
+        "broken": {
+          "ok": true,
+          "why": "captures opinion-based debate with no visibility into odds"
+        },
+        "changed": {
+          "ok": true,
+          "why": "captures same budget, thousands of simulated futures, best/likely/worst shown"
+        },
+        "proof": {
+          "ok": true,
+          "why": "captures 92% under 2°C, 1 point to coastal, 31M displaced"
+        }
+      },
+      "ok": 4
+    }
+  },
+  "lost_by_two": []
+}

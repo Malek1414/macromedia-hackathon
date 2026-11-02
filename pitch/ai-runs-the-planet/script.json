@@ -1,0 +1,62 @@
+{
+ "title": "AI Runs the Planet",
+ "names": [
+  "AI Runs the Planet",
+  "God's Eye View",
+  "IPCC",
+  "UN",
+  "Malek"
+ ],
+ "explained": [],
+ "beats": [
+  {
+   "id": "B1",
+   "job": "person",
+   "speaker": "A",
+   "shot": "demo",
+   "say": "In 2076, I'll still be here [I2]. Most of you in this room will be too [I2]. We are the young people who will live in the world being decided right now. So who should decide it?"
+  },
+  {
+   "id": "B2",
+   "job": "tried",
+   "speaker": "A",
+   "shot": "demo",
+   "say": "Online, people argue about letting AI run governments. Everyone has an opinion. Nobody has the odds [I1]. Headlines are loud and one-sided, and they never show where a choice leads [I3]."
+  },
+  {
+   "id": "B3",
+   "job": "thing",
+   "speaker": "A",
+   "shot": "demo",
+   "say": "So we built AI Runs the Planet. It gives an AI the same budget as all of us: 360 points across six levers [F6]. Clean energy, carbon price, sea walls, food, working together, and tech. Then it plays thousands of futures to 2076 [F6]."
+  },
+  {
+   "id": "B4",
+   "job": "works",
+   "speaker": "A",
+   "shot": "demo",
+   "say": "I press Let AI decide. The AI tries mix after mix, and the sliders move to its pick. Then the globe plays 5,000 futures [F7]. It shows three: the best case, the most likely, and the scariest [F9]. Red pins are disasters. Green pins are breakthroughs."
+  },
+  {
+   "id": "B5",
+   "job": "proof",
+   "speaker": "A",
+   "shot": "proof",
+   "say": "Here is what the AI did. It kept 92% of futures below 2 degrees [F1]. But it put 1 point into coastal protection [F3]. So in its most likely future, 31 million people are pushed out by the sea [F4]. Our test audience spent the same budget on people first. Only 8 million were pushed out [F4]. But none of their futures stayed below 2 degrees [F5]."
+  },
+  {
+   "id": "B6",
+   "job": "means",
+   "speaker": "A",
+   "shot": "demo",
+   "say": "So the AI saved the climate and forgot the coast. For us, the people who will live in 2076, that changes the argument. We can see the odds before anyone decides. These are possible futures, not predictions, built on IPCC and UN numbers [F8]. It is one world, and it affects all of us [I4]."
+  },
+  {
+   "id": "B7",
+   "job": "ask",
+   "speaker": "A",
+   "shot": "demo",
+   "say": "So take the sliders and try to beat the AI [I5]. Then back us with the funding programme, and we take it to schools and city halls [I5]."
+  }
+ ]
+}

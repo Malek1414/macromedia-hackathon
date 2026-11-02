@@ -1,0 +1,6 @@
+{"persona": "community", "model": "sonnet", "judge": {"cost_usd": 0.008106, "usage": 2}, "grader": {"cost_usd": 0.010112, "usage": 2}}
+{"persona": "gtm", "model": "sonnet", "judge": {"cost_usd": 0.0077480000000000005, "usage": 2}, "grader": {"cost_usd": 0.010627999999999999, "usage": 2}}
+{"persona": "founder", "model": "sonnet", "judge": {"cost_usd": 0.0072239999999999995, "usage": 2}, "grader": {"cost_usd": 0.011368, "usage": 2}}
+{"persona": "gtm", "model": "sonnet", "judge": {"cost_usd": 0.007398, "usage": 2}, "grader": {"cost_usd": 0.008174, "usage": 2}}
+{"persona": "community", "model": "sonnet", "judge": {"cost_usd": 0.008066, "usage": 2}, "grader": {"cost_usd": 0.006542, "usage": 2}}
+{"persona": "founder", "model": "sonnet", "judge": {"cost_usd": 0.007854, "usage": 2}, "grader": {"cost_usd": 0.006486, "usage": 2}}

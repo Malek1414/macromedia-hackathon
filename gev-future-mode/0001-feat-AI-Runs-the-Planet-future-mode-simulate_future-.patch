@@ -1,0 +1,1030 @@
+From d71ca33faa47d97c1deafc3109564fd49a6a0c5e Mon Sep 17 00:00:00 2001
+From: Malek Hassan <malek.hassan@rwth-aachen.de>
+Date: Mon, 2 Nov 2026 11:30:44 +0100
+Subject: [PATCH] feat: AI Runs the Planet future mode (simulate_future,
+ play_future, scene packs)
+
+Co-Authored-By: WOZCODE <contact@withwoz.com>
+Claude-Session: https://claude.ai/code/session_01T5GAsiSvUNCk2US4QqTgrk
+---
+ .../future/future-best-2026.geojson           |   1 +
+ .../future/future-best-2036.geojson           |   1 +
+ .../future/future-best-2046.geojson           |   1 +
+ .../future/future-best-2056.geojson           |   1 +
+ .../future/future-best-2066.geojson           |   1 +
+ .../future/future-best-2076.geojson           |   1 +
+ .../future/future-likely-2026.geojson         |   1 +
+ .../future/future-likely-2036.geojson         |   1 +
+ .../future/future-likely-2046.geojson         |   1 +
+ .../future/future-likely-2056.geojson         |   1 +
+ .../future/future-likely-2066.geojson         |   1 +
+ .../future/future-likely-2076.geojson         |   1 +
+ .../future/future-worst-2026.geojson          |   1 +
+ .../future/future-worst-2036.geojson          |   1 +
+ .../future/future-worst-2046.geojson          |   1 +
+ .../future/future-worst-2056.geojson          |   1 +
+ .../future/future-worst-2066.geojson          |   1 +
+ .../future/future-worst-2076.geojson          |   1 +
+ scripts/package-boundaries.json               |   8 +
+ src/future/README.md                          |   3 +
+ src/future/data.js                            | 122 ++++++++++++++
+ src/future/export.js                          | 109 +++++++++++++
+ src/future/index.js                           |   5 +
+ src/future/montecarlo.js                      |  89 ++++++++++
+ src/future/policies.js                        |  51 ++++++
+ src/future/rng.js                             |  20 +++
+ src/future/simulate.js                        | 107 ++++++++++++
+ src/tools/index.js                            |   3 +
+ src/tools/queries/future.js                   | 154 ++++++++++++++++++
+ src/tools/queries/future.test.mjs             |  41 +++++
+ src/tools/surfaces.js                         |   3 +
+ 31 files changed, 733 insertions(+)
+ create mode 100644 public/scene-assets/future/future-best-2026.geojson
+ create mode 100644 public/scene-assets/future/future-best-2036.geojson
+ create mode 100644 public/scene-assets/future/future-best-2046.geojson
+ create mode 100644 public/scene-assets/future/future-best-2056.geojson
+ create mode 100644 public/scene-assets/future/future-best-2066.geojson
+ create mode 100644 public/scene-assets/future/future-best-2076.geojson
+ create mode 100644 public/scene-assets/future/future-likely-2026.geojson
+ create mode 100644 public/scene-assets/future/future-likely-2036.geojson
+ create mode 100644 public/scene-assets/future/future-likely-2046.geojson
+ create mode 100644 public/scene-assets/future/future-likely-2056.geojson
+ create mode 100644 public/scene-assets/future/future-likely-2066.geojson
+ create mode 100644 public/scene-assets/future/future-likely-2076.geojson
+ create mode 100644 public/scene-assets/future/future-worst-2026.geojson
+ create mode 100644 public/scene-assets/future/future-worst-2036.geojson
+ create mode 100644 public/scene-assets/future/future-worst-2046.geojson
+ create mode 100644 public/scene-assets/future/future-worst-2056.geojson
+ create mode 100644 public/scene-assets/future/future-worst-2066.geojson
+ create mode 100644 public/scene-assets/future/future-worst-2076.geojson
+ create mode 100644 src/future/README.md
+ create mode 100644 src/future/data.js
+ create mode 100644 src/future/export.js
+ create mode 100644 src/future/index.js
+ create mode 100644 src/future/montecarlo.js
+ create mode 100644 src/future/policies.js
+ create mode 100644 src/future/rng.js
+ create mode 100644 src/future/simulate.js
+ create mode 100644 src/tools/queries/future.js
+ create mode 100644 src/tools/queries/future.test.mjs
+
+diff --git a/public/scene-assets/future/future-best-2026.geojson b/public/scene-assets/future/future-best-2026.geojson
+new file mode 100644
+index 0000000..3aa0a42
+--- /dev/null
++++ b/public/scene-assets/future/future-best-2026.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-best-2036.geojson b/public/scene-assets/future/future-best-2036.geojson
+new file mode 100644
+index 0000000..9bd7bb3
+--- /dev/null
++++ b/public/scene-assets/future/future-best-2036.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-best-2036-ev-0","geometry":{"type":"Point","coordinates":[-71.06,42.36,2000]},"properties":{}},{"type":"Feature","id":"future-best-2036-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-best-2036-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-best-2036-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-best-2036-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-best-2036-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-best-2036-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-best-2046.geojson b/public/scene-assets/future/future-best-2046.geojson
+new file mode 100644
+index 0000000..916285f
+--- /dev/null
++++ b/public/scene-assets/future/future-best-2046.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-best-2046-ev-0","geometry":{"type":"Point","coordinates":[-71.06,42.36,2000]},"properties":{}},{"type":"Feature","id":"future-best-2046-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-best-2046-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-best-2046-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-best-2046-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-best-2046-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-best-2046-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-best-2046-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-best-2046-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-best-2046-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-best-2056.geojson b/public/scene-assets/future/future-best-2056.geojson
+new file mode 100644
+index 0000000..89a9a56
+--- /dev/null
++++ b/public/scene-assets/future/future-best-2056.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-best-2056-ev-0","geometry":{"type":"Point","coordinates":[-71.06,42.36,2000]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-miami","geometry":{"type":"Point","coordinates":[-80.19,25.76,500]},"properties":{}},{"type":"Feature","id":"future-best-2056-coast-newyork","geometry":{"type":"Point","coordinates":[-74.01,40.71,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-best-2066.geojson b/public/scene-assets/future/future-best-2066.geojson
+new file mode 100644
+index 0000000..9a2c085
+--- /dev/null
++++ b/public/scene-assets/future/future-best-2066.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-best-2066-ev-0","geometry":{"type":"Point","coordinates":[-71.06,42.36,2000]},"properties":{}},{"type":"Feature","id":"future-best-2066-ev-1","geometry":{"type":"Point","coordinates":[-112.07,33.45,2000]},"properties":{}},{"type":"Feature","id":"future-best-2066-ev-2","geometry":{"type":"Point","coordinates":[67,24.86,2000]},"properties":{}},{"type":"Feature","id":"future-best-2066-ev-3","geometry":{"type":"Point","coordinates":[77.59,12.97,2000]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-miami","geometry":{"type":"Point","coordinates":[-80.19,25.76,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-newyork","geometry":{"type":"Point","coordinates":[-74.01,40.71,500]},"properties":{}},{"type":"Feature","id":"future-best-2066-coast-rotterdam","geometry":{"type":"Point","coordinates":[4.48,51.92,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-best-2076.geojson b/public/scene-assets/future/future-best-2076.geojson
+new file mode 100644
+index 0000000..d36d9ac
+--- /dev/null
++++ b/public/scene-assets/future/future-best-2076.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-best-2076-ev-0","geometry":{"type":"Point","coordinates":[-71.06,42.36,2000]},"properties":{}},{"type":"Feature","id":"future-best-2076-ev-1","geometry":{"type":"Point","coordinates":[-112.07,33.45,2000]},"properties":{}},{"type":"Feature","id":"future-best-2076-ev-2","geometry":{"type":"Point","coordinates":[67,24.86,2000]},"properties":{}},{"type":"Feature","id":"future-best-2076-ev-3","geometry":{"type":"Point","coordinates":[77.59,12.97,2000]},"properties":{}},{"type":"Feature","id":"future-best-2076-ev-4","geometry":{"type":"Point","coordinates":[118,-8.25,2000]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-miami","geometry":{"type":"Point","coordinates":[-80.19,25.76,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-newyork","geometry":{"type":"Point","coordinates":[-74.01,40.71,500]},"properties":{}},{"type":"Feature","id":"future-best-2076-coast-rotterdam","geometry":{"type":"Point","coordinates":[4.48,51.92,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-likely-2026.geojson b/public/scene-assets/future/future-likely-2026.geojson
+new file mode 100644
+index 0000000..3aa0a42
+--- /dev/null
++++ b/public/scene-assets/future/future-likely-2026.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-likely-2036.geojson b/public/scene-assets/future/future-likely-2036.geojson
+new file mode 100644
+index 0000000..ec37d2e
+--- /dev/null
++++ b/public/scene-assets/future/future-likely-2036.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-likely-2036-ev-0","geometry":{"type":"Point","coordinates":[-71.06,42.36,2000]},"properties":{}},{"type":"Feature","id":"future-likely-2036-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-likely-2036-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-likely-2036-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-likely-2036-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-likely-2036-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-likely-2036-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-likely-2046.geojson b/public/scene-assets/future/future-likely-2046.geojson
+new file mode 100644
+index 0000000..a953421
+--- /dev/null
++++ b/public/scene-assets/future/future-likely-2046.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-likely-2046-ev-0","geometry":{"type":"Point","coordinates":[-71.06,42.36,2000]},"properties":{}},{"type":"Feature","id":"future-likely-2046-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-likely-2046-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-likely-2046-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-likely-2046-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-likely-2046-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-likely-2046-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-likely-2046-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-likely-2046-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-likely-2046-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-likely-2046-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-likely-2056.geojson b/public/scene-assets/future/future-likely-2056.geojson
+new file mode 100644
+index 0000000..1990acd
+--- /dev/null
++++ b/public/scene-assets/future/future-likely-2056.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-likely-2056-ev-0","geometry":{"type":"Point","coordinates":[-71.06,42.36,2000]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-miami","geometry":{"type":"Point","coordinates":[-80.19,25.76,500]},"properties":{}},{"type":"Feature","id":"future-likely-2056-coast-newyork","geometry":{"type":"Point","coordinates":[-74.01,40.71,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-likely-2066.geojson b/public/scene-assets/future/future-likely-2066.geojson
+new file mode 100644
+index 0000000..31b3baf
+--- /dev/null
++++ b/public/scene-assets/future/future-likely-2066.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-likely-2066-ev-0","geometry":{"type":"Point","coordinates":[-71.06,42.36,2000]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-miami","geometry":{"type":"Point","coordinates":[-80.19,25.76,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-newyork","geometry":{"type":"Point","coordinates":[-74.01,40.71,500]},"properties":{}},{"type":"Feature","id":"future-likely-2066-coast-rotterdam","geometry":{"type":"Point","coordinates":[4.48,51.92,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-likely-2076.geojson b/public/scene-assets/future/future-likely-2076.geojson
+new file mode 100644
+index 0000000..a6b7499
+--- /dev/null
++++ b/public/scene-assets/future/future-likely-2076.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-likely-2076-ev-0","geometry":{"type":"Point","coordinates":[-71.06,42.36,2000]},"properties":{}},{"type":"Feature","id":"future-likely-2076-ev-1","geometry":{"type":"Point","coordinates":[32,49,2000]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-miami","geometry":{"type":"Point","coordinates":[-80.19,25.76,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-newyork","geometry":{"type":"Point","coordinates":[-74.01,40.71,500]},"properties":{}},{"type":"Feature","id":"future-likely-2076-coast-rotterdam","geometry":{"type":"Point","coordinates":[4.48,51.92,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-worst-2026.geojson b/public/scene-assets/future/future-worst-2026.geojson
+new file mode 100644
+index 0000000..3aa0a42
+--- /dev/null
++++ b/public/scene-assets/future/future-worst-2026.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-worst-2036.geojson b/public/scene-assets/future/future-worst-2036.geojson
+new file mode 100644
+index 0000000..a11ef4c
+--- /dev/null
++++ b/public/scene-assets/future/future-worst-2036.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-worst-2036-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-worst-2036-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-worst-2036-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-worst-2036-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-worst-2036-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-worst-2036-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-worst-2046.geojson b/public/scene-assets/future/future-worst-2046.geojson
+new file mode 100644
+index 0000000..9713621
+--- /dev/null
++++ b/public/scene-assets/future/future-worst-2046.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-worst-2046-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-worst-2046-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-worst-2046-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-worst-2046-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-worst-2046-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-worst-2046-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-worst-2046-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-worst-2046-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-worst-2046-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-worst-2046-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-worst-2056.geojson b/public/scene-assets/future/future-worst-2056.geojson
+new file mode 100644
+index 0000000..6139ead
+--- /dev/null
++++ b/public/scene-assets/future/future-worst-2056.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-worst-2056-ev-0","geometry":{"type":"Point","coordinates":[75.85,30.9,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2056-ev-1","geometry":{"type":"Point","coordinates":[15.27,-4.44,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-miami","geometry":{"type":"Point","coordinates":[-80.19,25.76,500]},"properties":{}},{"type":"Feature","id":"future-worst-2056-coast-newyork","geometry":{"type":"Point","coordinates":[-74.01,40.71,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-worst-2066.geojson b/public/scene-assets/future/future-worst-2066.geojson
+new file mode 100644
+index 0000000..6b2e74d
+--- /dev/null
++++ b/public/scene-assets/future/future-worst-2066.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-worst-2066-ev-0","geometry":{"type":"Point","coordinates":[75.85,30.9,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2066-ev-1","geometry":{"type":"Point","coordinates":[15.27,-4.44,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2066-ev-2","geometry":{"type":"Point","coordinates":[-46.63,-23.55,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2066-ev-3","geometry":{"type":"Point","coordinates":[77.21,28.61,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2066-ev-4","geometry":{"type":"Point","coordinates":[15.27,-4.44,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-miami","geometry":{"type":"Point","coordinates":[-80.19,25.76,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-newyork","geometry":{"type":"Point","coordinates":[-74.01,40.71,500]},"properties":{}},{"type":"Feature","id":"future-worst-2066-coast-rotterdam","geometry":{"type":"Point","coordinates":[4.48,51.92,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/future/future-worst-2076.geojson b/public/scene-assets/future/future-worst-2076.geojson
+new file mode 100644
+index 0000000..fea7743
+--- /dev/null
++++ b/public/scene-assets/future/future-worst-2076.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"future-worst-2076-ev-0","geometry":{"type":"Point","coordinates":[75.85,30.9,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2076-ev-1","geometry":{"type":"Point","coordinates":[15.27,-4.44,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2076-ev-2","geometry":{"type":"Point","coordinates":[-46.63,-23.55,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2076-ev-3","geometry":{"type":"Point","coordinates":[77.21,28.61,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2076-ev-4","geometry":{"type":"Point","coordinates":[15.27,-4.44,2000]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-dhaka","geometry":{"type":"Point","coordinates":[90.41,23.81,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-kolkata","geometry":{"type":"Point","coordinates":[88.36,22.57,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-shanghai","geometry":{"type":"Point","coordinates":[121.47,31.23,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-guangzhou","geometry":{"type":"Point","coordinates":[113.26,23.13,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-jakarta","geometry":{"type":"Point","coordinates":[106.85,-6.2,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-hcmc","geometry":{"type":"Point","coordinates":[106.63,10.82,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-bangkok","geometry":{"type":"Point","coordinates":[100.5,13.76,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-mumbai","geometry":{"type":"Point","coordinates":[72.88,19.08,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-lagos","geometry":{"type":"Point","coordinates":[3.38,6.52,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-alexandria","geometry":{"type":"Point","coordinates":[29.92,31.2,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-miami","geometry":{"type":"Point","coordinates":[-80.19,25.76,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-newyork","geometry":{"type":"Point","coordinates":[-74.01,40.71,500]},"properties":{}},{"type":"Feature","id":"future-worst-2076-coast-rotterdam","geometry":{"type":"Point","coordinates":[4.48,51.92,500]},"properties":{}}]}
+\ No newline at end of file
+diff --git a/scripts/package-boundaries.json b/scripts/package-boundaries.json
+index 3031076..7a8a32f 100644
+--- a/scripts/package-boundaries.json
++++ b/scripts/package-boundaries.json
+@@ -4665,6 +4665,14 @@
+       "src/tools/queries/brief.js",
+       "src/tools/queries/maritime.js",
+       "src/tools/queries/share.js",
++      "src/tools/queries/future.js",
++      "src/future/index.js",
++      "src/future/policies.js",
++      "src/future/data.js",
++      "src/future/simulate.js",
++      "src/future/montecarlo.js",
++      "src/future/export.js",
++      "src/future/rng.js",
+       "src/data/idSwitches.js",
+       "src/data/vesselTypes.js",
+       "src/data/layerState.js",
+diff --git a/src/future/README.md b/src/future/README.md
+new file mode 100644
+index 0000000..5f7d89c
+--- /dev/null
++++ b/src/future/README.md
+@@ -0,0 +1,3 @@
++# Future engine (vendored)
++
++Copied from `ai-runs-the-planet/engine` by `scripts/sync-engine.mjs`. Edit it there, not here.
+diff --git a/src/future/data.js b/src/future/data.js
+new file mode 100644
+index 0000000..a906ef9
+--- /dev/null
++++ b/src/future/data.js
+@@ -0,0 +1,122 @@
++/**
++ * The real-world anchors of the model. Values are rounded approximations of
++ * the cited sources, enough to keep the futures honest, not a climate model.
++ */
++
++export const START_YEAR = 2026;
++export const END_YEAR = 2076;
++
++export const SOURCES = [
++  { label: 'IPCC AR6 WG1, SPM Table SPM.1 and Fig. SPM.8 (warming and sea level by SSP)', url: 'https://www.ipcc.ch/report/ar6/wg1/' },
++  { label: 'UN World Population Prospects 2024 (medium variant)', url: 'https://population.un.org/wpp/' },
++  { label: 'Copernicus / WMO: about 1.4 °C above 1850-1900 in the mid-2020s', url: 'https://wmo.int/' },
++];
++
++/** Warming above 1850-1900 in 2026, °C. */
++export const WARMING_NOW = 1.4;
++
++/**
++ * SSP pathways from low to high emissions: warming reached by 2076 (°C above
++ * 1850-1900) and sea-level rise from 2026 to 2076 (m), interpolated from AR6.
++ */
++export const SSPS = [
++  { id: 'SSP1-2.6', warming2076: 1.8, seaRise2076: 0.26 },
++  { id: 'SSP2-4.5', warming2076: 2.4, seaRise2076: 0.31 },
++  { id: 'SSP3-7.0', warming2076: 2.9, seaRise2076: 0.36 },
++  { id: 'SSP5-8.5', warming2076: 3.3, seaRise2076: 0.41 },
++];
++
++/** World population, billions (UN WPP 2024 medium), linearly interpolated. */
++export const POPULATION = [
++  [2026, 8.2], [2036, 8.9], [2046, 9.45], [2056, 9.85], [2066, 10.15], [2076, 10.25],
++];
++
++/**
++ * Coastal cities with large populations near sea level. exposureM: millions
++ * living low enough to be displaced by roughly half a metre of rise without
++ * protection (rounded, illustrative from coastal exposure studies).
++ */
++export const HOTSPOTS = [
++  { id: 'dhaka', place: 'Dhaka', lat: 23.81, lon: 90.41, exposureM: 9 },
++  { id: 'kolkata', place: 'Kolkata', lat: 22.57, lon: 88.36, exposureM: 6 },
++  { id: 'shanghai', place: 'Shanghai', lat: 31.23, lon: 121.47, exposureM: 7 },
++  { id: 'guangzhou', place: 'Guangzhou', lat: 23.13, lon: 113.26, exposureM: 6 },
++  { id: 'jakarta', place: 'Jakarta', lat: -6.2, lon: 106.85, exposureM: 5 },
++  { id: 'hcmc', place: 'Ho Chi Minh City', lat: 10.82, lon: 106.63, exposureM: 5 },
++  { id: 'bangkok', place: 'Bangkok', lat: 13.76, lon: 100.5, exposureM: 4 },
++  { id: 'mumbai', place: 'Mumbai', lat: 19.08, lon: 72.88, exposureM: 4 },
++  { id: 'lagos', place: 'Lagos', lat: 6.52, lon: 3.38, exposureM: 3 },
++  { id: 'alexandria', place: 'Alexandria', lat: 31.2, lon: 29.92, exposureM: 2 },
++  { id: 'miami', place: 'Miami', lat: 25.76, lon: -80.19, exposureM: 1.5 },
++  { id: 'newyork', place: 'New York', lat: 40.71, lon: -74.01, exposureM: 1.5 },
++  { id: 'rotterdam', place: 'Rotterdam', lat: 51.92, lon: 4.48, exposureM: 1 },
++  { id: 'hamburg', place: 'Hamburg', lat: 53.55, lon: 9.99, exposureM: 0.5 },
++];
++
++const P = (place, lat, lon) => ({ place, lat, lon });
++
++/**
++ * Chance events. Each year, `chance(state)` gives the probability it happens;
++ * `effect` changes the run state. kind: good or bad for the world.
++ */
++export const EVENTS = [
++  {
++    id: 'pandemic', title: 'New pandemic', kind: 'bad',
++    places: [P('Wuhan', 30.59, 114.31), P('Kinshasa', -4.44, 15.27), P('São Paulo', -23.55, -46.63), P('Delhi', 28.61, 77.21)],
++    chance: () => 0.022,
++    effect: (s, p) => { const d = 25 * (1.4 - p.cooperation / 100); s.deathsM += d; s.wellbeing -= 4; return `${d.toFixed(0)}M deaths`; },
++  },
++  {
++    id: 'war', title: 'Major war', kind: 'bad',
++    places: [P('Taiwan Strait', 24.5, 119.5), P('Eastern Europe', 49.0, 32.0), P('Kashmir', 34.08, 74.8), P('Persian Gulf', 26.5, 52.0)],
++    chance: (s, p) => 0.015 * (1.4 - p.cooperation / 100),
++    effect: (s) => { s.deathsM += 8; s.wellbeing -= 7; s.emissionShift += 0.04; return '8M deaths, transition slowed'; },
++  },
++  {
++    id: 'tipping', title: 'Climate tipping point', kind: 'bad',
++    places: [P('Amazon rainforest', -3.47, -62.2), P('Siberian permafrost', 66.5, 120.0), P('Greenland ice sheet', 72.0, -40.0), P('West Antarctica', -79.0, -110.0)],
++    chance: (s) => (s.warmingC > 1.8 ? 0.015 * (s.warmingC - 1.8) * 4 : 0),
++    effect: (s) => { s.extraWarming += 0.25; s.extraSea += 0.05; s.wellbeing -= 5; return '+0.25 °C, +5 cm sea level locked in'; },
++    once: true,
++  },
++  {
++    id: 'heatdome', title: 'Deadly heat dome', kind: 'bad',
++    places: [P('Delhi', 28.61, 77.21), P('Karachi', 24.86, 67.0), P('Phoenix', 33.45, -112.07), P('Seville', 37.39, -5.98), P('Baghdad', 33.31, 44.36)],
++    chance: (s) => Math.max(0, 0.04 * (s.warmingC - 1.2)),
++    effect: (s, p) => { const d = 0.4 * (1.2 - p.adaptation / 100); s.deathsM += d; s.wellbeing -= 1.5; return `${Math.round(d * 1000)}k deaths`; },
++  },
++  {
++    id: 'cropfail', title: 'Breadbasket failure', kind: 'bad',
++    places: [P('US Midwest', 41.5, -93.5), P('Punjab', 30.9, 75.85), P('North China Plain', 36.0, 116.0), P('Ukraine', 49.0, 31.0)],
++    chance: (s, p) => Math.max(0, 0.03 * (s.warmingC - 1.3) * (1.3 - p.food / 100)),
++    effect: (s) => { s.deathsM += 2; s.wellbeing -= 4; return 'food prices spike, 2M deaths'; },
++  },
++  {
++    id: 'volcano', title: 'Volcanic winter', kind: 'bad',
++    places: [P('Tambora', -8.25, 118.0), P('Pinatubo', 15.14, 120.35), P('Katla', 63.63, -19.05)],
++    chance: () => 0.006,
++    effect: (s) => { s.coolingYears = 3; s.wellbeing -= 3; return '-0.3 °C for 3 years, harvests hit'; },
++    once: true,
++  },
++  {
++    id: 'breakthrough', title: 'Clean-energy breakthrough', kind: 'good',
++    places: [P('Cadarache (ITER)', 43.71, 5.76), P('Shenzhen', 22.54, 114.06), P('Boston', 42.36, -71.06), P('Berlin', 52.52, 13.4)],
++    chance: (s, p) => 0.004 + 0.03 * p.tech / 100,
++    effect: (s) => { s.emissionShift -= 0.12; s.wellbeing += 3; return 'emissions fall faster'; },
++    once: true,
++  },
++  {
++    id: 'aiboom', title: 'AI science boom', kind: 'good',
++    places: [P('San Francisco', 37.77, -122.42), P('London', 51.51, -0.13), P('Bengaluru', 12.97, 77.59), P('Beijing', 39.9, 116.4)],
++    chance: (s, p) => 0.004 + 0.025 * p.tech / 100,
++    effect: (s) => { s.wellbeing += 5; s.emissionShift -= 0.04; return 'medicine and materials leap ahead'; },
++    once: true,
++  },
++  {
++    id: 'treaty', title: 'Global climate treaty', kind: 'good',
++    places: [P('Geneva', 46.2, 6.14), P('New York (UN)', 40.75, -73.97), P('Nairobi', -1.29, 36.82)],
++    chance: (s, p) => 0.002 + 0.03 * p.cooperation / 100 * (p.carbonPrice / 100),
++    effect: (s) => { s.emissionShift -= 0.08; s.wellbeing += 2; return 'binding cuts agreed'; },
++    once: true,
++  },
++];
+diff --git a/src/future/export.js b/src/future/export.js
+new file mode 100644
+index 0000000..ce0d06f
+--- /dev/null
++++ b/src/future/export.js
+@@ -0,0 +1,109 @@
++/**
++ * Turns futures into God's Eye View formats: a version-5 scene document with
++ * GeoJSON data packs for Director playback, and view annotations (pins and
++ * labels) for share links and the MCP panel.
++ */
++
++import { hotspotsAt } from './simulate.js';
++import { START_YEAR, END_YEAR } from './data.js';
++
++export const WHICH = ['best', 'likely', 'worst'];
++const DECADES = [2026, 2036, 2046, 2056, 2066, 2076];
++const SCENE_TITLES = { best: 'Best case', likely: 'Most likely', worst: 'Scariest' };
++
++const clampYear = (y) => Math.min(END_YEAR, Math.max(START_YEAR, Math.round(y)));
++const rowAt = (run, year) => run.years.find((r) => r.year === year) ?? run.years.at(-1);
++
++/** The event that defines a decade of a run: the first bad one, else the first good one. */
++export function focusEvent(run, decade) {
++  const inDecade = run.events.filter((e) => e.year > decade - 10 && e.year <= decade);
++  return inDecade.find((e) => e.kind === 'bad') ?? inDecade[0] ?? null;
++}
++
++/** Camera for a year: over that decade's defining event, or a global view. */
++export function cameraFor(run, year) {
++  const decade = DECADES.find((d) => d >= clampYear(year)) ?? END_YEAR;
++  const ev = year > START_YEAR ? focusEvent(run, decade) : null;
++  return ev
++    ? { lat: ev.lat - 6, lon: ev.lon, alt: 1_800_000, heading: 0, pitch: -55, roll: 0, event: ev }
++    : { lat: 20, lon: 20, alt: 18_000_000, heading: 0, pitch: -90, roll: 0, event: null };
++}
++
++/** Pins and labels for everything that happened up to `year` (at most 24). */
++export function annotationsFor(run, year, adaptation = 50) {
++  const y = clampYear(year);
++  const events = run.events.filter((e) => e.year <= y).slice(-16).map((e) => ({
++    type: 'pin', latitude: e.lat, longitude: e.lon,
++    label: `${e.year} ${e.title}: ${e.impact}`.slice(0, 120),
++    color: e.kind === 'good' ? 'green' : 'red',
++  }));
++  const coast = hotspotsAt(run, y, adaptation)
++    .filter((h) => h.displacedM >= 0.3)
++    .sort((a, b) => b.displacedM - a.displacedM)
++    .slice(0, 24 - events.length)
++    .map((h) => ({
++      type: 'highlight', latitude: h.lat, longitude: h.lon,
++      label: `${h.place}: ${h.displacedM}M displaced by the sea`, color: 'amber',
++    }));
++  return [...events, ...coast];
++}
++
++/** One line for a year, for HUDs and narration. */
++export function headline(run, year) {
++  const r = rowAt(run, clampYear(year));
++  return `${r.year}: ${r.warmingC} °C, sea +${Math.round(r.seaLevelM * 100)} cm, ` +
++    `${r.populationBn} bn people, ${r.displacedM}M displaced by the sea`;
++}
++
++function decadePack(sceneId, run, decade, adaptation) {
++  const id = `${sceneId}-${decade}`;
++  const features = [
++    ...run.events.filter((e) => e.year <= decade).map((e, i) => ({
++      type: 'Feature', id: `${id}-ev-${i}`,
++      geometry: { type: 'Point', coordinates: [e.lon, e.lat, 2000] },
++      properties: {},
++    })),
++    ...hotspotsAt(run, decade, adaptation).filter((h) => h.displacedM >= 0.3).map((h) => ({
++      type: 'Feature', id: `${id}-coast-${h.id}`,
++      geometry: { type: 'Point', coordinates: [h.lon, h.lat, 500] },
++      properties: {},
++    })),
++  ];
++  return { id, path: `future/${id}.geojson`, collection: { type: 'FeatureCollection', features } };
++}
++
++/** A GEV scene document (version 5): one scene per future, one shot per decade. */
++export function toSceneDocument(futures, { title = 'AI Runs the Planet' } = {}) {
++  const assets = {};
++  const scenes = WHICH.map((which) => {
++    const run = futures[which];
++    const sceneId = `future-${which}`;
++    const packs = DECADES.map((d) => decadePack(sceneId, run, d, futures.policies.adaptation));
++    for (const p of packs) assets[p.path] = p.collection;
++    return {
++      id: sceneId,
++      title: `${title}: ${SCENE_TITLES[which]} (${run.share})`,
++      dataPacks: packs.map((p) => ({
++        id: p.id, version: 1, format: 'geojson',
++        source: { adapter: 'assets', path: p.path },
++        attribution: {
++          text: `Simulated future (seed ${run.seed}), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.`,
++          license: 'CC BY 4.0',
++        },
++        placement: { altitudeReference: 'ellipsoid' },
++      })),
++      shots: DECADES.map((d) => {
++        const cam = cameraFor(run, d);
++        return {
++          id: `${sceneId}-${d}`,
++          title: (cam.event ? `${headline(run, d)}. ${cam.event.title}, ${cam.event.place}` : headline(run, d)).slice(0, 200),
++          durationSec: 4,
++          holdSec: 3,
++          camera: { lat: cam.lat, lon: cam.lon, alt: cam.alt, heading: cam.heading, pitch: cam.pitch, roll: cam.roll },
++          dataPackIds: [`${sceneId}-${d}`],
++        };
++      }),
++    };
++  });
++  return { document: { version: 5, scenes }, assets };
++}
+diff --git a/src/future/index.js b/src/future/index.js
+new file mode 100644
+index 0000000..b3bcfd6
+--- /dev/null
++++ b/src/future/index.js
+@@ -0,0 +1,5 @@
++export * from './policies.js';
++export * from './data.js';
++export { simulateRun, hotspotsAt, populationAt } from './simulate.js';
++export { runMonteCarlo, optimizePolicies, explain } from './montecarlo.js';
++export * from './export.js';
+diff --git a/src/future/montecarlo.js b/src/future/montecarlo.js
+new file mode 100644
+index 0000000..99610f4
+--- /dev/null
++++ b/src/future/montecarlo.js
+@@ -0,0 +1,89 @@
++/** Thousands of futures from one policy mix, and an AI that picks the mix. */
++
++import { simulateRun } from './simulate.js';
++import { LEVERS, BUDGET, fitBudget, normalizePolicies } from './policies.js';
++import { mulberry32 } from './rng.js';
++
++const quantile = (sorted, q) => sorted[Math.round(q * (sorted.length - 1))];
++const r2 = (v) => Math.round(v * 100) / 100;
++
++export function runMonteCarlo(policies, { runs = 5000, seed = 2026 } = {}) {
++  const all = [];
++  for (let i = 0; i < runs; i++) all.push(simulateRun(policies, seed * 100003 + i));
++  const byScore = [...all].sort((a, b) => a.score - b.score);
++  const scores = byScore.map((r) => r.score);
++  const p5 = quantile(scores, 0.05), p50 = quantile(scores, 0.5), p95 = quantile(scores, 0.95);
++  const nearest = (target) => byScore.reduce((b, r) => (Math.abs(r.score - target) < Math.abs(b.score - target) ? r : b));
++  const share = (f) => r2(all.filter(f).length / runs);
++  const warm = all.map((r) => r.final.warmingC).sort((a, b) => a - b);
++  const sea = all.map((r) => r.final.seaLevelM).sort((a, b) => a - b);
++
++  // Histogram of scores in 20 bins, for the "how likely" bar.
++  const lo = scores[0], hi = scores.at(-1), bins = 20, width = (hi - lo) / bins || 1;
++  const histogram = Array.from({ length: bins }, (_, i) => ({ from: r2(lo + i * width), count: 0 }));
++  for (const s of scores) histogram[Math.min(bins - 1, Math.floor((s - lo) / width))].count++;
++
++  return {
++    policies, runs, seed,
++    best: { ...nearest(p95), label: 'Best case', share: 'top 5% of futures' },
++    likely: { ...nearest(p50), label: 'Most likely', share: 'the middle of all futures' },
++    worst: { ...nearest(p5), label: 'Scariest', share: 'worst 5% of futures' },
++    stats: {
++      p1_5C: share((r) => r.final.warmingC < 1.5),
++      p2C: share((r) => r.final.warmingC < 2),
++      tippingShare: share((r) => r.events.some((e) => e.id === 'tipping')),
++      warShare: share((r) => r.events.some((e) => e.id === 'war')),
++      breakthroughShare: share((r) => r.events.some((e) => e.id === 'breakthrough')),
++      medianWarming: quantile(warm, 0.5), warming90: [quantile(warm, 0.05), quantile(warm, 0.95)],
++      medianSeaLevel: quantile(sea, 0.5),
++      scoreQuantiles: { p5, p50, p95 },
++    },
++    histogram,
++  };
++}
++
++/** What the AI optimizes: a good typical future, with extra weight on avoiding the worst ones. */
++const objective = (f) => f.stats.scoreQuantiles.p50 + 0.5 * f.stats.scoreQuantiles.p5;
++
++/**
++ * The AI in charge: random search over budget-fitting policy mixes, then hill
++ * climbing (moving 10 points between levers). Same seeds for every candidate,
++ * so mixes are compared on the same luck.
++ */
++export function optimizePolicies({ candidates = 60, runs = 300, seed = 2026, steps = 40, onProgress } = {}) {
++  const rand = mulberry32(seed);
++  const evaluate = (p) => runMonteCarlo(p, { runs, seed });
++  let best = null;
++  const consider = (p) => {
++    const futures = evaluate(p);
++    const value = objective(futures);
++    if (!best || value > best.value) best = { policies: p, futures, value };
++  };
++  for (let i = 0; i < candidates; i++) {
++    const raw = Object.fromEntries(LEVERS.map(({ key }) => [key, rand() * 100]));
++    const total = LEVERS.reduce((s, { key }) => s + raw[key], 0);
++    consider(fitBudget(normalizePolicies(Object.fromEntries(LEVERS.map(({ key }) => [key, (raw[key] * BUDGET) / total])))));
++    onProgress?.(i / (candidates + steps));
++  }
++  for (let i = 0; i < steps; i++) {
++    const from = LEVERS[Math.floor(rand() * LEVERS.length)].key;
++    const to = LEVERS[Math.floor(rand() * LEVERS.length)].key;
++    if (from === to || best.policies[from] < 10 || best.policies[to] > 90) continue;
++    consider({ ...best.policies, [from]: best.policies[from] - 10, [to]: best.policies[to] + 10 });
++    onProgress?.((candidates + i) / (candidates + steps));
++  }
++  const full = runMonteCarlo(best.policies, { runs: 5000, seed });
++  return { policies: best.policies, futures: full, rationale: explain(best.policies, full) };
++}
++
++/** Plain-language reasons for the AI's mix, from the levers it chose. */
++export function explain(p, futures) {
++  const ranked = LEVERS.map((l) => ({ ...l, v: p[l.key] })).sort((a, b) => b.v - a.v);
++  const top = ranked.slice(0, 2), low = ranked.at(-1);
++  return [
++    `Spent most of the budget on ${top[0].label.toLowerCase()} (${top[0].v}) and ${top[1].label.toLowerCase()} (${top[1].v}).`,
++    `Spent least on ${low.label.toLowerCase()} (${low.v}): it moved the outcomes least per point.`,
++    `Result over ${futures.runs.toLocaleString('en')} futures: median ${futures.stats.medianWarming} °C by 2076, ` +
++      `${Math.round(futures.stats.p2C * 100)}% of futures stay below 2 °C.`,
++  ];
++}
+diff --git a/src/future/policies.js b/src/future/policies.js
+new file mode 100644
+index 0000000..7937b3c
+--- /dev/null
++++ b/src/future/policies.js
+@@ -0,0 +1,51 @@
++/** The levers the AI (or the audience) controls, each 0-100. */
++
++export const LEVERS = [
++  { key: 'energy', label: 'Energy transition', help: 'How fast coal, oil and gas are replaced by clean power' },
++  { key: 'carbonPrice', label: 'Carbon price', help: 'How much polluting costs' },
++  { key: 'adaptation', label: 'Coastal & heat adaptation', help: 'Sea walls, cooling, early warnings' },
++  { key: 'food', label: 'Food & land', help: 'Resilient crops, less waste, forests protected' },
++  { key: 'cooperation', label: 'Global cooperation', help: 'Treaties, aid, pandemic preparedness, peace' },
++  { key: 'tech', label: 'AI & tech investment', help: 'Research, storage, fusion, medicine' },
++];
++
++const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
++
++export function normalizePolicies(partial = {}) {
++  return Object.fromEntries(
++    LEVERS.map(({ key }) => {
++      const v = Number(partial?.[key]);
++      return [key, Number.isFinite(v) ? Math.round(clamp(v, 0, 100)) : 50];
++    }),
++  );
++}
++
++/** 0 = lowest-emission pathway (SSP1-2.6), 1 = highest (SSP5-8.5). */
++export function emissionIndex(p) {
++  const effort = (0.45 * p.energy + 0.25 * p.carbonPrice + 0.15 * p.cooperation + 0.15 * p.tech) / 100;
++  return clamp(1.05 - 1.1 * effort, 0, 1);
++}
++
++/**
++ * Cost of a policy mix in the model's wellbeing units: doing everything at
++ * once is not free, so the optimizer has to choose.
++ */
++export function policyCost(p) {
++  const total = LEVERS.reduce((sum, { key }) => sum + p[key], 0) / 100;
++  return Math.max(0, total - 3) * 2.2 + (p.carbonPrice / 100) * 1.5;
++}
++
++export function describePolicies(p) {
++  return LEVERS.map(({ key, label }) => `${label}: ${p[key]}`).join(', ');
++}
++
++/** Everyone (AI or audience) spends the same budget across the six levers. */
++export const BUDGET = 360;
++
++/** Scale levers down proportionally so they fit the budget. */
++export function fitBudget(p, budget = BUDGET) {
++  const total = LEVERS.reduce((sum, { key }) => sum + p[key], 0);
++  if (total <= budget) return { ...p };
++  const k = budget / total;
++  return Object.fromEntries(LEVERS.map(({ key }) => [key, Math.floor(p[key] * k)]));
++}
+diff --git a/src/future/rng.js b/src/future/rng.js
+new file mode 100644
+index 0000000..bc12bf0
+--- /dev/null
++++ b/src/future/rng.js
+@@ -0,0 +1,20 @@
++/** Seeded randomness so every future can be replayed from its seed. */
++
++export function mulberry32(seed) {
++  let a = seed >>> 0;
++  return function rand() {
++    a = (a + 0x6d2b79f5) >>> 0;
++    let t = a;
++    t = Math.imul(t ^ (t >>> 15), t | 1);
++    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
++    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
++  };
++}
++
++/** Standard normal sample (Box-Muller). */
++export function normal(rand) {
++  const u = Math.max(rand(), 1e-12);
++  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rand());
++}
++
++export const pick = (rand, list) => list[Math.floor(rand() * list.length)];
+diff --git a/src/future/simulate.js b/src/future/simulate.js
+new file mode 100644
+index 0000000..4e1461e
+--- /dev/null
++++ b/src/future/simulate.js
+@@ -0,0 +1,107 @@
++/**
++ * One possible future: 50 years, year by year, from a policy mix and a seed.
++ * Warming and sea level follow the SSP pathway the policies point to, scaled
++ * by an uncertain climate sensitivity; chance events push the run around.
++ */
++
++import { mulberry32, normal, pick } from './rng.js';
++import { START_YEAR, END_YEAR, WARMING_NOW, SSPS, POPULATION, HOTSPOTS, EVENTS } from './data.js';
++import { emissionIndex, policyCost } from './policies.js';
++
++const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
++const r2 = (v) => Math.round(v * 100) / 100;
++const SPAN = END_YEAR - START_YEAR;
++
++/** Value along the SSP list for an emission index 0..1. */
++function alongSsps(e, field) {
++  const x = clamp(e, 0, 1) * (SSPS.length - 1);
++  const i = Math.min(Math.floor(x), SSPS.length - 2);
++  return SSPS[i][field] + (SSPS[i + 1][field] - SSPS[i][field]) * (x - i);
++}
++
++export function populationAt(year) {
++  for (let i = 1; i < POPULATION.length; i++) {
++    const [y1, v1] = POPULATION[i];
++    const [y0, v0] = POPULATION[i - 1];
++    if (year <= y1) return v0 + ((v1 - v0) * (year - y0)) / (y1 - y0);
++  }
++  return POPULATION.at(-1)[1];
++}
++
++const warmShape = (t) => Math.pow(t / SPAN, 1.1);
++const seaShape = (t) => Math.pow(t / SPAN, 1.3);
++
++export function simulateRun(policies, seed) {
++  const rand = mulberry32(seed);
++  const sensitivity = Math.exp(0.18 * normal(rand));
++  const s = {
++    trendC: WARMING_NOW, seaLevelM: 0, warmingC: WARMING_NOW, wellbeing: 62,
++    deathsM: 0, displacedM: 0, emissionShift: 0, extraWarming: 0, extraSea: 0, coolingYears: 0,
++  };
++  const happened = new Set();
++  const years = [];
++  const events = [];
++  const cost = policyCost(policies);
++
++  for (let year = START_YEAR; year <= END_YEAR; year++) {
++    const t = year - START_YEAR;
++    if (t > 0) {
++      const e = emissionIndex(policies) + s.emissionShift;
++      const dShape = warmShape(t) - warmShape(t - 1);
++      s.trendC += (alongSsps(e, 'warming2076') - WARMING_NOW) * sensitivity * dShape;
++      s.seaLevelM += alongSsps(e, 'seaRise2076') * (0.5 + 0.5 * sensitivity) * (seaShape(t) - seaShape(t - 1));
++      // Locked-in shocks (tipping points) arrive over about ten years.
++      const extraW = Math.min(s.extraWarming, 0.025);
++      const extraS = Math.min(s.extraSea, 0.005);
++      s.trendC += extraW; s.extraWarming -= extraW;
++      s.seaLevelM += extraS; s.extraSea -= extraS;
++    }
++    const cooling = s.coolingYears > 0 ? 0.3 : 0;
++    if (s.coolingYears > 0) s.coolingYears--;
++    s.warmingC = s.trendC + 0.05 * normal(rand) - cooling;
++
++    if (t > 0) {
++      for (const ev of EVENTS) {
++        if (ev.once && happened.has(ev.id)) continue;
++        if (rand() < ev.chance(s, policies)) {
++          happened.add(ev.id);
++          const where = pick(rand, ev.places);
++          const impact = ev.effect(s, policies);
++          events.push({ year, id: ev.id, title: ev.title, kind: ev.kind, ...where, impact });
++        }
++      }
++      const excess = Math.max(0, s.warmingC - 1.5);
++      s.wellbeing +=
++        0.12 + 0.1 * (policies.tech / 100) + 0.06 * (policies.cooperation / 100)
++        - cost / 50 - 0.25 * excess * (1 - 0.4 * policies.adaptation / 100);
++      s.wellbeing = clamp(s.wellbeing, 0, 100);
++    }
++
++    const protect = 1 - 0.8 * (policies.adaptation / 100);
++    s.displacedM = HOTSPOTS.reduce(
++      (sum, h) => sum + Math.min(h.exposureM * 1.2, h.exposureM * (s.seaLevelM / 0.5)) * protect, 0);
++
++    years.push({
++      year, warmingC: r2(s.warmingC), seaLevelM: Math.round(s.seaLevelM * 1000) / 1000,
++      populationBn: r2(populationAt(year) - s.deathsM / 1000), wellbeing: r2(s.wellbeing),
++      displacedM: r2(s.displacedM), deathsM: r2(s.deathsM),
++    });
++  }
++
++  const final = { ...years.at(-1) };
++  delete final.year;
++  const score = r2(
++    final.wellbeing - 12 * Math.max(0, final.warmingC - 1.5) - 0.08 * final.displacedM - 0.15 * final.deathsM,
++  );
++  return { seed, score, years, events, final };
++}
++
++/** Where each coastal hotspot stands in a given year of a run. */
++export function hotspotsAt(run, year, adaptation) {
++  const row = run.years.find((y) => y.year === year) ?? run.years.at(-1);
++  const protect = 1 - 0.8 * (adaptation / 100);
++  return HOTSPOTS.map((h) => ({
++    ...h,
++    displacedM: r2(Math.min(h.exposureM * 1.2, h.exposureM * (row.seaLevelM / 0.5)) * protect),
++  }));
++}
+diff --git a/src/tools/index.js b/src/tools/index.js
+index 0d0802a..b33d0c2 100644
+--- a/src/tools/index.js
++++ b/src/tools/index.js
+@@ -42,6 +42,7 @@ import {
+ import { placesNearby, planRoute, searchPlaces } from './queries/places.js';
+ import { panelRequest } from './queries/panelRequest.js';
+ import { showInGodsEyeView } from './queries/share.js';
++import { simulateFuture, playFuture } from './queries/future.js';
+ import { findAlprCameras } from './queries/surveillance.js';
+ import {
+   findCctvCameras,
+@@ -124,4 +125,6 @@ export const coreTools = Object.freeze([
+   getHudCaption,
+   showInGodsEyeView,
+   panelRequest,
++  simulateFuture,
++  playFuture,
+ ]);
+diff --git a/src/tools/queries/future.js b/src/tools/queries/future.js
+new file mode 100644
+index 0000000..dd0a66b
+--- /dev/null
++++ b/src/tools/queries/future.js
+@@ -0,0 +1,154 @@
++/**
++ * AI Runs the Planet: Monte Carlo futures for 2026-2076 from a policy mix,
++ * and a tool that shows one of them in God's Eye View for a given year.
++ * The engine lives in src/future (vendored from ai-runs-the-planet/engine).
++ */
++
++import { defineTool, ToolError } from '../catalog.js';
++import {
++  LEVERS,
++  BUDGET,
++  fitBudget,
++  normalizePolicies,
++  runMonteCarlo,
++  optimizePolicies,
++  explain,
++  annotationsFor,
++  cameraFor,
++  headline,
++  WHICH,
++  START_YEAR,
++  END_YEAR,
++  SOURCES,
++} from '../../future/index.js';
++
++// The last simulation, so play_future can show it without passing it back.
++let last = null;
++export function forgetFutures() {
++  last = null;
++}
++
++const compact = (run) => ({
++  label: run.label,
++  share: run.share,
++  seed: run.seed,
++  score: run.score,
++  final: run.final,
++  events: run.events.map(({ year, title, place, impact, kind }) => ({ year, title, place, impact, kind })),
++  decades: run.years.filter((y) => (y.year - START_YEAR) % 10 === 0),
++});
++
++export const simulateFuture = defineTool({
++  name: 'simulate_future',
++  title: 'Simulate the next 50 years',
++  description:
++    'You are in charge of the world from 2026 to 2076. Choose six policy levers (0-100 each, ' +
++    `${BUDGET} points in total; more is scaled down): ` +
++    LEVERS.map((l) => `${l.key} (${l.help.toLowerCase()})`).join(', ') +
++    '. Runs thousands of Monte Carlo futures anchored to IPCC AR6 warming and sea-level pathways ' +
++    'and UN population projections, with chance events (pandemics, wars, tipping points, ' +
++    'breakthroughs). Returns the best (95th percentile), most likely (median) and scariest ' +
++    '(5th percentile) future and statistics across all runs. Set let_ai_decide to have the ' +
++    'built-in optimizer choose the levers instead. Then call play_future to show one on the globe. ' +
++    'These are possible futures, not predictions.',
++  inputSchema: {
++    type: 'object',
++    properties: {
++      policies: {
++        type: 'object',
++        description: 'Lever values 0-100; missing levers are 50.',
++        properties: Object.fromEntries(
++          LEVERS.map((l) => [l.key, { type: 'number', minimum: 0, maximum: 100, description: l.help }]),
++        ),
++        additionalProperties: false,
++      },
++      let_ai_decide: {
++        type: 'boolean',
++        description: 'Ignore policies and let the optimizer pick the mix with the best typical and least bad worst-case future.',
++      },
++      rationale: {
++        type: 'string',
++        maxLength: 2000,
++        description: 'Why you chose these levers, kept with the result.',
++      },
++      runs: { type: 'integer', minimum: 100, maximum: 10000, description: 'Number of futures (default 5000).' },
++      seed: { type: 'integer', minimum: 1, maximum: 2147483647 },
++    },
++    additionalProperties: false,
++  },
++  // Pure computation; it reads no service, but core tools are offered where
++  // the app is, since play_future shows the result there.
++  requires: ['app'],
++  run(args) {
++    const seed = args.seed ?? 2026;
++    let policies, futures, rationale;
++    if (args.let_ai_decide) {
++      ({ policies, futures, rationale } = optimizePolicies({ seed }));
++    } else {
++      policies = fitBudget(normalizePolicies(args.policies ?? {}));
++      futures = runMonteCarlo(policies, { runs: args.runs ?? 5000, seed });
++      rationale = args.rationale ? [args.rationale] : explain(policies, futures);
++    }
++    last = futures;
++    const s = futures.stats;
++    return {
++      summary:
++        `Ran ${futures.runs.toLocaleString('en')} futures. Median warming by 2076: ${s.medianWarming} °C ` +
++        `(90% of futures ${s.warming90[0]}-${s.warming90[1]} °C); ${Math.round(s.p2C * 100)}% stay below 2 °C; ` +
++        `${Math.round(s.tippingShare * 100)}% cross a tipping point. Best: ${futures.best.final.warmingC} °C, ` +
++        `most likely: ${futures.likely.final.warmingC} °C, scariest: ${futures.worst.final.warmingC} °C. ` +
++        'Call play_future to show one.',
++      data: {
++        policies,
++        rationale,
++        stats: s,
++        futures: Object.fromEntries(WHICH.map((w) => [w, compact(futures[w])])),
++        sources: SOURCES,
++        note: 'Possible futures, not predictions.',
++      },
++    };
++  },
++});
++
++export const playFuture = defineTool({
++  name: 'play_future',
++  title: 'Show a simulated future',
++  description:
++    'Shows one future from the last simulate_future call in God\'s Eye View at a given year: ' +
++    'red pins for disasters, green pins for breakthroughs, amber marks for coastal cities losing ' +
++    'people to the sea, with the camera on that decade\'s defining event. Call it for several ' +
++    'years (for example 2036, 2056, 2076) to walk through the future.',
++  inputSchema: {
++    type: 'object',
++    properties: {
++      which: { type: 'string', enum: [...WHICH], description: 'best, likely or worst' },
++      year: { type: 'integer', minimum: START_YEAR, maximum: END_YEAR, description: 'Default 2076.' },
++    },
++    required: ['which'],
++    additionalProperties: false,
++  },
++  requires: ['app'],
++  async run(args, { tools }) {
++    if (!last) throw new ToolError('invalid_arguments', 'Run simulate_future first.');
++    const run = last[args.which];
++    const year = args.year ?? END_YEAR;
++    const cam = cameraFor(run, year);
++    const annotations = annotationsFor(run, year, last.policies.adaptation);
++    const shown = await tools.call('show_in_gods_eye_view', {
++      camera: {
++        lat: cam.lat,
++        lon: cam.lon,
++        altitude_m: cam.alt,
++        heading_deg: 0,
++        pitch_deg: cam.pitch,
++      },
++      annotations,
++    });
++    const line = headline(run, year);
++    const focus = cam.event ? ` Defining event: ${cam.event.year} ${cam.event.title} in ${cam.event.place} (${cam.event.impact}).` : '';
++    return {
++      summary: `${run.label} future, ${line}.${focus} ${shown.summary}`,
++      data: { ...shown.data, which: args.which, year, headline: line, event: cam.event },
++    };
++  },
++});
+diff --git a/src/tools/queries/future.test.mjs b/src/tools/queries/future.test.mjs
+new file mode 100644
+index 0000000..33ab7b8
+--- /dev/null
++++ b/src/tools/queries/future.test.mjs
+@@ -0,0 +1,41 @@
++import assert from 'node:assert/strict';
++import test from 'node:test';
++import { composeCatalog, coreTools } from '../index.js';
++import { forgetFutures } from './future.js';
++
++const catalog = () =>
++  composeCatalog({
++    tools: coreTools,
++    services: { app: { baseUrl: 'https://maps.example/' } },
++  });
++
++test('play_future needs a simulation first', async () => {
++  forgetFutures();
++  await assert.rejects(
++    catalog().call('play_future', { which: 'likely' }),
++    (error) => error.code === 'invalid_arguments',
++  );
++});
++
++test('simulate_future returns three futures from given policies', async () => {
++  const result = await catalog().call('simulate_future', {
++    policies: { energy: 80, carbonPrice: 60, adaptation: 40, food: 60, cooperation: 70, tech: 50 },
++    runs: 500,
++    rationale: 'test',
++  });
++  const { futures, stats, policies } = result.data;
++  assert.ok(futures.best.final.warmingC <= futures.worst.final.warmingC + 1);
++  assert.ok(stats.p2C >= 0 && stats.p2C <= 1);
++  // Over budget is scaled down to 360 points.
++  assert.ok(Object.values(policies).reduce((a, b) => a + b, 0) <= 360);
++  assert.match(result.summary, /futures/);
++});
++
++test('play_future returns a link with annotations for a year', async () => {
++  const c = catalog();
++  await c.call('simulate_future', { policies: { energy: 10 }, runs: 300 });
++  const result = await c.call('play_future', { which: 'worst', year: 2076 });
++  assert.ok(result.data.url.startsWith('https://maps.example/'));
++  assert.ok(result.data.view.annotations.length <= 24);
++  assert.match(result.summary, /2076/);
++});
+diff --git a/src/tools/surfaces.js b/src/tools/surfaces.js
+index 7c8de61..d6648d9 100644
+--- a/src/tools/surfaces.js
++++ b/src/tools/surfaces.js
+@@ -16,6 +16,9 @@ const mcpOff = Object.freeze({ mcp: false });
+ export const TOOL_SURFACES = Object.freeze({
+   // Voice runs inside the app, so a link to it adds nothing.
+   show_in_gods_eye_view: voiceOff,
++  // AI Runs the Planet: offered to assistants over MCP, not to in-app voice.
++  simulate_future: voiceOff,
++  play_future: voiceOff,
+   // Only the God's Eye View panel calls this, to load the app.
+   panel_request: voiceOff,
+   // Voice has an app action of the same name.
+-- 
+2.39.5 (Apple Git-154)
+

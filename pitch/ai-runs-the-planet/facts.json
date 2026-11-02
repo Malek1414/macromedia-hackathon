@@ -1,0 +1,156 @@
+{
+  "facts": [
+    {
+      "id": "F1",
+      "claim": "With the AI's policies, 92% of the futures stay below 2 °C by 2076",
+      "value": "92%",
+      "say": [
+        "92%",
+        "92 percent"
+      ],
+      "file": "results/ai-vs-audience.md",
+      "quote": "Result over 5,000 futures: median 1.84 °C by 2076, 92% of futures stay below 2 °C.",
+      "line": 16
+    },
+    {
+      "id": "F2",
+      "claim": "The AI's most likely future warms 1.84 degrees by 2076",
+      "value": "1.84 °C",
+      "say": [
+        "1.84 degrees"
+      ],
+      "file": "results/ai-vs-audience.md",
+      "quote": "Result over 5,000 futures: median 1.84 °C by 2076, 92% of futures stay below 2 °C.",
+      "line": 16
+    },
+    {
+      "id": "F3",
+      "claim": "The AI put 1 point into coastal and heat adaptation",
+      "value": "1",
+      "say": [
+        "1 point",
+        "one point"
+      ],
+      "file": "results/ai-vs-audience.md",
+      "quote": "The AI put 1 point into coastal and heat adaptation.",
+      "line": 38
+    },
+    {
+      "id": "F4",
+      "claim": "In the AI's most likely future 31 million people are displaced by the sea; with the audience mix, 8 million",
+      "value": "31M vs 8M",
+      "say": [
+        "31 million",
+        "8 million"
+      ],
+      "file": "results/ai-vs-audience.md",
+      "quote": "In the AI's most likely future, 31 million people are displaced by the sea; with the audience mix, 8 million.",
+      "line": 39
+    },
+    {
+      "id": "F5",
+      "claim": "With the audience mix, 0% of futures stay below 2 °C",
+      "value": "0%",
+      "say": [
+        "0%",
+        "zero percent",
+        "none"
+      ],
+      "file": "results/ai-vs-audience.md",
+      "quote": "With the AI's policies, 92% of futures stay below 2 °C; with the audience mix, 0% do.",
+      "line": 36
+    },
+    {
+      "id": "F10",
+      "claim": "With the audience mix, median warming by 2076 is 2.98 °C",
+      "value": "2.98 °C",
+      "say": [
+        "2.98 degrees"
+      ],
+      "file": "results/ai-vs-audience.md",
+      "quote": "With the audience mix, median warming by 2076 is 2.98 °C.",
+      "line": 37
+    },
+    {
+      "id": "F6",
+      "claim": "Everyone gets the same budget, 360 points across six levers, and the AI tests mixes on thousands of futures",
+      "value": "360",
+      "say": [
+        "360 points",
+        "six levers",
+        "thousands of futures"
+      ],
+      "file": "README.md",
+      "quote": "It gets the same budget as humanity (360 points across six policy levers), tests every mix on thousands of Monte Carlo futures, and picks one.",
+      "line": 7
+    },
+    {
+      "id": "F7",
+      "claim": "Each run plays 5,000 futures",
+      "value": "5,000",
+      "say": [
+        "5,000 futures",
+        "five thousand futures"
+      ],
+      "file": "results/ai-vs-audience.md",
+      "quote": "Result over 5,000 futures: median 1.84 °C by 2076, 92% of futures stay below 2 °C.",
+      "line": 16
+    },
+    {
+      "id": "F8",
+      "claim": "Warming and sea level follow the IPCC pathways and population follows the UN; these are possible futures, not predictions",
+      "value": "IPCC, UN",
+      "say": [
+        "IPCC",
+        "UN"
+      ],
+      "file": "README.md",
+      "quote": "Possible futures, not predictions. Warming and sea level follow IPCC AR6 SSP pathways, population follows UN WPP 2024",
+      "line": 9
+    },
+    {
+      "id": "F9",
+      "claim": "The globe plays three futures: best case, most likely and scariest",
+      "value": "three",
+      "say": [
+        "three futures",
+        "best case",
+        "most likely",
+        "scariest"
+      ],
+      "file": "README.md",
+      "quote": "The globe then plays three of the futures: **best case** (top 5%), **most likely** (median) and **scariest** (worst 5%).",
+      "line": 7
+    },
+    {
+      "id": "I1",
+      "claim": "The debate about AI running governments: everyone had an opinion, nobody had odds",
+      "file": "interview.json",
+      "quote": "a viral take about AI running governments; everyone had an opinion, nobody had odds."
+    },
+    {
+      "id": "I2",
+      "claim": "Malek will still be here in 2076, and most of the room will be alive then",
+      "file": "interview.json",
+      "quote": "me, Malek (I'll still be here in 2076) and everyone in the room (most of you will be alive in 2076)"
+    },
+    {
+      "id": "I3",
+      "claim": "Opinions and headlines are loud, one-sided, and never show the odds",
+      "file": "interview.json",
+      "quote": "Opinions & headlines: loud, one-sided, and never show the odds."
+    },
+    {
+      "id": "I4",
+      "claim": "It is one world that affects us all",
+      "file": "interview.json",
+      "quote": "all of the above one world that affects us all"
+    },
+    {
+      "id": "I5",
+      "claim": "The ask: beat the AI now, then back us into the LEXIE programme",
+      "file": "interview.json",
+      "quote": "Both: beat the AI now, then back us into the LEXIE programme to take it further."
+    }
+  ]
+}
