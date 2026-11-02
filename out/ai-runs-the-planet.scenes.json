@@ -116,6 +116,18 @@
             "pitch": -90,
             "roll": 0
           },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
           "dataPackIds": [
             "future-best-2026"
           ]
@@ -132,6 +144,18 @@
             "heading": 0,
             "pitch": -55,
             "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
           },
           "dataPackIds": [
             "future-best-2036"
@@ -150,6 +174,18 @@
             "pitch": -90,
             "roll": 0
           },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
           "dataPackIds": [
             "future-best-2046"
           ]
@@ -166,6 +202,18 @@
             "heading": 0,
             "pitch": -90,
             "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
           },
           "dataPackIds": [
             "future-best-2056"
@@ -184,6 +232,18 @@
             "pitch": -55,
             "roll": 0
           },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
           "dataPackIds": [
             "future-best-2066"
           ]
@@ -200,6 +260,18 @@
             "heading": 0,
             "pitch": -55,
             "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
           },
           "dataPackIds": [
             "future-best-2076"
@@ -322,6 +394,18 @@
             "pitch": -90,
             "roll": 0
           },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
           "dataPackIds": [
             "future-likely-2026"
           ]
@@ -338,6 +422,18 @@
             "heading": 0,
             "pitch": -55,
             "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
           },
           "dataPackIds": [
             "future-likely-2036"
@@ -356,6 +452,18 @@
             "pitch": -90,
             "roll": 0
           },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
           "dataPackIds": [
             "future-likely-2046"
           ]
@@ -372,6 +480,18 @@
             "heading": 0,
             "pitch": -90,
             "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
           },
           "dataPackIds": [
             "future-likely-2056"
@@ -390,6 +510,18 @@
             "pitch": -90,
             "roll": 0
           },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
           "dataPackIds": [
             "future-likely-2066"
           ]
@@ -406,6 +538,18 @@
             "heading": 0,
             "pitch": -55,
             "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
           },
           "dataPackIds": [
             "future-likely-2076"
@@ -528,6 +672,18 @@
             "pitch": -90,
             "roll": 0
           },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
           "dataPackIds": [
             "future-worst-2026"
           ]
@@ -544,6 +700,18 @@
             "heading": 0,
             "pitch": -90,
             "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
           },
           "dataPackIds": [
             "future-worst-2036"
@@ -562,6 +730,18 @@
             "pitch": -90,
             "roll": 0
           },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
           "dataPackIds": [
             "future-worst-2046"
           ]
@@ -578,6 +758,18 @@
             "heading": 0,
             "pitch": -55,
             "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
           },
           "dataPackIds": [
             "future-worst-2056"
@@ -596,6 +788,18 @@
             "pitch": -55,
             "roll": 0
           },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
           "dataPackIds": [
             "future-worst-2066"
           ]
@@ -612,6 +816,18 @@
             "heading": 0,
             "pitch": -90,
             "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
           },
           "dataPackIds": [
             "future-worst-2076"

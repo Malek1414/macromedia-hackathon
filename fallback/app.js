@@ -15,27 +15,72 @@ const state = {
 };
 
 // ---------- globe ----------
+// NASA GIBS imagery (keyless, CORS open): Blue Marble by day, city lights by night.
+// GIBS geographic tiles are 512 px at 0.5625°/px, so a level-0 tile spans 288°:
+// the matrix starts at (-180, 90) and runs past the globe's edge.
+const GIBS_SCHEME = new Cesium.GeographicTilingScheme({
+  rectangle: Cesium.Rectangle.fromDegrees(-180, -198, 396, 90),
+  numberOfLevelZeroTilesX: 2,
+  numberOfLevelZeroTilesY: 1,
+});
+const gibs = (layer, date, ext, maxLevel) => new Cesium.WebMapTileServiceImageryProvider({
+  url: `https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/${layer}/default/${date}/500m/{TileMatrix}/{TileRow}/{TileCol}.${ext}`,
+  layer, style: 'default', tileMatrixSetID: '500m', format: `image/${ext === 'jpeg' ? 'jpeg' : 'png'}`,
+  tilingScheme: GIBS_SCHEME, tileWidth: 512, tileHeight: 512, maximumLevel: maxLevel,
+  credit: new Cesium.Credit('NASA GIBS / Blue Marble, Black Marble'),
+});
 const viewer = new Cesium.Viewer('globe', {
-  baseLayer: Cesium.ImageryLayer.fromProviderAsync(
-    Cesium.TileMapServiceImageryProvider.fromUrl(Cesium.buildModuleUrl('Assets/Textures/NaturalEarthII')),
-  ),
+  baseLayer: new Cesium.ImageryLayer(gibs('BlueMarble_ShadedRelief_Bathymetry', '2004-08-01', 'jpeg', 7)),
   baseLayerPicker: false, geocoder: false, timeline: false, animation: false, homeButton: false,
   sceneModePicker: false, navigationHelpButton: false, fullscreenButton: false, infoBox: false, selectionIndicator: false,
+  shouldAnimate: false,
 });
 const scene = viewer.scene;
-scene.globe.enableLighting = false;
-scene.skyAtmosphere.show = true;
+const night = viewer.imageryLayers.addImageryProvider(gibs('VIIRS_Black_Marble', '2016-01-01', 'png', 7));
+night.dayAlpha = 0.0;
+night.nightAlpha = 1.0;
+night.brightness = 2.0;
+scene.globe.enableLighting = true;
+scene.globe.dynamicAtmosphereLighting = true;
+scene.globe.dynamicAtmosphereLightingFromSun = true;
 scene.globe.showGroundAtmosphere = true;
-viewer.camera.setView({ destination: Cesium.Cartesian3.fromDegrees(20, 20, 20_000_000) });
-const layer = () => viewer.imageryLayers.get(0);
+scene.globe.baseColor = Cesium.Color.fromCssColorString('#020409');
+scene.skyAtmosphere.show = true;
+scene.backgroundColor = Cesium.Color.fromCssColorString('#020409');
+// Late afternoon over Europe: the night line crosses the Middle East, Asia shows its city lights.
+viewer.clock.currentTime = Cesium.JulianDate.fromIso8601('2026-11-03T15:30:00Z');
+const bloom = scene.postProcessStages.bloom;
+bloom.enabled = true;
+Object.assign(bloom.uniforms, { glowOnly: false, contrast: 128, brightness: -0.55, delta: 1.0, sigma: 2.6, stepSize: 1.0 });
+viewer.camera.setView({ destination: Cesium.Cartesian3.fromDegrees(30, 15, 17_000_000) });
+const baseLayer = () => viewer.imageryLayers.get(0);
 
 let spin = true;
-viewer.clock.onTick.addEventListener(() => { if (spin) viewer.camera.rotate(Cesium.Cartesian3.UNIT_Z, -0.0006); });
+viewer.scene.preRender.addEventListener(() => { if (spin) viewer.camera.rotate(Cesium.Cartesian3.UNIT_Z, -0.0005); });
 viewer.screenSpaceEventHandler.setInputAction(() => { spin = false; }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
 const entities = new Cesium.CustomDataSource('future');
 viewer.dataSources.add(entities);
 
+/** A soft round glow, drawn once per colour, used as the billboard for events and cities. */
+const glowCache = new Map();
+function glow(css) {
+  if (glowCache.has(css)) return glowCache.get(css);
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const g = c.getContext('2d');
+  const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0, '#ffffff');
+  grad.addColorStop(0.18, css);
+  grad.addColorStop(0.5, css + '55');
+  grad.addColorStop(1, css + '00');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 64, 64);
+  glowCache.set(css, c);
+  return c;
+}
+
+const RED = '#ff3b4e', GREEN = '#3ee08f', AMBER = '#ffb020';
 function currentRun() {
   const r = state.results[state.mode];
   return r ? r[state.which] : null;
@@ -47,65 +92,104 @@ function drawGlobe() {
   const res = state.results[state.mode];
   if (!run) return;
   const row = run.years.find((y) => y.year === state.year);
-  // Hotspots: coastal cities, circle grows with people displaced by the sea.
+  const now = () => performance.now() / 1000;
+
+  // Coastal cities losing people to the sea: amber glow and a ring sized by displacement.
   for (const h of hotspotsAt(run, state.year, res.policies.adaptation)) {
     if (h.displacedM < 0.05) continue;
-    const r = 40_000 + Math.sqrt(h.displacedM) * 110_000;
+    const r = 60_000 + Math.sqrt(h.displacedM) * 140_000;
     entities.entities.add({
       position: Cesium.Cartesian3.fromDegrees(h.lon, h.lat),
-      ellipse: { semiMajorAxis: r, semiMinorAxis: r, material: Cesium.Color.fromCssColorString('#ffb020').withAlpha(0.35), outline: true, outlineColor: Cesium.Color.fromCssColorString('#ffb020') , height: 0 },
+      billboard: { image: glow(AMBER), scale: 0.35 + Math.sqrt(h.displacedM) * 0.25, color: Cesium.Color.WHITE.withAlpha(0.9) },
+      ellipse: {
+        semiMajorAxis: r, semiMinorAxis: r, height: 0,
+        material: Cesium.Color.fromCssColorString(AMBER).withAlpha(0.18),
+        outline: true, outlineColor: Cesium.Color.fromCssColorString(AMBER).withAlpha(0.8),
+      },
       label: h.displacedM >= 1 ? {
-        text: `${h.place}  ${h.displacedM}M`, font: '12px JetBrains Mono', fillColor: Cesium.Color.fromCssColorString('#ffd27a'),
-        showBackground: true, backgroundColor: Cesium.Color.BLACK.withAlpha(0.55), pixelOffset: new Cesium.Cartesian2(0, -18),
-        distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 14_000_000),
+        text: `${h.place.toUpperCase()}  ${h.displacedM.toFixed(1)}M`, font: '600 11px JetBrains Mono',
+        fillColor: Cesium.Color.fromCssColorString('#ffd27a'), showBackground: true,
+        backgroundColor: Cesium.Color.fromCssColorString('#05070b').withAlpha(0.7), backgroundPadding: new Cesium.Cartesian2(6, 4),
+        pixelOffset: new Cesium.Cartesian2(0, -20), distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 9_000_000),
       } : undefined,
     });
   }
-  // Events: pins, the recent ones pulse and carry labels.
-  const t0 = performance.now();
+
+  // Events: a glow for every one so far; the recent ones send out shockwaves and carry a label.
   for (const e of run.events.filter((x) => x.year <= state.year)) {
-    const recent = state.year - e.year <= 3;
-    const color = Cesium.Color.fromCssColorString(e.kind === 'good' ? '#3ee08f' : '#ff4d5e');
+    const css = e.kind === 'good' ? GREEN : RED;
+    const color = Cesium.Color.fromCssColorString(css);
+    const age = state.year - e.year;
+    const recent = age <= 2;
+    const pos = Cesium.Cartesian3.fromDegrees(e.lon, e.lat);
+    const born = now();
     entities.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(e.lon, e.lat),
-      point: {
-        pixelSize: recent ? new Cesium.CallbackProperty(() => 10 + 6 * Math.abs(Math.sin((performance.now() - t0) / 300)), false) : 8,
-        color: color.withAlpha(recent ? 1 : 0.6), outlineColor: Cesium.Color.WHITE.withAlpha(0.7), outlineWidth: 1,
+      position: pos,
+      billboard: {
+        image: glow(css),
+        scale: recent ? new Cesium.CallbackProperty(() => 1.1 + 0.35 * Math.sin((now() - born) * 4), false) : 0.6,
+        color: Cesium.Color.WHITE.withAlpha(recent ? 1 : 0.55),
+        disableDepthTestDistance: 0,
       },
       label: recent ? {
-        text: `${e.year} · ${e.title}\n${e.place}: ${e.impact}`, font: '13px Inter', fillColor: color,
-        showBackground: true, backgroundColor: Cesium.Color.BLACK.withAlpha(0.7), pixelOffset: new Cesium.Cartesian2(0, -26),
-        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+        text: `${e.year}  ${e.title.toUpperCase()}\n${e.place} · ${e.impact}`, font: '600 13px Inter', fillColor: color,
+        showBackground: true, backgroundColor: Cesium.Color.fromCssColorString('#05070b').withAlpha(0.78),
+        backgroundPadding: new Cesium.Cartesian2(8, 6), pixelOffset: new Cesium.Cartesian2(0, -34),
       } : undefined,
     });
+    if (recent) {
+      // Two expanding rings, half a cycle apart.
+      for (const phase of [0, 0.5]) {
+        const t = () => ((now() - born) / 2.2 + phase) % 1;
+        entities.entities.add({
+          position: pos,
+          ellipse: {
+            semiMajorAxis: new Cesium.CallbackProperty(() => 50_000 + t() * (e.kind === 'good' ? 600_000 : 900_000), false),
+            semiMinorAxis: new Cesium.CallbackProperty(() => 50_000 + t() * (e.kind === 'good' ? 600_000 : 900_000), false),
+            height: 0,
+            material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(() => color.withAlpha(0.35 * (1 - t())), false)),
+            outline: false,
+          },
+        });
+      }
+    }
   }
-  // Heat: the planet's colours shift toward red as it warms.
+
+  // Heat: a red veil over the whole planet that thickens with every tenth of a degree.
   const heat = Math.max(0, row.warmingC - 1.4);
-  if (layer()) { layer().saturation = 1 + heat * 0.25; layer().hue = -heat * 0.03; layer().brightness = 1 - heat * 0.06; }
-  scene.skyAtmosphere.hueShift = -heat * 0.06;
-  scene.skyAtmosphere.saturationShift = heat * 0.15;
-  scene.globe.atmosphereHueShift = -heat * 0.06;
+  entities.entities.add({
+    rectangle: {
+      coordinates: Cesium.Rectangle.fromDegrees(-180, -85, 180, 85),
+      material: Cesium.Color.fromCssColorString('#ff3a1a').withAlpha(Math.min(0.32, heat * 0.14)),
+      height: 0,
+    },
+  });
+  if (baseLayer()) { baseLayer().saturation = 1 + heat * 0.3; baseLayer().hue = -heat * 0.02; }
+  scene.skyAtmosphere.hueShift = -heat * 0.07;
+  scene.skyAtmosphere.saturationShift = heat * 0.25;
+  scene.globe.atmosphereHueShift = -heat * 0.07;
+  scene.globe.atmosphereSaturationShift = heat * 0.25;
+}
+
+/** Fly so the point sits in the middle of the screen, seen from the south at a tilt. */
+function flyToPoint(lon, lat, range, pitchDeg, duration) {
+  spin = false;
+  viewer.camera.flyToBoundingSphere(new Cesium.BoundingSphere(Cesium.Cartesian3.fromDegrees(lon, lat), 1), {
+    offset: new Cesium.HeadingPitchRange(0, Cesium.Math.toRadians(pitchDeg), range),
+    duration,
+  });
 }
 
 function flyToEvent(e) {
-  spin = false;
-  viewer.camera.flyTo({
-    destination: Cesium.Cartesian3.fromDegrees(e.lon, e.lat - 3.5, 4_200_000),
-    orientation: { heading: 0, pitch: Cesium.Math.toRadians(-72), roll: 0 },
-    duration: 1.8,
-  });
+  flyToPoint(e.lon, e.lat, 3_800_000, -58, 1.8);
 }
 
 function flyToYear(year) {
   const run = currentRun();
   if (!run) return;
   const cam = cameraFor(run, year);
-  spin = false;
-  viewer.camera.flyTo({
-    destination: Cesium.Cartesian3.fromDegrees(cam.lon, cam.lat, cam.event ? 4_500_000 : 20_000_000),
-    orientation: { heading: 0, pitch: Cesium.Math.toRadians(cam.event ? -70 : -90), roll: 0 },
-    duration: 2.2,
-  });
+  if (cam.event) flyToPoint(cam.event.lon, cam.event.lat, 4_200_000, -60, 2.2);
+  else flyToPoint(30, 15, 17_000_000, -90, 2.2);
 }
 
 // ---------- HUD + timeline ----------
@@ -120,9 +204,27 @@ function drawHud() {
   $('hud-wb').textContent = row ? Math.round(row.wellbeing) : '62';
   $('hud-warm').style.color = row && row.warmingC >= 2 ? '#ff4d5e' : row && row.warmingC >= 1.7 ? '#ffc53d' : '#e6edf7';
   const ev = run ? run.events.filter((e) => e.year <= state.year && e.year > state.year - 3).slice(-3) : [];
+  const fresh = run ? run.events.filter((e) => e.year === state.year) : [];
+  // While playing, the play loop shows the banner together with the camera move.
+  if (fresh.length && !state.playing) showBanner(fresh.find((e) => e.kind === 'bad') ?? fresh[0]);
   $('ticker').innerHTML = ev.map((e) => `<span class="${e.kind}">● ${e.year} ${e.title} (${e.place}): ${e.impact}</span>`).join('&nbsp;&nbsp;&nbsp;');
   $('year').value = state.year;
 }
+
+let bannerTimer = null;
+function showBanner(e) {
+  const b = $('banner');
+  b.className = `banner show ${e.kind}`;
+  b.innerHTML = `<span class="y">${e.year}</span><b>${e.title}</b><small>${e.place} · ${e.impact}</small>`;
+  clearTimeout(bannerTimer);
+  bannerTimer = setTimeout(() => b.classList.remove('show'), 2600);
+}
+
+function setLeftCollapsed(on) {
+  $('left').classList.toggle('collapsed', on);
+  $('collapse').textContent = on ? '›' : '‹';
+}
+$('collapse').addEventListener('click', () => setLeftCollapsed(!$('left').classList.contains('collapsed')));
 
 function setYear(y, { fly = false } = {}) {
   state.year = Math.min(END_YEAR, Math.max(START_YEAR, y));
@@ -151,14 +253,14 @@ function play() {
     if (state.year >= END_YEAR) {
       stop();
       // End on the whole planet.
-      viewer.camera.flyTo({ destination: Cesium.Cartesian3.fromDegrees(20, 20, 20_000_000), duration: 2.5 });
+      flyToPoint(30, 15, 17_000_000, -90, 2.5);
       return;
     }
     const next = state.year + 1;
     setYear(next);
     const now = currentRun().events.filter((e) => e.year === next);
     const ev = now.find((e) => e.kind === 'bad') ?? now[0];
-    if (ev && next - lastFly >= 4) { lastFly = next; flyToEvent(ev); }
+    if (ev && next - lastFly >= 3) { lastFly = next; flyToEvent(ev); showBanner(ev); }
   }, 420);
 }
 $('btn-play').addEventListener('click', play);
@@ -199,6 +301,7 @@ $('levers').addEventListener('input', (e) => {
 
 function setMode(mode) {
   state.mode = mode;
+  setLeftCollapsed(false);
   $('tab-ai').classList.toggle('active', mode === 'ai');
   $('tab-human').classList.toggle('active', mode === 'human');
   drawLevers();
@@ -266,6 +369,7 @@ async function letAiDecide() {
 
 function afterResult() {
   state.which = 'likely';
+  setLeftCollapsed(true);
   drawLevers();
   drawResults();
   setYear(START_YEAR);
@@ -278,6 +382,7 @@ $('btn-run').addEventListener('click', () => runFutures(state.mode));
 // ---------- results ----------
 function drawResults() {
   const res = state.results[state.mode];
+  document.querySelector('.panel.right').classList.toggle('empty', !res);
   if (!res) { $('cards').innerHTML = '<p class="hint">Run the simulation to see three futures.</p>'; $('histogram').innerHTML = ''; $('stats').innerHTML = ''; drawCompare(); return; }
   $('runs').textContent = res.runs.toLocaleString('en');
   $('cards').innerHTML = ['best', 'likely', 'worst'].map((w) => {
@@ -285,7 +390,7 @@ function drawResults() {
     const top = r.events.slice(0, 3).map((e) => `${e.year} ${e.title}`).join(' · ') || 'no major shocks';
     return `<div class="card ${w} ${state.which === w ? 'active' : ''}" data-which="${w}">
       <div class="title">${r.label}<small>${r.share}</small></div>
-      <div class="nums">${f.warmingC.toFixed(2)} °C · sea +${Math.round(f.seaLevelM * 100)} cm · ${f.displacedM.toFixed(0)}M displaced</div>
+      <div class="nums">${f.warmingC.toFixed(2)} °C · +${Math.round(f.seaLevelM * 100)} cm · ${f.displacedM.toFixed(0)}M flooded out</div>
       <div class="events">${top}</div></div>`;
   }).join('');
   const max = Math.max(...res.histogram.map((b) => b.count));

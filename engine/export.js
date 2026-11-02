@@ -10,6 +10,12 @@ import { START_YEAR, END_YEAR } from './data.js';
 export const WHICH = ['best', 'likely', 'worst'];
 const DECADES = [2026, 2036, 2046, 2056, 2066, 2076];
 const SCENE_TITLES = { best: 'Best case', likely: 'Most likely', worst: 'Scariest' };
+// Each future gets GEV's glow and tactical HUD; the scariest one glows hardest.
+const SCENE_VISUALS = {
+  best: { style: 'normal', bloom: { enabled: true, intensity: 40, version: 2 }, hud: { visible: true, variant: 'tactical' } },
+  likely: { style: 'normal', bloom: { enabled: true, intensity: 55, version: 2 }, hud: { visible: true, variant: 'tactical' } },
+  worst: { style: 'normal', bloom: { enabled: true, intensity: 75, version: 2 }, hud: { visible: true, variant: 'tactical' } },
+};
 
 const clampYear = (y) => Math.min(END_YEAR, Math.max(START_YEAR, Math.round(y)));
 const rowAt = (run, year) => run.years.find((r) => r.year === year) ?? run.years.at(-1);
@@ -100,6 +106,7 @@ export function toSceneDocument(futures, { title = 'AI Runs the Planet' } = {}) 
           durationSec: 4,
           holdSec: 3,
           camera: { lat: cam.lat, lon: cam.lon, alt: cam.alt, heading: cam.heading, pitch: cam.pitch, roll: cam.roll },
+          visual: SCENE_VISUALS[which],
           dataPackIds: [`${sceneId}-${d}`],
         };
       }),
