@@ -2,10 +2,11 @@
  "title": "AI Runs the Planet",
  "names": [
   "AI Runs the Planet",
+  "Claude",
   "God's Eye View",
   "IPCC",
-  "UN",
-  "Malek"
+  "Malek",
+  "UN"
  ],
  "explained": [],
  "beats": [
@@ -28,7 +29,7 @@
    "job": "thing",
    "speaker": "A",
    "shot": "demo",
-   "say": "So we built AI Runs the Planet. It gives an AI the same budget as all of us: 360 points across six levers [F6]. Clean energy, carbon price, sea walls, food, working together, and tech. Then it plays thousands of futures to 2076 [F6]."
+   "say": "So we built AI Runs the Planet. It gives an AI the same budget as all of us: 360 points across six levers [F6]. Then it plays thousands of futures to 2076 [F6]."
   },
   {
    "id": "B4",
@@ -42,14 +43,14 @@
    "job": "proof",
    "speaker": "A",
    "shot": "proof",
-   "say": "Here is what the AI did. It kept 92% of futures below 2 degrees [F1]. But it put 1 point into coastal protection [F3]. So in its most likely future, 31 million people are pushed out by the sea [F4]. Our test audience spent the same budget on people first. Only 8 million were pushed out [F4]. But none of their futures stayed below 2 degrees [F5]."
+   "say": "Here is what the AI did. It kept 92% of futures below 2 degrees [F1]. But it put 1 point into coastal protection [F3]. So in its most likely future, 31 million people are pushed out by the sea [F4]. Then we let Claude choose for itself. It kept 26% below 2 degrees [F11], and 18 million were pushed out [F12]. Our test audience put people first. Only 8 million were pushed out [F4]. But none of their futures stayed below 2 degrees [F5]."
   },
   {
    "id": "B6",
    "job": "means",
    "speaker": "A",
    "shot": "demo",
-   "say": "So the AI saved the climate and forgot the coast. For us, the people who will live in 2076, that changes the argument. We can see the odds before anyone decides. These are possible futures, not predictions, built on IPCC and UN numbers [F8]. It is one world, and it affects all of us [I4]."
+   "say": "So the AI saved the climate and forgot the coast. For everyone who will be alive in 2076, not just us, that changes the argument. We can see the odds before anyone decides. These are possible futures, not predictions, built on IPCC and UN numbers [F8]. It is one world, and it affects all of us [I4]."
   },
   {
    "id": "B7",

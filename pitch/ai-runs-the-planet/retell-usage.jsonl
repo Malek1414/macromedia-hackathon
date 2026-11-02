@@ -4,3 +4,9 @@
 {"persona": "gtm", "model": "sonnet", "judge": {"cost_usd": 0.007398, "usage": 2}, "grader": {"cost_usd": 0.008174, "usage": 2}}
 {"persona": "community", "model": "sonnet", "judge": {"cost_usd": 0.008066, "usage": 2}, "grader": {"cost_usd": 0.006542, "usage": 2}}
 {"persona": "founder", "model": "sonnet", "judge": {"cost_usd": 0.007854, "usage": 2}, "grader": {"cost_usd": 0.006486, "usage": 2}}
+{"persona": "founder", "model": "sonnet", "judge": {"cost_usd": 0.008102, "usage": 2}, "grader": {"cost_usd": 0.006622, "usage": 2}}
+{"persona": "gtm", "model": "sonnet", "judge": {"cost_usd": 0.0077859999999999995, "usage": 2}, "grader": {"cost_usd": 0.006468000000000001, "usage": 2}}
+{"persona": "community", "model": "sonnet", "judge": {"cost_usd": 0.007874, "usage": 2}, "grader": {"cost_usd": 0.013574, "usage": 2}}
+{"persona": "founder", "model": "sonnet", "judge": {"cost_usd": 0.007952, "usage": 2}, "grader": {"cost_usd": 0.008626, "usage": 2}}
+{"persona": "community", "model": "sonnet", "judge": {"cost_usd": 0.008374, "usage": 2}, "grader": {"cost_usd": 0.009961999999999999, "usage": 2}}
+{"persona": "gtm", "model": "sonnet", "judge": {"cost_usd": 0.007866, "usage": 2}, "grader": {"cost_usd": 0.010891999999999999, "usage": 2}}

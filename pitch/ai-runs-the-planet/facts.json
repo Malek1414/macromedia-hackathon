@@ -151,6 +151,29 @@
       "claim": "The ask: beat the AI now, then back us into the LEXIE programme",
       "file": "interview.json",
       "quote": "Both: beat the AI now, then back us into the LEXIE programme to take it further."
+    },
+    {
+      "id": "F11",
+      "claim": "Claude, choosing its own levers, keeps 26% of futures below 2 °C",
+      "value": "26%",
+      "say": [
+        "26%",
+        "26 percent"
+      ],
+      "file": "results/ai-vs-audience.md",
+      "quote": "Claude, choosing for itself, keeps 26% of futures below 2 °C (median 2.11 °C), with 18 million people displaced by the sea in its most likely future.",
+      "line": 49
+    },
+    {
+      "id": "F12",
+      "claim": "In Claude's most likely future 18 million people are displaced by the sea",
+      "value": "18 million",
+      "say": [
+        "18 million"
+      ],
+      "file": "results/ai-vs-audience.md",
+      "quote": "Claude, choosing for itself, keeps 26% of futures below 2 °C (median 2.11 °C), with 18 million people displaced by the sea in its most likely future.",
+      "line": 49
     }
   ]
 }

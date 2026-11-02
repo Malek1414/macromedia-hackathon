@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parent.parent
 A = ROOT / 'footage/take-A-fallback-raw.mp4'
 B = ROOT / 'footage/take-B-gev-raw.mp4'
+C = ROOT / 'footage/take-C-claude-raw.mp4'
 OUT = ROOT / 'footage/rough-cut-v0.mp4'
 W, H, FPS = 1920, 1080, 30
 
@@ -17,12 +18,14 @@ CUTS = [
     (A, 0, 7),           # 0:00 hook: title screen
     (B, 0, 7),           #       the planet today
     (B, 7, 18),          # 0:14 tried: God's Eye View, today's world
-    (A, 7, 24),          # 0:25 thing: hand over, the AI tests futures, sliders glide, starved levers flagged
-    (A, 24, 42),         # 0:42 works: playback with event banners, into the AI's 2076 report
-    (A, 41.6, 53.6),     # 1:00 proof: the AI's report, then the audience sets its levers
-    (A, 76.4, 88.4),     # 1:12 end of the audience run, the face-off
-    (B, 18, 40),         # 1:24 means: GEV plays the scariest future
-    (A, 78.4, 88.4),     # 1:46 ask: back on the face-off
+    (A, 7, 20),          # 0:25 thing: hand over, the AI tests futures, sliders glide, starved levers flagged
+    (A, 20, 37),         # 0:38 works: playback with event banners
+    (A, 37.6, 47.6),     # 0:55 proof: the AI's 2076 report
+    (C, 0, 8),           #       Claude's own levers and reasoning
+    (A, 76.4, 82.4),     #       the audience's future ends
+    (C, 26.8, 33.8),     #       the three-way face-off
+    (B, 18, 40),         # 1:26 means: GEV plays the scariest future
+    (C, 25.8, 33.8),     # 1:48 ask: back on the face-off
 ]
 END_CARD_S = 4
 
@@ -56,7 +59,11 @@ def end_card(path):
 
 def main():
     beats = json.loads((ROOT / 'pitch/ai-runs-the-planet/script.json').read_text())['beats']
-    starts = {'B1': 0, 'B2': 14, 'B3': 25, 'B4': 42, 'B5': 60, 'B6': 84, 'B7': 106}
+    # Beat start times from the gated script (pitch.py script-md writes them).
+    starts = {}
+    for line in (ROOT / 'pitch/ai-runs-the-planet/script.md').read_text().splitlines():
+        m = re.match(r'\| (\d+):(\d+) \| (B\d+) ', line)
+        if m: starts[m.group(3)] = int(m.group(1)) * 60 + int(m.group(2))
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         parts = []
@@ -95,7 +102,7 @@ def main():
         mix = ''.join(f'[a{n}]' for n in range(len(beats)))
         filters.append(f'{mix}amix=inputs={len(beats)}:normalize=0,apad[aout]')
         run('ffmpeg', '-y', '-i', str(video), *inputs, '-filter_complex', ';'.join(filters),
-            '-map', '0:v', '-map', '[aout]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-shortest', str(OUT))
+            '-map', '0:v', '-map', '[aout]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-t', '120', str(OUT))
     print(f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s')
 
 if __name__ == '__main__':

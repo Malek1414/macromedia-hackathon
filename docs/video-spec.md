@@ -18,15 +18,16 @@
 
 | Time | Beat | On screen | Source | Overlay |
 |---|---|---|---|---|
-| 0:00-0:14 | Hook | Title screen "What if AI ran the planet?" over the slowly turning globe, night side lit with city lights | fallback, fresh load | (none, the title is the overlay) |
-| 0:14-0:25 | Tried | GEV with the live flights layer on (today's world), slow drift over Europe | GEV `npm run dev` | "Opinions. No odds." |
-| 0:25-0:42 | Thing | Click **Hand over the planet**. "AI is testing futures…" bar fills, then the six sliders glide to the AI's pick (energy 100, cooperation 99, tech 84, carbon 69, food 4, coastal 1) as the voice names the levers | fallback | "360 points · 6 levers" |
-| 0:42-1:00 | Works | The three future cards slide in; playback starts; the camera flies to each event and the big banner fires ("NEW PANDEMIC · Kinshasa"), shockwave rings on the globe, coastal cities glowing amber | fallback | "5,000 futures" when the cards appear |
-| 1:00-1:12 | Proof (AI) | The **2076 report card**: "The AI ran the planet for 50 years", 1.82 °C, 31M flooded out, "92% stay below 2 °C", "It spent least on coastal & heat adaptation (1)" | fallback | "92% below 2 °C" → "Coastal: 1 point" → "31 million flooded out" |
-| 1:12-1:24 | Proof (audience) | Click **Try to beat the AI**, set energy 20, carbon 20, adaptation 100, food 100, cooperation 20, tech 100, **Run 5,000 futures**; jump cut to the audience report with the face-off: "The AI wins 3 to 1", flooded out 31M vs **8M**, below 2 °C 92% vs **0%** | fallback | "8 million" → "0% below 2 °C" |
-| 1:24-1:46 | Means | God's Eye View playing the *Scariest* Director scene: glow, tactical HUD, camera decade to decade, the "Simulated future, not a prediction" card | GEV Authoring → Play | "Possible futures, not predictions" |
-| 1:46-1:56 | Ask | Back on the face-off card, cursor on **Try to beat the AI** | fallback | "Beat the AI." |
-| 1:56-2:00 | End card | Black, title + repo link + names | edit | "AI Runs the Planet · Malek Hassan & Sammy" |
+| 0:00-0:14 | Hook | Title screen "What if AI ran the planet?" over the turning globe, then today's planet in God's Eye View | take A 0-7, take B 0-7 | (the title is the overlay) |
+| 0:14-0:25 | Tried | God's Eye View, today's world, slow drift | take B 7-18 | "Opinions. No odds." |
+| 0:25-0:38 | Thing | **Hand over the planet** → "AI is testing futures…" → sliders glide to energy 100, cooperation 99, tech 84, carbon 69; food 4 and coastal 1 turn red "ALMOST NOTHING"; the AI's reasoning on top | take A 7-20 | "360 points · 6 levers" |
+| 0:38-0:55 | Works | Three future cards; playback with event banners, shockwaves, heat zones, flooded coasts | take A 20-37 | "5,000 futures" |
+| 0:55-1:26 | Proof | AI's 2076 report (92% below 2 °C, coastal 1, 31M flooded out) → Claude's tab with its own levers and quoted reasoning → the audience's future ending → the **three-way face-off** (AI · Claude · Audience) | take A 37.6-47.6, take C 0-8, take A 76.4-82.4, take C 26.8-33.8 | "92% below 2 °C" → "Coastal: 1 point" → "31 million" → "Claude: 26%, 18 million" → "Audience: 8 million, 0%" |
+| 1:26-1:48 | Means | God's Eye View playing the *Scariest* Director scene | take B 18-40 | "Possible futures, not predictions" |
+| 1:48-1:56 | Ask | The face-off, cursor on **Try to beat both** | take C 25.8-33.8 | "Beat the AI." |
+| 1:56-2:00 | End card | Title, names, credits | rough-cut.py | |
+
+The raw takes and a rough cut with a temporary voice are on the GitHub release `rough-cut-v0`; `python3 scripts/rough-cut.py` rebuilds the cut from `footage/` with these exact in/out points.
 
 ## How to record (about 20 minutes)
 
