@@ -242,8 +242,13 @@ function autoplay(delay) {
   clearTimeout(autoplayTimer);
   autoplayTimer = setTimeout(() => { if (!state.playing) play(); }, delay);
 }
+function hideReport() {
+  $('report').classList.add('hidden');
+  document.body.classList.remove('reporting');
+}
 function play() {
   clearTimeout(autoplayTimer);
+  hideReport();
   if (!currentRun()) return;
   if (state.playing) return stop();
   if (state.year >= END_YEAR) setYear(START_YEAR);
@@ -254,6 +259,7 @@ function play() {
       stop();
       // End on the whole planet.
       flyToPoint(30, 15, 17_000_000, -90, 2.5);
+      setTimeout(showReport, 1800);
       return;
     }
     const next = state.year + 1;
@@ -436,6 +442,55 @@ function drawCompare() {
   const cls = (a, b, dir, mine) => ((dir === 'low' ? (mine ? a < b : b < a) : (mine ? a > b : b > a)) ? 'win' : '');
   box.innerHTML = `<h4>AI vs audience</h4><table><tr><th></th><th>AI</th><th>Audience</th></tr>${rows.map(([l, a, h, d, u]) =>
     `<tr><td>${l}</td><td class="${cls(a, h, d, true)}">${a}${u}</td><td class="${cls(a, h, d, false)}">${h}${u}</td></tr>`).join('')}</table>`;
+}
+
+// ---------- intro and the 2076 report ----------
+function closeIntro() { $('intro').classList.add('gone'); }
+$('intro-go').addEventListener('click', () => { closeIntro(); letAiDecide(); });
+$('intro-skip').addEventListener('click', () => { closeIntro(); setMode('human'); });
+
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+function showReport() {
+  const res = state.results[state.mode];
+  const run = currentRun();
+  if (!res || !run) return;
+  const f = run.final;
+  const who = state.mode === 'ai' ? 'The AI' : 'The audience';
+  const color = { best: 'var(--good)', likely: 'var(--mid)', worst: 'var(--bad)' }[state.which];
+  const bad = run.events.filter((e) => e.kind === 'bad').length;
+  const good = run.events.filter((e) => e.kind === 'good').length;
+  const p = res.policies;
+  const low = LEVERS.map((l) => ({ ...l, v: p[l.key] })).sort((a, b) => a.v - b.v)[0];
+  $('report').innerHTML = `
+    <p class="kicker" style="color:${color}">2076 · ${run.label} · ${run.share}</p>
+    <h2>${who} ran the planet for 50 years.</h2>
+    <div class="big">
+      <div><b style="color:${f.warmingC >= 2 ? 'var(--bad)' : 'var(--good)'}">${f.warmingC.toFixed(2)} °C</b><span>warmer than pre-industrial</span></div>
+      <div><b>+${Math.round(f.seaLevelM * 100)} cm</b><span>sea level since 2026</span></div>
+      <div><b style="color:var(--mid)">${f.displacedM.toFixed(0)}M</b><span>people flooded out</span></div>
+      <div><b>${f.populationBn.toFixed(1)} bn</b><span>people alive</span></div>
+    </div>
+    <p class="line">${plural(bad, 'disaster')}, ${plural(good, 'breakthrough')}. Across all ${res.runs.toLocaleString('en')} futures,
+      <b>${Math.round(res.stats.p2C * 100)}%</b> stay below 2 °C.
+      ${who === 'The AI' ? `It spent least on ${low.label.toLowerCase()} (${low.v}).` : ''}</p>
+    <div class="actions">
+      <button class="primary" id="report-again">Watch another future</button>
+      <button class="secondary" id="report-beat">${state.mode === 'ai' ? 'Try to beat the AI' : 'Compare with the AI'}</button>
+    </div>
+    <p class="fine">Possible futures, not predictions.</p>`;
+  $('report').classList.remove('hidden');
+  document.body.classList.add('reporting');
+  $('report-again').onclick = () => {
+    hideReport();
+    state.which = { likely: 'worst', worst: 'best', best: 'likely' }[state.which];
+    drawResults(); setYear(START_YEAR); autoplay(300);
+  };
+  $('report-beat').onclick = () => {
+    hideReport();
+    if (state.mode === 'ai') setMode('human');
+    else { setMode('ai'); if (!state.results.ai) letAiDecide(); }
+  };
 }
 
 setMode('ai');
