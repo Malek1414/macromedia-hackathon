@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Runs the Planet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/cesium@1.123.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+  <link href="style.css" rel="stylesheet" />
+  <script>window.CESIUM_BASE_URL = 'https://cdn.jsdelivr.net/npm/cesium@1.123.0/Build/Cesium/';</script>
+  <script src="https://cdn.jsdelivr.net/npm/cesium@1.123.0/Build/Cesium/Cesium.js"></script>
+</head>
+<body>
+  <div id="globe"></div>
+
+  <header class="hud">
+    <div class="brand">AI RUNS THE PLANET <span>2026 → 2076</span></div>
+    <div class="readouts">
+      <div><label>YEAR</label><b id="hud-year">2026</b></div>
+      <div><label>WARMING</label><b id="hud-warm">1.4 °C</b></div>
+      <div><label>SEA LEVEL</label><b id="hud-sea">+0 cm</b></div>
+      <div><label>PEOPLE</label><b id="hud-pop">8.2 bn</b></div>
+      <div><label>DISPLACED</label><b id="hud-disp">0</b></div>
+      <div><label>WELLBEING</label><b id="hud-wb">62</b></div>
+    </div>
+  </header>
+
+  <aside class="panel left">
+    <div class="tabs">
+      <button id="tab-ai" class="active">AI decides</button>
+      <button id="tab-human">Audience decides</button>
+    </div>
+    <p class="hint" id="who-hint">The AI gets the same budget as humanity: <b>360 points</b> across six levers. It runs thousands of futures for every mix it tries.</p>
+    <div id="levers"></div>
+    <div class="budget"><div id="budget-bar"></div><span id="budget-text">0 / 360</span></div>
+    <button id="btn-ai" class="primary">Let AI decide</button>
+    <button id="btn-run" class="secondary">Run 5,000 futures</button>
+    <div id="progress" class="progress hidden"><div></div></div>
+    <ul id="rationale" class="rationale"></ul>
+  </aside>
+
+  <aside class="panel right">
+    <h3>Three futures out of <span id="runs">5,000</span></h3>
+    <div id="cards"></div>
+    <h4>All futures, worst → best</h4>
+    <div id="histogram" class="histogram"></div>
+    <div id="stats" class="stats"></div>
+    <div id="compare" class="compare hidden"></div>
+    <p class="disclaimer">Possible futures, not predictions. Anchored to IPCC AR6 (warming, sea level by SSP) and UN World Population Prospects 2024; events and effects are simplified.</p>
+  </aside>
+
+  <footer class="timeline">
+    <button id="btn-play" aria-label="Play">▶</button>
+    <input id="year" type="range" min="2026" max="2076" value="2026" step="1" />
+    <div class="ticks"><span>2026</span><span>2036</span><span>2046</span><span>2056</span><span>2066</span><span>2076</span></div>
+    <div id="ticker" class="ticker"></div>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

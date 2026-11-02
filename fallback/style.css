@@ -1,0 +1,95 @@
+:root {
+  --bg: #05070b;
+  --panel: rgba(8, 12, 20, 0.82);
+  --line: rgba(120, 170, 255, 0.18);
+  --text: #e6edf7;
+  --muted: #8a97ab;
+  --accent: #5ad1ff;
+  --good: #3ee08f;
+  --mid: #ffc53d;
+  --bad: #ff4d5e;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 14px/1.4 Inter, system-ui, sans-serif; overflow: hidden; }
+#globe { position: fixed; inset: 0; }
+.cesium-viewer-bottom, .cesium-widget-credits { opacity: 0.5; }
+
+.hud { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 24px; align-items: center;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px 16px; backdrop-filter: blur(8px); z-index: 5; }
+.brand { font-weight: 700; letter-spacing: 0.12em; font-size: 13px; white-space: nowrap; }
+.brand span { color: var(--accent); font-family: var(--mono); font-weight: 400; margin-left: 6px; }
+.readouts { display: flex; gap: 18px; }
+.readouts div { display: flex; flex-direction: column; min-width: 64px; }
+.readouts label { font-size: 9px; letter-spacing: 0.14em; color: var(--muted); }
+.readouts b { white-space: nowrap; font-family: var(--mono); font-size: 17px; font-weight: 600; }
+
+.panel { position: fixed; top: 84px; bottom: 96px; width: 300px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 14px; padding: 14px; overflow-y: auto; backdrop-filter: blur(8px); z-index: 5; }
+.panel.left { left: 12px; }
+.panel.right { right: 12px; width: 320px; }
+.panel h3 { margin: 0 0 10px; font-size: 14px; }
+.panel h4 { margin: 14px 0 6px; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.hint { color: var(--muted); font-size: 12px; margin: 8px 0 12px; }
+
+.tabs { display: flex; gap: 4px; background: rgba(255,255,255,0.04); border-radius: 8px; padding: 3px; }
+.tabs button { flex: 1; background: none; border: 0; color: var(--muted); padding: 6px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 12px; }
+.tabs button.active { background: rgba(90, 209, 255, 0.15); color: var(--text); }
+
+.lever { margin-bottom: 10px; }
+.lever .row { display: flex; justify-content: space-between; font-size: 12px; }
+.lever .row b { font-family: var(--mono); color: var(--accent); }
+.lever small { color: var(--muted); font-size: 11px; display: block; }
+.lever input { width: 100%; accent-color: var(--accent); }
+.lever input:disabled { opacity: 0.8; }
+
+.budget { position: relative; height: 18px; background: rgba(255,255,255,0.06); border-radius: 9px; margin: 6px 0 12px; overflow: hidden; }
+#budget-bar { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #2a8cff, var(--accent)); width: 0; transition: width .2s; }
+#budget-bar.over { background: var(--bad); }
+#budget-text { position: absolute; inset: 0; text-align: center; font: 600 11px/18px var(--mono); }
+
+button.primary, button.secondary { width: 100%; padding: 10px; border-radius: 10px; font: 600 13px Inter, sans-serif; cursor: pointer; margin-bottom: 6px; }
+button.primary { background: var(--accent); color: #03131d; border: 0; }
+button.secondary { background: none; color: var(--text); border: 1px solid var(--line); }
+button:disabled { opacity: 0.5; cursor: progress; }
+.progress { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin: 6px 0; }
+.progress div { height: 100%; width: 0; background: var(--accent); transition: width .1s; }
+.hidden { display: none !important; }
+.rationale { padding-left: 16px; font-size: 12px; color: var(--text); }
+.rationale li { margin-bottom: 6px; }
+
+.card { border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-bottom: 8px; cursor: pointer; transition: border-color .15s, background .15s; }
+.card:hover { background: rgba(255,255,255,0.03); }
+.card.active { border-color: currentColor; background: rgba(255,255,255,0.05); }
+.card.best { color: var(--good); } .card.likely { color: var(--mid); } .card.worst { color: var(--bad); }
+.card .title { display: flex; justify-content: space-between; font-weight: 700; }
+.card .title small { font-weight: 400; color: var(--muted); font-size: 11px; }
+.card .nums { color: var(--text); font-family: var(--mono); font-size: 12px; margin-top: 4px; }
+.card .events { color: var(--muted); font-size: 11px; margin-top: 4px; }
+
+.histogram { display: flex; align-items: flex-end; gap: 2px; height: 56px; }
+.histogram div { flex: 1; background: var(--muted); border-radius: 2px 2px 0 0; min-height: 1px; }
+.stats { font-size: 12px; margin-top: 10px; display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; }
+.stats b { font-family: var(--mono); text-align: right; }
+.compare { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 12px; }
+.compare table { width: 100%; border-collapse: collapse; font-family: var(--mono); }
+.compare td, .compare th { padding: 3px 4px; text-align: right; }
+.compare th:first-child, .compare td:first-child { text-align: left; font-family: Inter, sans-serif; }
+.compare .win { color: var(--good); }
+.disclaimer { color: var(--muted); font-size: 10.5px; margin-top: 14px; }
+
+.timeline { position: fixed; left: 324px; right: 344px; bottom: 12px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 14px; padding: 10px 14px 8px 56px; z-index: 5; backdrop-filter: blur(8px); }
+#btn-play { position: absolute; left: 12px; top: 10px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--accent); color: #03131d; font-size: 14px; cursor: pointer; }
+#year { width: 100%; accent-color: var(--accent); }
+.ticks { display: flex; justify-content: space-between; font: 10px var(--mono); color: var(--muted); }
+.ticker { font-size: 12px; min-height: 17px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ticker .bad { color: var(--bad); } .ticker .good { color: var(--good); }
+
+@media (max-width: 900px) {
+  .panel { position: static; width: auto !important; margin: 8px; max-height: none; }
+  body { overflow: auto; }
+  #globe { position: relative; height: 60vh; }
+  .hud { position: static; transform: none; flex-wrap: wrap; margin: 8px; }
+  .timeline { position: static; margin: 8px; }
+}
