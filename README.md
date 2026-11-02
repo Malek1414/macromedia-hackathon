@@ -197,15 +197,14 @@ Good demo prompt: *"You are in charge of the world from 2026 to 2076 with 360 po
 ## What's left for Nov 3
 
 In priority order:
-- [ ] **Record the demo video** with [`docs/video-spec.md`](docs/video-spec.md): takes A/B/C, then the voice-over, then the edit, keeping it under 2:00.
-- [ ] **Malek approves the script.** If any number changes, change `scripts/results.mjs`/README first, then the ledger (`python3 <pitch>/ledger.py check ai-runs-the-planet`).
+- [ ] **Malek picks the script:** v2 with Claude ([`docs/pitch-script.md`](docs/pitch-script.md), recommended) or v1 without (`pitch/ai-runs-the-planet/script-v1.md`). Both pass the gates and the retell.
+- [ ] **Record the real voice-over** over the rough cut (release `rough-cut-v0`): same timecodes, your voice instead of the computer one. Swap the audio in any editor, or re-record the takes with [`docs/video-spec.md`](docs/video-spec.md).
 - [ ] **Submission:** form URL unknown yet. Check the Luma event page / organiser messages.
+- [ ] On the demo machine: `./scripts/vendor-cesium.sh` once (offline globe), GEV running with the scenes imported, `?offline` ready if the Wi-Fi is bad.
 - [ ] Optional: Google Maps key in GEV for photoreal 3D (local `.env` only, never committed).
-- [ ] Optional polish:
-  - mobile layout of the fallback;
-  - a "share this future" link;
-  - a third button, "Claude decides", calling the Anthropic API from a tiny proxy. Not needed: the MCP route already shows Claude in charge.
-- [ ] Nice to have: host the fallback on GitHub Pages for judges to try. **Ask Malek before publishing anything.**
+- [ ] Nice to have: host the fallback (GitHub Pages or similar) so judges can try it on their phones; the phone layout is ready. **Ask Malek before publishing anything.**
+
+Done since the first handover: NASA satellite globe with day/night and city lights, event banners and shockwaves, heat-stress zones, title screen, 2076 report card, AI · Claude · Audience face-off, instant AI choice, phone layout, offline mode, raw takes A/B/C and a 2:00 rough cut.
 
 ## Picking this up with Claude Code
 
