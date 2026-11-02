@@ -7,3 +7,4 @@ pitch/*/demo/
 pitch/*/render/
 *.mov
 *.mp4
+fallback/vendor/

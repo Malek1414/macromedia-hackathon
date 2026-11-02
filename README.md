@@ -66,8 +66,9 @@ cd macromedia-hackathon
 npm test                                          # engine, 11 tests
 
 # 1. Fallback globe (no keys, no install)
+./scripts/vendor-cesium.sh                        # once: local CesiumJS, so the globe loads without Wi-Fi
 python3 -m http.server 5180 --bind 127.0.0.1
-open http://127.0.0.1:5180/fallback/
+open http://127.0.0.1:5180/fallback/              # add ?offline to force the built-in map if the venue Wi-Fi is bad
 
 # 2. God's Eye View fork (clones GEV next to this repo and applies our patch)
 ./scripts/setup-gev.sh                            # -> ../gods-eye-view on branch future-mode

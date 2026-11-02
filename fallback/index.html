@@ -6,10 +6,31 @@
   <title>AI Runs the Planet</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/cesium@1.123.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
   <link href="style.css" rel="stylesheet" />
-  <script>window.CESIUM_BASE_URL = 'https://cdn.jsdelivr.net/npm/cesium@1.123.0/Build/Cesium/';</script>
-  <script src="https://cdn.jsdelivr.net/npm/cesium@1.123.0/Build/Cesium/Cesium.js"></script>
+  <script>
+    // Cesium from the local copy (scripts/vendor-cesium.sh) so the demo survives bad Wi-Fi; the CDN otherwise.
+    (function () {
+      var bases = ['vendor/cesium/', 'https://cdn.jsdelivr.net/npm/cesium@1.123.0/Build/Cesium/'];
+      function load(i) {
+        var base = bases[i];
+        var s = document.createElement('script');
+        s.src = base + 'Cesium.js';
+        s.onload = function () {
+          window.CESIUM_BASE_URL = base;
+          var l = document.createElement('link');
+          l.rel = 'stylesheet';
+          l.href = base + 'Widgets/widgets.css';
+          document.head.appendChild(l);
+          window.cesiumReady = true;
+          document.dispatchEvent(new Event('cesium-ready'));
+        };
+        s.onerror = function () { if (i + 1 < bases.length) load(i + 1); };
+        window.CESIUM_BASE_URL = base;
+        document.head.appendChild(s);
+      }
+      load(0);
+    })();
+  </script>
 </head>
 <body>
   <div id="globe"></div>

@@ -1,6 +1,8 @@
 /** Fallback demo: the engine's three futures on a keyless Cesium globe. */
 import { LEVERS, BUDGET, normalizePolicies, fitBudget, hotspotsAt, cameraFor, START_YEAR, END_YEAR } from '../engine/index.js';
 
+if (!window.cesiumReady) await new Promise((resolve) => document.addEventListener('cesium-ready', resolve, { once: true }));
+
 const $ = (id) => document.getElementById(id);
 const COLORS = { best: '#3ee08f', likely: '#ffc53d', worst: '#ff4d5e' };
 
@@ -54,6 +56,25 @@ bloom.enabled = true;
 Object.assign(bloom.uniforms, { glowOnly: false, contrast: 128, brightness: -0.55, delta: 1.0, sigma: 2.6, stepSize: 1.0 });
 viewer.camera.setView({ destination: Cesium.Cartesian3.fromDegrees(30, 15, 17_000_000) });
 const baseLayer = () => viewer.imageryLayers.get(0);
+
+// Offline safety: if NASA's tiles keep failing (venue Wi-Fi), switch to the
+// Natural Earth map that ships inside Cesium, and drop the night lights.
+let gibsErrors = 0, offline = false;
+async function goOffline() {
+  if (offline) return;
+  offline = true;
+  const local = await Cesium.TileMapServiceImageryProvider.fromUrl(Cesium.buildModuleUrl('Assets/Textures/NaturalEarthII'));
+  viewer.imageryLayers.removeAll();
+  viewer.imageryLayers.addImageryProvider(local);
+  console.warn('NASA imagery unreachable: using the offline map');
+}
+if (new URLSearchParams(location.search).has('offline')) goOffline();
+for (const layer of [viewer.imageryLayers.get(0), night]) {
+  layer.imageryProvider.errorEvent.addEventListener((err) => {
+    err.retry = false;
+    if (++gibsErrors >= 6) goOffline();
+  });
+}
 
 let spin = true;
 viewer.scene.preRender.addEventListener(() => { if (spin) viewer.camera.rotate(Cesium.Cartesian3.UNIT_Z, -0.0005); });
