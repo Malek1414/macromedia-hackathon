@@ -30,8 +30,13 @@ export function focusEvent(run, decade) {
 export function cameraFor(run, year) {
   const decade = DECADES.find((d) => d >= clampYear(year)) ?? END_YEAR;
   const ev = year > START_YEAR ? focusEvent(run, decade) : null;
+  if (!ev) return { lat: 20, lon: 20, alt: 18_000_000, heading: 0, pitch: -90, roll: 0, event: null };
+  // The camera hangs south of the event, looking north at it: at this tilt it
+  // sees the ground alt / tan(|pitch|) ahead, so step back that far.
+  const alt = 2_400_000, pitch = -62;
+  const backDeg = alt / Math.tan((Math.abs(pitch) * Math.PI) / 180) / 111_320;
   return ev
-    ? { lat: ev.lat - 6, lon: ev.lon, alt: 1_800_000, heading: 0, pitch: -55, roll: 0, event: ev }
+    ? { lat: Math.max(-89, ev.lat - backDeg), lon: ev.lon, alt, heading: 0, pitch, roll: 0, event: ev }
     : { lat: 20, lon: 20, alt: 18_000_000, heading: 0, pitch: -90, roll: 0, event: null };
 }
 

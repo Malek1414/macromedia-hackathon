@@ -138,11 +138,11 @@
           "durationSec": 4,
           "holdSec": 3,
           "camera": {
-            "lat": 36.36,
+            "lat": 30.896627416568908,
             "lon": -71.06,
-            "alt": 1800000,
+            "alt": 2400000,
             "heading": 0,
-            "pitch": -55,
+            "pitch": -62,
             "roll": 0
           },
           "visual": {
@@ -225,11 +225,11 @@
           "durationSec": 4,
           "holdSec": 3,
           "camera": {
-            "lat": 27.450000000000003,
+            "lat": 21.98662741656891,
             "lon": -112.07,
-            "alt": 1800000,
+            "alt": 2400000,
             "heading": 0,
-            "pitch": -55,
+            "pitch": -62,
             "roll": 0
           },
           "visual": {
@@ -254,11 +254,11 @@
           "durationSec": 4,
           "holdSec": 3,
           "camera": {
-            "lat": -14.25,
+            "lat": -19.71337258343109,
             "lon": 118,
-            "alt": 1800000,
+            "alt": 2400000,
             "heading": 0,
-            "pitch": -55,
+            "pitch": -62,
             "roll": 0
           },
           "visual": {
@@ -416,11 +416,11 @@
           "durationSec": 4,
           "holdSec": 3,
           "camera": {
-            "lat": 36.36,
+            "lat": 30.896627416568908,
             "lon": -71.06,
-            "alt": 1800000,
+            "alt": 2400000,
             "heading": 0,
-            "pitch": -55,
+            "pitch": -62,
             "roll": 0
           },
           "visual": {
@@ -532,11 +532,11 @@
           "durationSec": 4,
           "holdSec": 3,
           "camera": {
-            "lat": 43,
+            "lat": 37.536627416568905,
             "lon": 32,
-            "alt": 1800000,
+            "alt": 2400000,
             "heading": 0,
-            "pitch": -55,
+            "pitch": -62,
             "roll": 0
           },
           "visual": {
@@ -752,11 +752,11 @@
           "durationSec": 4,
           "holdSec": 3,
           "camera": {
-            "lat": 24.9,
+            "lat": 19.436627416568907,
             "lon": 75.85,
-            "alt": 1800000,
+            "alt": 2400000,
             "heading": 0,
-            "pitch": -55,
+            "pitch": -62,
             "roll": 0
           },
           "visual": {
@@ -781,11 +781,11 @@
           "durationSec": 4,
           "holdSec": 3,
           "camera": {
-            "lat": -29.55,
+            "lat": -35.01337258343109,
             "lon": -46.63,
-            "alt": 1800000,
+            "alt": 2400000,
             "heading": 0,
-            "pitch": -55,
+            "pitch": -62,
             "roll": 0
           },
           "visual": {
