@@ -55,7 +55,7 @@ The hook beat's voice ("In 2076, I'll still be here. Most of you in this room wi
 | 1:48-1:56 | Ask | The face-off, cursor on **Try to beat both** | take C 25.8-33.8 | "Beat the AI." |
 | 1:56-2:00 | End card | Title, names, credits | rough-cut.py | |
 
-The raw takes and a rough cut with a temporary voice are on the GitHub release `rough-cut-v0`; `python3 scripts/rough-cut.py` rebuilds the cut from `footage/` with these exact in/out points.
+The raw takes (A2 = the whole fallback flow with the motion pass, AI → audience → Claude; B = God's Eye View) and a rough cut with a temporary voice are on the GitHub release `rough-cut-v0`; `python3 scripts/rough-cut.py` rebuilds the cut from `footage/` with these exact in/out points.
 
 ## How to record (about 20 minutes)
 

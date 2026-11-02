@@ -50,6 +50,7 @@ const viewer = new Cesium.Viewer('globe', {
   shouldAnimate: false,
 });
 const scene = viewer.scene;
+window.__viewer = viewer; // for performance checks from the console
 const night = viewer.imageryLayers.addImageryProvider(gibs('VIIRS_Black_Marble', '2016-01-01', 'png', 7));
 night.dayAlpha = 0.0;
 night.nightAlpha = 1.0;
@@ -176,125 +177,167 @@ function bornAt(key) {
   return firstSeen.get(key);
 }
 
+/** A thin ring that fades at its edges: the ripple sent out by an event. */
+let ringCanvas = null;
+function ring() {
+  if (ringCanvas) return ringCanvas;
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const grad = g.createRadialGradient(128, 128, 96, 128, 128, 128);
+  grad.addColorStop(0, '#ffffff00');
+  grad.addColorStop(0.55, '#ffffffff');
+  grad.addColorStop(1, '#ffffff00');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 256, 256);
+  return (ringCanvas = c);
+}
+
+// Entities live across years: drawGlobe adds what is new, updates what changed and
+// removes what is gone, so playback never rebuilds the whole planet (it ran at 4 fps).
+const live = new Map();
+let liveRun = null;
+function keep(key, make) {
+  let e = live.get(key);
+  if (!e) { e = entities.entities.add(make()); live.set(key, e); }
+  return e;
+}
+// Values the callbacks read; drawGlobe only changes these numbers.
+const sizes = new Map();
+
 function drawGlobe() {
-  entities.entities.removeAll();
   const run = currentRun();
   const res = state.results[state.mode];
-  if (!run) return;
+  const runKey = run ? `${state.mode}:${state.which}:${run.seed}` : null;
+  if (runKey !== liveRun) { entities.entities.removeAll(); live.clear(); sizes.clear(); liveRun = runKey; }
+  if (!run) { setHeat(0); return; }
   const row = run.years.find((y) => y.year === state.year);
-  const runKey = `${state.mode}:${state.which}:${run.seed}`;
+  const wanted = new Set();
 
-  // Coastal cities losing people to the sea: a soft amber glow that breathes slowly, sized by displacement.
+  // Coastal cities losing people to the sea: a soft amber glow sized by displacement, breathing slowly.
   for (const h of hotspotsAt(run, state.year, res.policies.adaptation)) {
     if (h.displacedM < 0.05) continue;
-    const r = 70_000 + Math.sqrt(h.displacedM) * 170_000;
+    const key = `coast:${h.id}`;
+    wanted.add(key);
+    sizes.set(key, 2 * (70_000 + Math.sqrt(h.displacedM) * 170_000));
     const phase = (h.lat + h.lon) * 0.1;
-    entities.entities.add({
+    const e = keep(key, () => ({
       position: Cesium.Cartesian3.fromDegrees(h.lon, h.lat),
-      billboard: { image: glow(AMBER), scale: 0.3 + Math.sqrt(h.displacedM) * 0.22, color: Cesium.Color.WHITE.withAlpha(0.95) },
-      ellipse: {
-        semiMajorAxis: r, semiMinorAxis: r, height: 0,
-        material: new Cesium.ImageMaterialProperty({
-          image: softDisc(AMBER, 0.08), transparent: true,
-          color: new Cesium.CallbackProperty(() => Cesium.Color.WHITE.withAlpha(0.55 + 0.2 * Math.sin(nowS() * 1.6 + phase)), false),
-        }),
+      billboard: {
+        image: softDisc(AMBER, 0.08), sizeInMeters: true,
+        width: new Cesium.CallbackProperty(() => sizes.get(key), false),
+        height: new Cesium.CallbackProperty(() => sizes.get(key), false),
+        color: new Cesium.CallbackProperty(() => Cesium.Color.WHITE.withAlpha(0.6 + 0.2 * Math.sin(nowS() * 1.6 + phase)), false),
       },
-      label: h.displacedM >= 1 ? {
-        text: `${h.place.toUpperCase()}  ${h.displacedM.toFixed(1)}M`, font: '600 11px JetBrains Mono',
-        fillColor: Cesium.Color.fromCssColorString('#ffd27a'), showBackground: true,
+      point: { pixelSize: 6, color: Cesium.Color.fromCssColorString('#ffe2a8') },
+      label: {
+        text: '', font: '600 11px JetBrains Mono', fillColor: Cesium.Color.fromCssColorString('#ffd27a'), showBackground: true,
         backgroundColor: Cesium.Color.fromCssColorString('#05070b').withAlpha(0.7), backgroundPadding: new Cesium.Cartesian2(6, 4),
         pixelOffset: new Cesium.Cartesian2(0, -20), distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 9_000_000),
-      } : undefined,
-    });
+      },
+    }));
+    e.label.text = h.displacedM >= 1 ? `${h.place.toUpperCase()}  ${h.displacedM.toFixed(1)}M` : '';
   }
 
-  // Events: a glow for every one so far; recent ones ripple, carry a label and spread along arcs.
+  // Events: a glow for every one so far; recent ones flash in, ripple, carry a label and spread along arcs.
   for (const e of run.events.filter((x) => x.year <= state.year)) {
     const css = e.kind === 'good' ? GREEN : RED;
     const color = Cesium.Color.fromCssColorString(css);
     const age = state.year - e.year;
     const recent = age <= 2;
+    const id = `ev:${e.year}:${e.id}`;
+    const born = bornAt(`${runKey}:${id}`);
     const pos = Cesium.Cartesian3.fromDegrees(e.lon, e.lat);
-    const born = bornAt(`${runKey}:${e.year}:${e.id}`);
-    entities.entities.add({
+    wanted.add(id);
+    sizes.set(id, recent ? 1 : 0);
+    const ent = keep(id, () => ({
       position: pos,
       billboard: {
-        image: glow(css),
-        scale: recent ? new Cesium.CallbackProperty(() => {
+        image: glow(css), disableDepthTestDistance: 0,
+        scale: new Cesium.CallbackProperty(() => {
+          if (!sizes.get(id)) return 0.55;
           const t = nowS() - born;
-          const pop = t < 0.5 ? 0.4 + 2.2 * (t / 0.5) : 1.15 + 0.3 * Math.sin(t * 4); // flash in, then pulse
-          return pop;
-        }, false) : 0.55,
-        color: Cesium.Color.WHITE.withAlpha(recent ? 1 : 0.5),
-        disableDepthTestDistance: 0,
+          return t < 0.5 ? 0.4 + 2.2 * (t / 0.5) : 1.15 + 0.3 * Math.sin(t * 4);
+        }, false),
       },
-      label: recent ? {
+      label: {
         text: `${e.year}  ${e.title.toUpperCase()}\n${e.place} · ${e.impact}`, font: '600 13px Inter', fillColor: color,
         showBackground: true, backgroundColor: Cesium.Color.fromCssColorString('#05070b').withAlpha(0.78),
         backgroundPadding: new Cesium.Cartesian2(8, 6), pixelOffset: new Cesium.Cartesian2(0, -34),
-      } : undefined,
-    });
+      },
+    }));
+    ent.label.show = recent;
+    ent.billboard.color = Cesium.Color.WHITE.withAlpha(recent ? 1 : 0.5);
     if (!recent) continue;
-    // Three ripples, a third of a cycle apart, easing out as they grow.
-    const reach = e.kind === 'good' ? 650_000 : 1_000_000;
-    for (const phase of [0, 1 / 3, 2 / 3]) {
+    // Three ripples a third of a cycle apart, easing out as they grow (camera-facing, sized in metres).
+    const reach = e.kind === 'good' ? 1_300_000 : 2_000_000;
+    for (const [n, phase] of [0, 1 / 3, 2 / 3].entries()) {
+      const key = `${id}:ripple${n}`;
+      wanted.add(key);
       const t = () => ((nowS() - born) / 2.4 + phase) % 1;
-      const radius = () => 40_000 + (1 - Math.pow(1 - t(), 3)) * reach;
-      entities.entities.add({
+      const size = () => 80_000 + (1 - Math.pow(1 - t(), 3)) * reach;
+      keep(key, () => ({
         position: pos,
-        ellipse: {
-          semiMajorAxis: new Cesium.CallbackProperty(radius, false),
-          semiMinorAxis: new Cesium.CallbackProperty(radius, false),
-          height: 0,
-          material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(() => color.withAlpha(0.32 * Math.pow(1 - t(), 1.5)), false)),
+        billboard: {
+          image: ring(), sizeInMeters: true,
+          width: new Cesium.CallbackProperty(size, false),
+          height: new Cesium.CallbackProperty(size, false),
+          color: new Cesium.CallbackProperty(() => color.withAlpha(0.75 * Math.pow(1 - t(), 1.5)), false),
         },
-      });
+      }));
     }
-    // Arcs: the event reaching the rest of the world, drawn out over 1.6 s, then glowing.
+    // Arcs: the event reaching the rest of the world, drawn out over 1.6 s, then fixed in place.
     for (const [i, [lat, lon]] of (SPREAD_TO[e.id] ?? []).entries()) {
-      const pts = arcPoints(e.lat, e.lon, lat, lon);
-      const delay = i * 0.12;
-      entities.entities.add({
-        polyline: {
-          positions: new Cesium.CallbackProperty(() => {
-            const f = Math.max(0, Math.min(1, (nowS() - born - delay) / 1.6));
-            const k = Math.max(2, Math.ceil(f * pts.length));
-            return pts.slice(0, k);
-          }, false),
-          width: 9,
-          material: new Cesium.PolylineGlowMaterialProperty({ glowPower: 0.28, taperPower: 0.85, color: color.withAlpha(Math.max(0.25, 0.85 - age * 0.25)) }),
-          arcType: Cesium.ArcType.NONE,
-        },
+      const key = `${id}:arc${i}`;
+      wanted.add(key);
+      const arc = keep(key, () => {
+        const pts = arcPoints(e.lat, e.lon, lat, lon);
+        const delay = i * 0.12;
+        const entity = {
+          polyline: {
+            positions: new Cesium.CallbackProperty(() => {
+              const f = Math.max(0, Math.min(1, (nowS() - born - delay) / 1.6));
+              return pts.slice(0, Math.max(2, Math.ceil(f * pts.length)));
+            }, false),
+            width: 9, arcType: Cesium.ArcType.NONE,
+            material: new Cesium.PolylineGlowMaterialProperty({ glowPower: 0.28, taperPower: 0.85, color: color.withAlpha(0.85) }),
+          },
+        };
+        // Once drawn, the arc stops being recomputed every frame.
+        setTimeout(() => { const a = live.get(key); if (a) a.polyline.positions = pts; }, (1.7 + delay) * 1000);
+        return entity;
       });
+      arc.polyline.material = new Cesium.PolylineGlowMaterialProperty({ glowPower: 0.28, taperPower: 0.85, color: color.withAlpha(Math.max(0.25, 0.85 - age * 0.25)) });
     }
   }
 
   // Heat stress: soft orange glows that spread with every tenth of a degree above 1.5 °C.
   const stress = Math.max(0, row.warmingC - 1.45);
+  sizes.set('heat', 2 * (220_000 + stress * 1_100_000));
+  sizes.set('heatAlpha', Math.min(0.85, 0.25 + stress * 0.55));
   if (stress > 0) {
     for (const [lat, lon] of HEAT_ZONES) {
-      const r = 220_000 + stress * 1_100_000;
-      entities.entities.add({
+      const key = `heat:${lat}:${lon}`;
+      wanted.add(key);
+      keep(key, () => ({
         position: Cesium.Cartesian3.fromDegrees(lon, lat),
-        ellipse: {
-          semiMajorAxis: r, semiMinorAxis: r * 0.8, height: 0,
-          material: new Cesium.ImageMaterialProperty({
-            image: softDisc(HEAT, 0.2), transparent: true,
-            color: Cesium.Color.WHITE.withAlpha(Math.min(0.85, 0.25 + stress * 0.55)),
-          }),
+        billboard: {
+          image: softDisc(HEAT, 0.2), sizeInMeters: true,
+          width: new Cesium.CallbackProperty(() => sizes.get('heat'), false),
+          height: new Cesium.CallbackProperty(() => sizes.get('heat') * 0.8, false),
+          color: new Cesium.CallbackProperty(() => Cesium.Color.WHITE.withAlpha(sizes.get('heatAlpha')), false),
         },
-      });
+      }));
     }
   }
-  // Heat: a red veil over the whole planet that thickens with every tenth of a degree.
-  const heat = Math.max(0, row.warmingC - 1.4);
-  entities.entities.add({
-    rectangle: {
-      coordinates: Cesium.Rectangle.fromDegrees(-180, -85, 180, 85),
-      material: Cesium.Color.fromCssColorString('#ff3a1a').withAlpha(Math.min(0.32, heat * 0.14)),
-      height: 0,
-    },
-  });
+
+  for (const [key, e] of live) if (!wanted.has(key)) { entities.entities.remove(e); live.delete(key); }
+  setHeat(Math.max(0, row.warmingC - 1.4));
+}
+
+/** The planet runs a fever: a red vignette over the screen and warmer imagery as it heats up. */
+function setHeat(heat) {
+  $('heatveil').style.opacity = Math.min(0.85, heat * 0.45);
   if (baseLayer()) { baseLayer().saturation = 1 + heat * 0.3; baseLayer().hue = -heat * 0.02; }
   scene.skyAtmosphere.hueShift = -heat * 0.07;
   scene.skyAtmosphere.saturationShift = heat * 0.25;

@@ -201,6 +201,7 @@ In priority order:
 - [ ] **Record the real voice-over** over the rough cut (release `rough-cut-v0`): same timecodes, your voice instead of the computer one. Swap the audio in any editor, or re-record the takes with [`docs/video-spec.md`](docs/video-spec.md).
 - [ ] **Submission:** form URL unknown yet. Check the Luma event page / organiser messages.
 - [ ] On the demo machine: `./scripts/vendor-cesium.sh` once (offline globe), GEV running with the scenes imported, `?offline` ready if the Wi-Fi is bad.
+- [ ] **Only one 3D globe tab rendering at a time.** With the GEV tab open in the background, the fallback drops to about 8 fps; alone it runs at about 37 fps. Close or blank the other tab before showing either one.
 - [ ] Optional: Google Maps key in GEV for photoreal 3D (local `.env` only, never committed).
 - [ ] Nice to have: host the fallback (GitHub Pages or similar) so judges can try it on their phones; the phone layout is ready. **Ask Malek before publishing anything.**
 

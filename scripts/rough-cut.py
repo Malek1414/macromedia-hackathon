@@ -10,6 +10,8 @@ ROOT = Path(__file__).resolve().parent.parent
 A = ROOT / 'footage/take-A-fallback-raw.mp4'
 B = ROOT / 'footage/take-B-gev-raw.mp4'
 C = ROOT / 'footage/take-C-claude-raw.mp4'
+# Take A2: the whole flow in one take with the motion pass (AI → audience → Claude), times from its marks.
+A2 = ROOT / 'footage/take-A2-all-raw.mp4'
 OUT = ROOT / 'footage/rough-cut-v0.mp4'
 W, H, FPS = 1920, 1080, 30
 
@@ -24,17 +26,17 @@ def opening(cold_s):
     """Hook and tried visuals for the 25 s before beat 3, after the cold open."""
     rest = 25 - cold_s
     title = min(6.0, rest * 0.45)
-    return [(A, 0, title), (B, 7, 7 + rest - title)]
+    return [(A2, 0, title), (B, 7, 7 + rest - title)]
 
 CUTS = [
-    (A, 7, 20),          # 0:25 thing: hand over, the AI tests futures, sliders glide, starved levers flagged
-    (A, 20, 37),         # 0:38 works: playback with event banners
-    (A, 37.6, 47.6),     # 0:55 proof: the AI's 2076 report
-    (C, 0, 8),           #       Claude's own levers and reasoning
-    (A, 76.4, 82.4),     #       the audience's future ends
-    (C, 26.8, 33.8),     #       the three-way face-off
+    (A2, 8.0, 21.0),     # 0:25 thing: hand over, the AI tests futures, sliders glide, starved levers flagged
+    (A2, 21.0, 38.0),    # 0:38 works: playback with banners, arcs, ripples, heat glows
+    (A2, 44.7, 54.7),    # 0:55 proof: the AI's 2076 report (numbers count up)
+    (A2, 132.6, 140.6),  #       Claude's own levers and reasoning
+    (A2, 99.8, 105.8),   #       the audience's future ends
+    (A2, 162.2, 169.2),  #       the three-way face-off (bars grow in)
     (B, 18, 40),         # 1:26 means: GEV plays the scariest future
-    (C, 25.8, 33.8),     # 1:48 ask: back on the face-off
+    (A2, 162.4, 170.4),  # 1:48 ask: back on the face-off
 ]
 END_CARD_S = 4
 
@@ -45,6 +47,16 @@ def duration(path):
     out = subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(path)],
                          check=True, capture_output=True, text=True).stdout
     return float(out)
+
+def proxy(src):
+    """A 1080p/30 copy of a raw take, made once (and again only if the take changes), so rebuilds take seconds."""
+    out = ROOT / 'footage/.proxy' / (src.stem + '-1080p30.mp4')
+    if not out.exists() or out.stat().st_mtime < src.stat().st_mtime:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        run('ffmpeg', '-y', '-i', str(src), '-an', '-vf',
+            f'scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=0x020409,fps={FPS},setsar=1',
+            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-g', str(FPS), '-pix_fmt', 'yuv420p', str(out))
+    return out
 
 def end_card(path):
     img = Image.new('RGB', (W, H), (2, 4, 9))
@@ -107,10 +119,11 @@ def main():
         tmp = Path(tmp)
         vf = f'scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=0x020409,fps={FPS},setsar=1'
         parts, n_clips = cold_open_parts(tmp, cold_s, vf) if cold_s > 0 else ([], 0)
+        proxies = {src: proxy(src) for src in {c[0] for c in opening(cold_s) + CUTS}}
         for i, (src, a, b) in enumerate(opening(cold_s) + CUTS):
             part = tmp / f'part{i}.mp4'
-            run('ffmpeg', '-y', '-ss', str(a), '-to', str(b), '-i', str(src), '-an',
-                '-vf', vf,
+            run('ffmpeg', '-y', '-ss', str(a), '-to', str(b), '-i', str(proxies[src]), '-an',
+                '-vf', 'setsar=1',
                 '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p', str(part))
             parts.append(part)
         card = tmp / 'card.png'
