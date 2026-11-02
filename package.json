@@ -1,0 +1,6 @@
+{
+  "name": "ai-runs-the-planet",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test engine/test/*.test.js" }
+}
