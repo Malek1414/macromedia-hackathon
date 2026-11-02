@@ -18,14 +18,14 @@
 
 | Time | Beat | On screen | Source | Overlay |
 |---|---|---|---|---|
-| 0:00-0:14 | Hook | Fallback page, globe slowly spinning (it auto-rotates on load), HUD reads 2026 / 1.40 °C | fallback | "2026 → 2076" |
-| 0:14-0:25 | Tried | GEV page with live flights layer on (it looks like the "now" world); slow drift over Europe | GEV `npm run dev` | "Opinions. No odds." |
-| 0:25-0:42 | Thing | Back to fallback. Cursor over the six sliders, top to bottom, in step with the voice naming them. Budget bar at 360/360 | fallback | "360 points · 6 levers" |
-| 0:42-1:00 | Works | Click **Let AI decide**, progress bar, sliders animate to the AI's pick, cards appear, playback starts and the camera flies to the first event (red pin + label) | fallback | "5,000 futures" when cards appear |
-| 1:00-1:12 | Proof (AI) | Zoom 1: right panel stats, "Futures below 2 °C 92%". Then zoom 2: left panel, coastal adaptation slider at **1**. Then the timeline at 2076 on *Most likely*: amber coastal circles over Dhaka/Shanghai | fallback | "92% below 2 °C" → "Coastal: 1 point" → "31 million pushed out by the sea" |
-| 1:12-1:24 | Proof (audience) | Click **Audience decides**, set the audience mix (energy 20, carbon 20, adaptation 100, food 100, cooperation 20, tech 100), Run; the AI vs audience table appears | fallback | "8 million" → "0% below 2 °C" |
-| 1:24-1:46 | Means | God's Eye View playing the *Scariest* Director scene: camera flies decade to decade, pins and the "Simulated future, not a prediction" card visible | GEV Authoring → Play | "Possible futures, not predictions" |
-| 1:46-1:56 | Ask | Fallback page, cursor hovering **Audience decides**, then the whole globe | fallback | "Beat the AI." |
+| 0:00-0:14 | Hook | Title screen "What if AI ran the planet?" over the slowly turning globe, night side lit with city lights | fallback, fresh load | (none, the title is the overlay) |
+| 0:14-0:25 | Tried | GEV with the live flights layer on (today's world), slow drift over Europe | GEV `npm run dev` | "Opinions. No odds." |
+| 0:25-0:42 | Thing | Click **Hand over the planet**. "AI is testing futures…" bar fills, then the six sliders glide to the AI's pick (energy 100, cooperation 99, tech 84, carbon 69, food 4, coastal 1) as the voice names the levers | fallback | "360 points · 6 levers" |
+| 0:42-1:00 | Works | The three future cards slide in; playback starts; the camera flies to each event and the big banner fires ("NEW PANDEMIC · Kinshasa"), shockwave rings on the globe, coastal cities glowing amber | fallback | "5,000 futures" when the cards appear |
+| 1:00-1:12 | Proof (AI) | The **2076 report card**: "The AI ran the planet for 50 years", 1.82 °C, 31M flooded out, "92% stay below 2 °C", "It spent least on coastal & heat adaptation (1)" | fallback | "92% below 2 °C" → "Coastal: 1 point" → "31 million flooded out" |
+| 1:12-1:24 | Proof (audience) | Click **Try to beat the AI**, set energy 20, carbon 20, adaptation 100, food 100, cooperation 20, tech 100, **Run 5,000 futures**; jump cut to the audience report with the face-off: "The AI wins 3 to 1", flooded out 31M vs **8M**, below 2 °C 92% vs **0%** | fallback | "8 million" → "0% below 2 °C" |
+| 1:24-1:46 | Means | God's Eye View playing the *Scariest* Director scene: glow, tactical HUD, camera decade to decade, the "Simulated future, not a prediction" card | GEV Authoring → Play | "Possible futures, not predictions" |
+| 1:46-1:56 | Ask | Back on the face-off card, cursor on **Try to beat the AI** | fallback | "Beat the AI." |
 | 1:56-2:00 | End card | Black, title + repo link + names | edit | "AI Runs the Planet · Malek Hassan & Sammy" |
 
 ## How to record (about 20 minutes)
@@ -35,16 +35,15 @@
    - Turn on Do Not Disturb, hide the bookmarks bar, and set the zoom to 100%.
    - Start the fallback: `python3 -m http.server 5180 --bind 127.0.0.1` in this repo, then open `http://127.0.0.1:5180/fallback/`.
    - Start GEV: `cd ../gods-eye-view && npm run dev`. Then import `out/ai-runs-the-planet.scenes.json` in Authoring and apply it.
-2. **Take A (fallback, 0:25-1:24 and 1:46-1:56):** one continuous take of the clicks in the shot list. The seed is fixed (2026), so the numbers come out the same on every take: 92%, coastal 1, 31 million, 8 million, 0%. Record with macOS Screenshot (⇧⌘5 → Record Selected Portion) or OBS at 30 fps.
+2. **Take A (fallback, 0:00-0:14 and 0:25-1:24 and 1:46-1:56):** reload, let the title screen sit for 15 s, then one continuous take of the clicks in the shot list (each playback runs about 25 s to the report; cut the middle in the edit). The seed is fixed (2026), so the numbers come out the same on every take: 92%, coastal 1, 31 million, 8 million, 0%. Record with macOS Screenshot (⇧⌘5 → Record Selected Portion) or OBS at 30 fps.
 3. **Take B (GEV, 0:14-0:25 and 1:24-1:46):**
    - First, GEV's live view with the flights layer on.
    - Then Authoring, select "AI Runs the Planet: Scariest", and Play.
-4. **Take C (hook, 0:00-0:14):** reload the fallback and let the globe spin for 20 s without touching it.
-5. **Voice-over:** read `pitch-script.md` one beat at a time.
+4. **Voice-over:** read `pitch-script.md` one beat at a time.
    - Use a quiet room, a phone or USB mic 15 cm from your mouth, and the phone's voice memo app.
    - Leave a 1 s pause between beats, and redo any beat you stumble on.
    - The pitch skill's teleprompter can show the lines on your phone: `python3 "$S/prompter.py" build ai-runs-the-planet` then `serve`.
-6. **Edit:**
+5. **Edit:**
    - Lay the voice-over down first, then cut the screen takes to it.
    - Speed up only the wait for the AI's choice (×2), not the globe flights.
    - Add the overlays from the table, then export H.264 at 1080p30 under 2:00.

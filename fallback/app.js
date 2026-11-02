@@ -350,10 +350,35 @@ async function runFutures(mode) {
   afterResult();
 }
 
+// The AI starts choosing as soon as the page loads, in its own worker, so the
+// button answers at once on stage. The seed is fixed, so the choice is the same.
+const aiChoice = new Promise((resolve) => {
+  const w = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
+  w.onmessage = ({ data }) => { if (data.type === 'done') { resolve(data); w.terminate(); } };
+  w.postMessage({ id: 0, type: 'optimize' });
+});
+
+/** Show the AI "testing futures" for at least `minMs`, then hand over its choice. */
+async function thinking(promise, minMs = 1800) {
+  const bar = $('progress').firstElementChild;
+  $('progress').classList.remove('hidden');
+  $('btn-ai').disabled = $('btn-run').disabled = true;
+  const label = $('btn-ai').textContent;
+  $('btn-ai').textContent = 'AI is testing futures…';
+  const t0 = performance.now();
+  const tick = setInterval(() => { bar.style.width = `${Math.min(96, ((performance.now() - t0) / minMs) * 100)}%`; }, 50);
+  const [result] = await Promise.all([promise, new Promise((r) => setTimeout(r, minMs))]);
+  clearInterval(tick);
+  bar.style.width = '100%';
+  $('progress').classList.add('hidden');
+  $('btn-ai').textContent = label;
+  return result;
+}
+
 async function letAiDecide() {
   stop();
   clearTimeout(autoplayTimer);
-  const { policies, futures, rationale } = await job({ type: 'optimize' });
+  const { policies, futures, rationale } = await thinking(aiChoice);
   $('btn-ai').disabled = $('btn-run').disabled = true;
   // Animate the sliders to the AI's choice.
   const from = { ...state.policies.ai };

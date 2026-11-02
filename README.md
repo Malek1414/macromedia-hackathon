@@ -29,7 +29,7 @@ Possible futures, not predictions. Warming and sea level follow IPCC AR6 SSP pat
 | Part | State | Checked by |
 |---|---|---|
 | Engine (`engine/`) | done | 11 tests (`npm test`) |
-| Fallback globe (`fallback/`) | done | clicked through in Chrome: AI decides, audience decides, compare, playback |
+| Fallback globe (`fallback/`) | done | clicked through in Chrome: title screen → AI decides → playback with event banners → 2076 report → audience run → AI vs audience face-off |
 | GEV fork: MCP tools `simulate_future`, `play_future` | done | 3 new tests + GEV's 225 tool/MCP tests pass; GEV's package boundary check passes; called over real MCP stdio |
 | GEV fork: Director scenes (3 futures × 6 decades) | done | GEV's own `parseSceneDocument` accepts it; imported in GEV Authoring and played |
 | Results file for the pitch | done | `node scripts/results.mjs` → `results/ai-vs-audience.md` |
@@ -99,10 +99,12 @@ policies ──►   │ policies.js  levers, 360-point budget, emission index, 
                                                    └─ public/scene-assets/future/  (Director packs)
 ```
 
-- **Fallback** (`fallback/app.js`):
+- **Fallback** (`fallback/app.js`), flow: title screen ("Hand over the planet") → the AI "tests futures" (it really started optimizing in a second worker at page load, so the click answers in under 2 s) → sliders glide to its pick → playback 2026-2076 with event banners → 2076 report card → "Try to beat the AI" → audience run → report with the AI vs audience face-off.
+- **Fallback** visuals:
+  - NASA GIBS Blue Marble (day) and Black Marble city lights (night) with real day/night lighting, bloom, a red veil that thickens with warming. No key needed.
   - Runs the engine in a Web Worker (`fallback/worker.js`), so the 4-5 s optimizer never freezes the globe.
-  - Draws pulsing red/green event pins and amber coastal circles sized by displaced people, and tints the planet as it warms.
-  - The camera flies to each new event, at most once every 4 years of playback.
+  - Events glow red (disasters) or green (breakthroughs) and send out shockwave rings; coastal cities glow amber, sized by people flooded out.
+  - During playback the camera centres on a new event at most every 3 years, and the event banner fires with it.
 - **GEV tools** (`src/tools/queries/future.js` in the fork):
   - `simulate_future` takes policies (or `let_ai_decide: true`), runs the futures and caches the result.
   - `play_future` builds GEV annotations for one future at one year, then calls GEV's own `show_in_gods_eye_view`. That gives the live panel in Claude Desktop and a link everywhere else.
