@@ -14,10 +14,19 @@ OUT = ROOT / 'footage/rough-cut-v0.mp4'
 W, H, FPS = 1920, 1080, 30
 
 # (source, start, end) in the raw takes, in order; times mapped from the contact sheets.
+# Cold open: Malek's clips in footage/cold-open/ (any .mp4/.mov, played in file-name
+# order, each trimmed to an equal share of the slot). Without clips, a placeholder card.
+# The first beats' voice plays over it; the hook visuals shrink to make room.
+COLD = ROOT / 'footage/cold-open'
+COLD_OPEN_S = 15          # 10-20; override with --cold-open N
+
+def opening(cold_s):
+    """Hook and tried visuals for the 25 s before beat 3, after the cold open."""
+    rest = 25 - cold_s
+    title = min(6.0, rest * 0.45)
+    return [(A, 0, title), (B, 7, 7 + rest - title)]
+
 CUTS = [
-    (A, 0, 7),           # 0:00 hook: title screen
-    (B, 0, 7),           #       the planet today
-    (B, 7, 18),          # 0:14 tried: God's Eye View, today's world
     (A, 7, 20),          # 0:25 thing: hand over, the AI tests futures, sliders glide, starved levers flagged
     (A, 20, 37),         # 0:38 works: playback with event banners
     (A, 37.6, 47.6),     # 0:55 proof: the AI's 2076 report
@@ -57,7 +66,37 @@ def end_card(path):
         y += f.size + 40
     img.save(path)
 
+def cold_open_parts(tmp, cold_s, vf):
+    clips = sorted(p for p in COLD.glob('*') if p.suffix.lower() in ('.mp4', '.mov', '.m4v', '.webm')) if COLD.exists() else []
+    parts = []
+    if clips:
+        each = cold_s / len(clips)
+        for i, clip in enumerate(clips):
+            part = tmp / f'cold{i}.mp4'
+            run('ffmpeg', '-y', '-ss', '0', '-t', f'{each:.3f}', '-i', str(clip), '-an', '-vf', vf,
+                '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p', str(part))
+            parts.append(part)
+        return parts, len(clips)
+    img = Image.new('RGB', (W, H), (0, 0, 0))
+    d = ImageDraw.Draw(img)
+    try: f = ImageFont.truetype('/System/Library/Fonts/Supplemental/Arial Bold.ttf', 64)
+    except OSError: f = ImageFont.load_default()
+    for text, y in [(f'COLD OPEN · {cold_s:g} s', 470), ('clips go in footage/cold-open/', 560)]:
+        w = d.textlength(text, font=f)
+        d.text(((W - w) / 2, y), text, font=f, fill=(90, 209, 255) if y < 500 else (138, 151, 171))
+    png = tmp / 'cold.png'
+    img.save(png)
+    part = tmp / 'cold.mp4'
+    run('ffmpeg', '-y', '-loop', '1', '-t', str(cold_s), '-i', str(png), '-vf', f'fps={FPS},format=yuv420p',
+        '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', str(part))
+    return [part], 0
+
 def main():
+    import sys
+    cold_s = COLD_OPEN_S
+    if '--cold-open' in sys.argv:
+        cold_s = float(sys.argv[sys.argv.index('--cold-open') + 1])
+    cold_s = max(0.0, min(20.0, cold_s))
     beats = json.loads((ROOT / 'pitch/ai-runs-the-planet/script.json').read_text())['beats']
     # Beat start times from the gated script (pitch.py script-md writes them).
     starts = {}
@@ -66,11 +105,12 @@ def main():
         if m: starts[m.group(3)] = int(m.group(1)) * 60 + int(m.group(2))
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
-        parts = []
-        for i, (src, a, b) in enumerate(CUTS):
+        vf = f'scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=0x020409,fps={FPS},setsar=1'
+        parts, n_clips = cold_open_parts(tmp, cold_s, vf) if cold_s > 0 else ([], 0)
+        for i, (src, a, b) in enumerate(opening(cold_s) + CUTS):
             part = tmp / f'part{i}.mp4'
             run('ffmpeg', '-y', '-ss', str(a), '-to', str(b), '-i', str(src), '-an',
-                '-vf', f'scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=0x020409,fps={FPS},setsar=1',
+                '-vf', vf,
                 '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p', str(part))
             parts.append(part)
         card = tmp / 'card.png'
@@ -103,7 +143,9 @@ def main():
         filters.append(f'{mix}amix=inputs={len(beats)}:normalize=0,apad[aout]')
         run('ffmpeg', '-y', '-i', str(video), *inputs, '-filter_complex', ';'.join(filters),
             '-map', '0:v', '-map', '[aout]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-t', '119.9', str(OUT))
-    print(f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s')
+    print(f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s, cold open {cold_s:g} s '
+          f'({n_clips} clips from footage/cold-open)' if n_clips else
+          f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s, cold open {cold_s:g} s (placeholder: add clips to footage/cold-open)')
 
 if __name__ == '__main__':
     main()

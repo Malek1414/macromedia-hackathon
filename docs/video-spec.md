@@ -14,6 +14,34 @@
 | Motion | the globe's own camera flights only; no zoom/pan added in edit except the two proof zooms below |
 | Sound | voice-over at -16 LUFS; quiet ambient bed at -32 LUFS, ducked under the voice; no music with lyrics |
 
+## Cold open (first 10 s, over Malek's first line)
+
+The hook beat's voice ("In 2076, I'll still be here. Most of you in this room will be too.") plays over a hard-cut montage. Then everything goes black for a moment, and the title screen and globe drop in.
+
+**Rule:** only free-licence footage (Pexels, Pixabay, NASA public domain). **No film or TV clips**: YouTube's copyright matching mutes or blocks them, and Germany has no fair use for a mood montage. We can *name* films on title cards; we can't *show* them. Sourcing is task 1 in [`sammy-tasks.md`](sammy-tasks.md); licences go in `docs/cold-open-sources.md`.
+
+| Time | Shot (1-1.5 s each, hard cuts on the music) | Mood |
+|---|---|---|
+| 0.0 | Black. One low hit. White text card: **"We've imagined this future for 100 years."** | |
+| 1.2 | Neon megacity at night, slow push in | dystopia |
+| 2.2 | Solar farm aerial at golden hour | utopia |
+| 3.0 | Robot arm / humanoid robot close-up | AI |
+| 3.8 | Flooded street, cars underwater | dystopia |
+| 4.6 | Child looking up at the sky | human |
+| 5.4 | Drone swarm or server-room corridor | AI |
+| 6.2 | Wildfire at night | dystopia |
+| 7.0 | Text card, typed on: **"I, Robot. RoboCop. Elysium. Her."**, then struck through, then: **"Fiction."** | |
+| 8.2 | Earth from orbit (NASA), slow rotation, bright | |
+| 9.2 | Hard cut to black, 6 frames | |
+| 9.4 | Title screen drops in: "What if AI ran the planet?" (take A) | |
+
+**Craft notes:**
+- **Speed:** ramp the montage 1.0× → 1.3× as it builds. Cuts land on the beat.
+- **Colour:** dystopia shots graded teal-and-red, utopia shots warm. This matches the app's red/green.
+- **Typography:** title cards in Inter Bold, white on black, letter-spacing 0.05em. No other fonts.
+- **Sound:** a low sub hit on the first card, a rising swell through the montage, silence for the 6 black frames, then the music drops in with the title. The voice-over starts at 1.2 s.
+- **Room for it:** trim the take-A title hold (0:00-0:07) to 3 s, so the hook stays 14 s and the total stays ≤ 2:00.
+
 ## Shot list (timecodes match the script)
 
 | Time | Beat | On screen | Source | Overlay |

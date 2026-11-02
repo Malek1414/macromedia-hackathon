@@ -66,7 +66,9 @@ viewer.clock.currentTime = Cesium.JulianDate.fromIso8601('2026-11-03T15:30:00Z')
 const bloom = scene.postProcessStages.bloom;
 bloom.enabled = true;
 Object.assign(bloom.uniforms, { glowOnly: false, contrast: 128, brightness: -0.55, delta: 1.0, sigma: 2.6, stepSize: 1.0 });
-viewer.camera.setView({ destination: Cesium.Cartesian3.fromDegrees(30, 15, 17_000_000) });
+viewer.camera.setView({ destination: Cesium.Cartesian3.fromDegrees(10, 10, 60_000_000) });
+viewer.camera.flyTo({ destination: Cesium.Cartesian3.fromDegrees(30, 15, 17_000_000), duration: 4.5,
+  easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT });
 const baseLayer = () => viewer.imageryLayers.get(0);
 
 // Offline safety: if NASA's tiles keep failing (venue Wi-Fi), switch to the
@@ -125,25 +127,77 @@ function currentRun() {
   return r ? r[state.which] : null;
 }
 
+/** A soft disc that fades from `css` in the middle to nothing at the edge: heat and flooding read as glow, not stickers. */
+const softCache = new Map();
+function softDisc(css, core = 0.15) {
+  const key = css + core;
+  if (softCache.has(key)) return softCache.get(key);
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const grad = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  grad.addColorStop(0, css + 'ff');
+  grad.addColorStop(core, css + 'cc');
+  grad.addColorStop(0.55, css + '55');
+  grad.addColorStop(1, css + '00');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 256, 256);
+  softCache.set(key, c);
+  return c;
+}
+
+// Where events spread to: pandemics travel, wars send shock through markets, breakthroughs diffuse.
+const SPREAD_TO = {
+  pandemic: [[51.5, -0.13], [40.7, -74], [35.7, 139.7], [-23.5, -46.6], [28.6, 77.2], [6.5, 3.4], [55.8, 37.6]],
+  war: [[50.1, 8.7], [40.7, -74], [31.2, 121.5], [25.3, 55.3]],
+  breakthrough: [[52.5, 13.4], [31.2, 121.5], [37.8, -122.4], [19.1, 72.9], [-33.9, 18.4], [-23.5, -46.6]],
+  aiboom: [[51.5, -0.13], [35.7, 139.7], [12.97, 77.6], [1.35, 103.8], [-33.9, 151.2]],
+  treaty: [[39.9, 116.4], [38.9, -77], [28.6, 77.2], [-15.8, -47.9], [-1.3, 36.8]],
+};
+
+/** A great-circle arc lifted off the surface, as points. */
+function arcPoints(lat1, lon1, lat2, lon2, n = 48) {
+  const geo = new Cesium.EllipsoidGeodesic(Cesium.Cartographic.fromDegrees(lon1, lat1), Cesium.Cartographic.fromDegrees(lon2, lat2));
+  const lift = Math.min(1_800_000, geo.surfaceDistance * 0.18);
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const c = geo.interpolateUsingFraction(t);
+    pts.push(Cesium.Cartesian3.fromRadians(c.longitude, c.latitude, Math.sin(Math.PI * t) * lift));
+  }
+  return pts;
+}
+
+// Animations keep their own clock per event, so redrawing every year does not restart them.
+const firstSeen = new Map();
+const nowS = () => performance.now() / 1000;
+function bornAt(key) {
+  if (!firstSeen.has(key)) firstSeen.set(key, nowS());
+  return firstSeen.get(key);
+}
+
 function drawGlobe() {
   entities.entities.removeAll();
   const run = currentRun();
   const res = state.results[state.mode];
   if (!run) return;
   const row = run.years.find((y) => y.year === state.year);
-  const now = () => performance.now() / 1000;
+  const runKey = `${state.mode}:${state.which}:${run.seed}`;
 
-  // Coastal cities losing people to the sea: amber glow and a ring sized by displacement.
+  // Coastal cities losing people to the sea: a soft amber glow that breathes slowly, sized by displacement.
   for (const h of hotspotsAt(run, state.year, res.policies.adaptation)) {
     if (h.displacedM < 0.05) continue;
-    const r = 60_000 + Math.sqrt(h.displacedM) * 140_000;
+    const r = 70_000 + Math.sqrt(h.displacedM) * 170_000;
+    const phase = (h.lat + h.lon) * 0.1;
     entities.entities.add({
       position: Cesium.Cartesian3.fromDegrees(h.lon, h.lat),
-      billboard: { image: glow(AMBER), scale: 0.35 + Math.sqrt(h.displacedM) * 0.25, color: Cesium.Color.WHITE.withAlpha(0.9) },
+      billboard: { image: glow(AMBER), scale: 0.3 + Math.sqrt(h.displacedM) * 0.22, color: Cesium.Color.WHITE.withAlpha(0.95) },
       ellipse: {
         semiMajorAxis: r, semiMinorAxis: r, height: 0,
-        material: Cesium.Color.fromCssColorString(AMBER).withAlpha(0.18),
-        outline: true, outlineColor: Cesium.Color.fromCssColorString(AMBER).withAlpha(0.8),
+        material: new Cesium.ImageMaterialProperty({
+          image: softDisc(AMBER, 0.08), transparent: true,
+          color: new Cesium.CallbackProperty(() => Cesium.Color.WHITE.withAlpha(0.55 + 0.2 * Math.sin(nowS() * 1.6 + phase)), false),
+        }),
       },
       label: h.displacedM >= 1 ? {
         text: `${h.place.toUpperCase()}  ${h.displacedM.toFixed(1)}M`, font: '600 11px JetBrains Mono',
@@ -154,20 +208,24 @@ function drawGlobe() {
     });
   }
 
-  // Events: a glow for every one so far; the recent ones send out shockwaves and carry a label.
+  // Events: a glow for every one so far; recent ones ripple, carry a label and spread along arcs.
   for (const e of run.events.filter((x) => x.year <= state.year)) {
     const css = e.kind === 'good' ? GREEN : RED;
     const color = Cesium.Color.fromCssColorString(css);
     const age = state.year - e.year;
     const recent = age <= 2;
     const pos = Cesium.Cartesian3.fromDegrees(e.lon, e.lat);
-    const born = now();
+    const born = bornAt(`${runKey}:${e.year}:${e.id}`);
     entities.entities.add({
       position: pos,
       billboard: {
         image: glow(css),
-        scale: recent ? new Cesium.CallbackProperty(() => 1.1 + 0.35 * Math.sin((now() - born) * 4), false) : 0.6,
-        color: Cesium.Color.WHITE.withAlpha(recent ? 1 : 0.55),
+        scale: recent ? new Cesium.CallbackProperty(() => {
+          const t = nowS() - born;
+          const pop = t < 0.5 ? 0.4 + 2.2 * (t / 0.5) : 1.15 + 0.3 * Math.sin(t * 4); // flash in, then pulse
+          return pop;
+        }, false) : 0.55,
+        color: Cesium.Color.WHITE.withAlpha(recent ? 1 : 0.5),
         disableDepthTestDistance: 0,
       },
       label: recent ? {
@@ -176,39 +234,58 @@ function drawGlobe() {
         backgroundPadding: new Cesium.Cartesian2(8, 6), pixelOffset: new Cesium.Cartesian2(0, -34),
       } : undefined,
     });
-    if (recent) {
-      // Two expanding rings, half a cycle apart.
-      for (const phase of [0, 0.5]) {
-        const t = () => ((now() - born) / 2.2 + phase) % 1;
-        entities.entities.add({
-          position: pos,
-          ellipse: {
-            semiMajorAxis: new Cesium.CallbackProperty(() => 50_000 + t() * (e.kind === 'good' ? 600_000 : 900_000), false),
-            semiMinorAxis: new Cesium.CallbackProperty(() => 50_000 + t() * (e.kind === 'good' ? 600_000 : 900_000), false),
-            height: 0,
-            material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(() => color.withAlpha(0.35 * (1 - t())), false)),
-            outline: false,
-          },
-        });
-      }
-    }
-  }
-
-  // Heat stress: orange zones that spread with every tenth of a degree above 1.5 °C.
-  const stress = Math.max(0, row.warmingC - 1.45);
-  if (stress > 0) {
-    for (const [lat, lon] of HEAT_ZONES) {
-      const r = 150_000 + stress * 900_000;
+    if (!recent) continue;
+    // Three ripples, a third of a cycle apart, easing out as they grow.
+    const reach = e.kind === 'good' ? 650_000 : 1_000_000;
+    for (const phase of [0, 1 / 3, 2 / 3]) {
+      const t = () => ((nowS() - born) / 2.4 + phase) % 1;
+      const radius = () => 40_000 + (1 - Math.pow(1 - t(), 3)) * reach;
       entities.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(lon, lat),
+        position: pos,
         ellipse: {
-          semiMajorAxis: r, semiMinorAxis: r * 0.8, height: 0,
-          material: Cesium.Color.fromCssColorString(HEAT).withAlpha(Math.min(0.42, 0.08 + stress * 0.3)),
+          semiMajorAxis: new Cesium.CallbackProperty(radius, false),
+          semiMinorAxis: new Cesium.CallbackProperty(radius, false),
+          height: 0,
+          material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(() => color.withAlpha(0.32 * Math.pow(1 - t(), 1.5)), false)),
+        },
+      });
+    }
+    // Arcs: the event reaching the rest of the world, drawn out over 1.6 s, then glowing.
+    for (const [i, [lat, lon]] of (SPREAD_TO[e.id] ?? []).entries()) {
+      const pts = arcPoints(e.lat, e.lon, lat, lon);
+      const delay = i * 0.12;
+      entities.entities.add({
+        polyline: {
+          positions: new Cesium.CallbackProperty(() => {
+            const f = Math.max(0, Math.min(1, (nowS() - born - delay) / 1.6));
+            const k = Math.max(2, Math.ceil(f * pts.length));
+            return pts.slice(0, k);
+          }, false),
+          width: 9,
+          material: new Cesium.PolylineGlowMaterialProperty({ glowPower: 0.28, taperPower: 0.85, color: color.withAlpha(Math.max(0.25, 0.85 - age * 0.25)) }),
+          arcType: Cesium.ArcType.NONE,
         },
       });
     }
   }
 
+  // Heat stress: soft orange glows that spread with every tenth of a degree above 1.5 °C.
+  const stress = Math.max(0, row.warmingC - 1.45);
+  if (stress > 0) {
+    for (const [lat, lon] of HEAT_ZONES) {
+      const r = 220_000 + stress * 1_100_000;
+      entities.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(lon, lat),
+        ellipse: {
+          semiMajorAxis: r, semiMinorAxis: r * 0.8, height: 0,
+          material: new Cesium.ImageMaterialProperty({
+            image: softDisc(HEAT, 0.2), transparent: true,
+            color: Cesium.Color.WHITE.withAlpha(Math.min(0.85, 0.25 + stress * 0.55)),
+          }),
+        },
+      });
+    }
+  }
   // Heat: a red veil over the whole planet that thickens with every tenth of a degree.
   const heat = Math.max(0, row.warmingC - 1.4);
   entities.entities.add({
@@ -235,7 +312,9 @@ function flyToPoint(lon, lat, range, pitchDeg, duration) {
 }
 
 function flyToEvent(e) {
-  flyToPoint(e.lon, e.lat, 3_800_000, -58, 1.8);
+  // Events that spread get a wider shot, so the arcs leaving them are in frame.
+  if (SPREAD_TO[e.id]) flyToPoint(e.lon, e.lat, 9_500_000, -75, 1.8);
+  else flyToPoint(e.lon, e.lat, 3_800_000, -58, 1.8);
 }
 
 function flyToYear(year) {
@@ -247,15 +326,31 @@ function flyToYear(year) {
 }
 
 // ---------- HUD + timeline ----------
+/** Numbers glide to their new value instead of jumping (about one playback step). */
+const shown = new Map();
+function tween(id, to, fmt, ms = 380) {
+  const el = $(id);
+  const from = shown.has(id) ? shown.get(id) : to;
+  shown.set(id, to);
+  const t0 = performance.now();
+  cancelAnimationFrame(el._raf);
+  const step = () => {
+    const k = Math.min(1, (performance.now() - t0) / ms);
+    el.textContent = fmt(from + (to - from) * (1 - Math.pow(1 - k, 3)));
+    if (k < 1) el._raf = requestAnimationFrame(step);
+  };
+  step();
+}
+
 function drawHud() {
   const run = currentRun();
   const row = run ? run.years.find((y) => y.year === state.year) : null;
   $('hud-year').textContent = state.year;
-  $('hud-warm').textContent = row ? `${row.warmingC.toFixed(2)} °C` : '1.40 °C';
-  $('hud-sea').textContent = row ? `+${Math.round(row.seaLevelM * 100)} cm` : '+0 cm';
-  $('hud-pop').textContent = row ? `${row.populationBn.toFixed(2)} bn` : '8.20 bn';
-  $('hud-disp').textContent = row ? `${row.displacedM.toFixed(1)}M` : '0';
-  $('hud-wb').textContent = row ? Math.round(row.wellbeing) : '62';
+  tween('hud-warm', row ? row.warmingC : 1.4, (v) => `${v.toFixed(2)} °C`);
+  tween('hud-sea', row ? row.seaLevelM * 100 : 0, (v) => `+${Math.round(v)} cm`);
+  tween('hud-pop', row ? row.populationBn : 8.2, (v) => `${v.toFixed(2)} bn`);
+  tween('hud-disp', row ? row.displacedM : 0, (v) => `${v.toFixed(1)}M`);
+  tween('hud-wb', row ? row.wellbeing : 62, (v) => `${Math.round(v)}`);
   $('hud-warm').style.color = row && row.warmingC >= 2 ? '#ff4d5e' : row && row.warmingC >= 1.7 ? '#ffc53d' : '#e6edf7';
   const ev = run ? run.events.filter((e) => e.year <= state.year && e.year > state.year - 3).slice(-3) : [];
   const fresh = run ? run.events.filter((e) => e.year === state.year) : [];
@@ -589,6 +684,29 @@ function duel() {
     <span class="legend">${players.map((m) => `<i class="${m}"></i>${names[m]}`).join(' ')}</span></div>${html}</div>`;
 }
 
+/** Every number in the report's big tiles counts up from zero. */
+function countUp(root) {
+  for (const b of root.querySelectorAll('.big b')) {
+    const m = b.textContent.match(/^([+]?)([\d.]+)(.*)$/);
+    if (!m) continue;
+    const [, sign, num, unit] = m;
+    const to = Number(num), dp = (num.split('.')[1] ?? '').length, t0 = performance.now();
+    const step = () => {
+      const k = Math.min(1, (performance.now() - t0) / 1100);
+      b.textContent = `${sign}${(to * (1 - Math.pow(1 - k, 3))).toFixed(dp)}${unit}`;
+      if (k < 1) requestAnimationFrame(step);
+    };
+    step();
+  }
+  // The face-off bars grow in, one row after another.
+  root.querySelectorAll('.duel-bar i').forEach((i, n) => {
+    const w = i.style.width;
+    i.style.width = '0%';
+    i.style.transition = `width .9s cubic-bezier(.2,.8,.2,1) ${0.25 + n * 0.06}s`;
+    requestAnimationFrame(() => requestAnimationFrame(() => { i.style.width = w; }));
+  });
+}
+
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
 function showReport() {
@@ -623,6 +741,7 @@ function showReport() {
   $('report').classList.toggle('compact', ['ai', 'claude', 'human'].filter((m) => state.results[m]).length >= 2);
   $('report').classList.remove('hidden');
   document.body.classList.add('reporting');
+  countUp($('report'));
   $('report-again').onclick = () => {
     hideReport();
     state.which = { likely: 'worst', worst: 'best', best: 'likely' }[state.which];
