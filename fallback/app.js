@@ -296,6 +296,7 @@ function play() {
   if (state.year >= END_YEAR) setYear(START_YEAR);
   $('btn-play').textContent = '❚❚';
   let lastFly = -10;
+  let quietStop = 0;
   state.playing = setInterval(() => {
     if (state.year >= END_YEAR) {
       stop();
@@ -309,6 +310,16 @@ function play() {
     const now = currentRun().events.filter((e) => e.year === next);
     const ev = now.find((e) => e.kind === 'bad') ?? now[0];
     if (ev && next - lastFly >= 3) { lastFly = next; flyToEvent(ev); showBanner(ev); }
+    else if (!ev && next - lastFly >= 7) {
+      // Quiet years: visit the coast losing the most people, then the whole planet.
+      lastFly = next;
+      quietStop = (quietStop + 1) % 2;
+      if (quietStop === 1) {
+        const worst = hotspotsAt(currentRun(), next, state.results[state.mode].policies.adaptation)
+          .sort((a, b) => b.displacedM - a.displacedM)[0];
+        flyToPoint(worst.lon, worst.lat, 4_500_000, -55, 2.6);
+      } else flyToPoint(30, 15, 17_000_000, -90, 2.6);
+    }
   }, 420);
 }
 $('btn-play').addEventListener('click', play);
