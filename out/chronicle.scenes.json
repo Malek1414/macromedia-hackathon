@@ -31,7 +31,7 @@
           "camera": {
             "lat": 22,
             "lon": 40,
-            "alt": 21000000,
+            "alt": 19000000,
             "heading": 0,
             "pitch": -90,
             "roll": 0,
@@ -41,7 +41,7 @@
             "from": {
               "lat": 12,
               "lon": 70,
-              "alt": 30000000,
+              "alt": 32000000,
               "heading": 0,
               "pitch": -90,
               "roll": 0,
@@ -54,12 +54,16 @@
             "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
-              "intensity": 22,
+              "intensity": 18,
               "version": 2
             },
             "hud": {
               "visible": false,
               "variant": "tactical"
+            },
+            "scope": {
+              "enabled": false,
+              "featherPct": 35
             }
           },
           "layers": {},
@@ -71,9 +75,9 @@
           "durationSec": 9,
           "holdSec": 0.5,
           "camera": {
-            "lat": 34,
-            "lon": -30,
-            "alt": 19000000,
+            "lat": 36,
+            "lon": -35,
+            "alt": 16000000,
             "heading": 0,
             "pitch": -90,
             "roll": 0,
@@ -81,9 +85,9 @@
           },
           "move": {
             "from": {
-              "lat": 30,
-              "lon": 0,
-              "alt": 21000000,
+              "lat": 32,
+              "lon": 10,
+              "alt": 19000000,
               "heading": 0,
               "pitch": -90,
               "roll": 0,
@@ -96,12 +100,16 @@
             "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
-              "intensity": 22,
+              "intensity": 18,
               "version": 2
             },
             "hud": {
               "visible": false,
               "variant": "tactical"
+            },
+            "scope": {
+              "enabled": false,
+              "featherPct": 35
             }
           },
           "layers": {},
@@ -113,21 +121,21 @@
           "durationSec": 10,
           "holdSec": 0.5,
           "camera": {
-            "lat": 42.34189,
-            "lon": -71.04855,
-            "alt": 941,
-            "heading": 320,
-            "pitch": -26,
+            "lat": 42.34824,
+            "lon": -71.04996,
+            "alt": 490,
+            "heading": 305,
+            "pitch": -20,
             "roll": 0,
             "altitudeReference": "ellipsoid"
           },
           "move": {
             "from": {
-              "lat": 42.34845,
-              "lon": -71.03778,
-              "alt": 1198,
-              "heading": 290,
-              "pitch": -28,
+              "lat": 42.36485,
+              "lon": -71.02924,
+              "alt": 966,
+              "heading": 250,
+              "pitch": -18,
               "roll": 0,
               "altitudeReference": "ellipsoid"
             },
@@ -138,12 +146,16 @@
             "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
-              "intensity": 22,
+              "intensity": 18,
               "version": 2
             },
             "hud": {
               "visible": false,
               "variant": "tactical"
+            },
+            "scope": {
+              "enabled": false,
+              "featherPct": 35
             }
           },
           "layers": {},
@@ -155,21 +167,21 @@
           "durationSec": 10,
           "holdSec": 0.5,
           "camera": {
-            "lat": 31.24104,
-            "lon": 121.47485,
-            "alt": 801,
-            "heading": 100,
-            "pitch": -22,
+            "lat": 31.23905,
+            "lon": 121.48491,
+            "alt": 400,
+            "heading": 95,
+            "pitch": -16,
             "roll": 0,
             "altitudeReference": "ellipsoid"
           },
           "move": {
             "from": {
-              "lat": 31.23248,
-              "lon": 121.4709,
-              "alt": 1072,
-              "heading": 75,
-              "pitch": -24,
+              "lat": 31.22493,
+              "lon": 121.47251,
+              "alt": 740,
+              "heading": 60,
+              "pitch": -14,
               "roll": 0,
               "altitudeReference": "ellipsoid"
             },
@@ -180,12 +192,16 @@
             "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
-              "intensity": 22,
+              "intensity": 18,
               "version": 2
             },
             "hud": {
               "visible": false,
               "variant": "tactical"
+            },
+            "scope": {
+              "enabled": false,
+              "featherPct": 35
             }
           },
           "layers": {},
@@ -197,21 +213,21 @@
           "durationSec": 10,
           "holdSec": 0.5,
           "camera": {
-            "lat": 50.46285,
-            "lon": 30.49954,
-            "alt": 1371,
-            "heading": 130,
-            "pitch": -28,
+            "lat": 50.46308,
+            "lon": 30.51163,
+            "alt": 871,
+            "heading": 150,
+            "pitch": -22,
             "roll": 0,
             "altitudeReference": "ellipsoid"
           },
           "move": {
             "from": {
-              "lat": 50.47158,
-              "lon": 30.51112,
-              "alt": 1787,
-              "heading": 160,
-              "pitch": -32,
+              "lat": 50.47726,
+              "lon": 30.53892,
+              "alt": 2897,
+              "heading": 200,
+              "pitch": -40,
               "roll": 0,
               "altitudeReference": "ellipsoid"
             },
@@ -222,12 +238,16 @@
             "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
-              "intensity": 22,
+              "intensity": 18,
               "version": 2
             },
             "hud": {
               "visible": false,
               "variant": "tactical"
+            },
+            "scope": {
+              "enabled": false,
+              "featherPct": 35
             }
           },
           "layers": {},
@@ -239,21 +259,21 @@
           "durationSec": 10,
           "holdSec": 0.5,
           "camera": {
-            "lat": 25.7907,
-            "lon": -80.14446,
-            "alt": 361,
-            "heading": 90,
-            "pitch": -15,
+            "lat": 25.79236,
+            "lon": -80.14049,
+            "alt": 239,
+            "heading": 100,
+            "pitch": -14,
             "roll": 0,
             "altitudeReference": "ellipsoid"
           },
           "move": {
             "from": {
-              "lat": 25.7907,
-              "lon": -80.1511,
-              "alt": 579,
-              "heading": 90,
-              "pitch": -16,
+              "lat": 25.78673,
+              "lon": -80.15499,
+              "alt": 513,
+              "heading": 80,
+              "pitch": -12,
               "roll": 0,
               "altitudeReference": "ellipsoid"
             },
@@ -264,12 +284,16 @@
             "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
-              "intensity": 22,
+              "intensity": 18,
               "version": 2
             },
             "hud": {
               "visible": false,
               "variant": "tactical"
+            },
+            "scope": {
+              "enabled": false,
+              "featherPct": 35
             }
           },
           "layers": {},
@@ -283,21 +307,21 @@
           "durationSec": 10,
           "holdSec": 0.5,
           "camera": {
-            "lat": 23.77898,
-            "lon": 90.39052,
-            "alt": 1138,
-            "heading": 45,
-            "pitch": -27,
+            "lat": 23.78652,
+            "lon": 90.39302,
+            "alt": 539,
+            "heading": 60,
+            "pitch": -20,
             "roll": 0,
             "altitudeReference": "ellipsoid"
           },
           "move": {
             "from": {
-              "lat": 23.76965,
-              "lon": 90.39956,
-              "alt": 1557,
-              "heading": 15,
-              "pitch": -30,
+              "lat": 23.7658,
+              "lon": 90.4066,
+              "alt": 1340,
+              "heading": 0,
+              "pitch": -24,
               "roll": 0,
               "altitudeReference": "ellipsoid"
             },
@@ -308,12 +332,16 @@
             "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
-              "intensity": 22,
+              "intensity": 18,
               "version": 2
             },
             "hud": {
               "visible": false,
               "variant": "tactical"
+            },
+            "scope": {
+              "enabled": false,
+              "featherPct": 35
             }
           },
           "layers": {},
@@ -322,12 +350,12 @@
         {
           "id": "earth-end",
           "title": "2076 · the planet",
-          "durationSec": 10,
+          "durationSec": 12,
           "holdSec": 0.5,
           "camera": {
             "lat": 18,
             "lon": 60,
-            "alt": 24000000,
+            "alt": 26000000,
             "heading": 0,
             "pitch": -90,
             "roll": 0,
@@ -337,7 +365,7 @@
             "from": {
               "lat": 24,
               "lon": 90,
-              "alt": 2500000,
+              "alt": 1500000,
               "heading": 0,
               "pitch": -90,
               "roll": 0,
@@ -350,12 +378,16 @@
             "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
-              "intensity": 22,
+              "intensity": 18,
               "version": 2
             },
             "hud": {
               "visible": false,
               "variant": "tactical"
+            },
+            "scope": {
+              "enabled": false,
+              "featherPct": 35
             }
           },
           "layers": {},

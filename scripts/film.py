@@ -198,21 +198,25 @@ def encode_frames(frames, out):
     p.wait()
     return out
 
-def footage(tmp, n, src, a, b, overlay=None, grade=None):
-    """A piece of the 3D take with its overlay faded in, slow fade from/to black, and a colour grade."""
+def footage(tmp, n, src, a, b, overlay=None, grade=None, length=None):
+    """A piece of the 3D take, exactly `length` seconds (slowed down if the window is shorter),
+    with its overlay faded in, a quick dip at each end so cuts land on the beat, and a grade."""
     out = tmp / f'p{n:02d}.mp4'
-    L = b - a
-    g = grade or 'eq=contrast=1.06:saturation=1.08:gamma=0.97'
-    fades = f'fade=t=in:st=0:d=0.6,fade=t=out:st={L - 0.6:.2f}:d=0.6'
+    L = length or (b - a)
+    k = L / (b - a)
+    g = grade or 'eq=contrast=1.08:saturation=1.1:gamma=0.96'
+    fades = f'fade=t=in:st=0:d=0.25,fade=t=out:st={L - 0.25:.3f}:d=0.25'
+    speed = f'setpts={k:.4f}*PTS,' if abs(k - 1) > 0.01 else ''
     if overlay:
         png = tmp / f'o{n:02d}.png'
         overlay.save(png)
-        fc = (f'[0]scale={W}:{H},{g}[v];[1]format=rgba,fade=t=in:st=0.3:d=0.7:alpha=1[o];'
-              f'[v][o]overlay=0:0,{fades},format=yuv420p')
-        run('ffmpeg', '-y', '-ss', str(a), '-t', f'{L:.3f}', '-i', str(src), '-loop', '1', '-t', f'{L:.3f}', '-i', str(png),
+        fc = (f'[0]{speed}scale={W}:{H},{g},trim=0:{L:.3f},setpts=PTS-STARTPTS[v];[1]format=rgba,fade=t=in:st=0.2:d=0.5:alpha=1[o];'
+              f'[v][o]overlay=0:0:shortest=1,{fades},format=yuv420p')
+        run('ffmpeg', '-y', '-ss', str(a), '-t', f'{b - a:.3f}', '-i', str(src), '-loop', '1', '-t', f'{L:.3f}', '-i', str(png),
             '-filter_complex', fc, '-r', str(FPS), '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', str(out))
     else:
-        run('ffmpeg', '-y', '-ss', str(a), '-t', f'{L:.3f}', '-i', str(src), '-vf', f'scale={W}:{H},{g},{fades},format=yuv420p',
+        run('ffmpeg', '-y', '-ss', str(a), '-t', f'{b - a:.3f}', '-i', str(src), '-vf',
+            f'{speed}scale={W}:{H},{g},trim=0:{L:.3f},setpts=PTS-STARTPTS,{fades},format=yuv420p',
             '-r', str(FPS), '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', str(out))
     return out
 
@@ -228,66 +232,60 @@ def score(out, total, hits):
         '-c:a', 'aac', '-b:a', '192k', str(out))
 
 def main():
-    cold_s = 15.0
-    if '--cold-open' in sys.argv: cold_s = max(0.0, min(20.0, float(sys.argv[sys.argv.index('--cold-open') + 1])))
     OFF = float(sys.argv[sys.argv.index('--offset') + 1]) if '--offset' in sys.argv else 1.6
     x, r = engine_facts(), results_facts()
     rows, p = x['rows'], x['policies']
     rib = lambda y: f'{y}   ·   {rows[str(y)]["warmingC"]:.2f} °C   ·   sea +{round(rows[str(y)]["seaLevelM"] * 100)} cm   ·   {rows[str(y)]["displacedM"]:.1f} M displaced'
     ev = {e['id']: e for e in x['events']}
     sh50 = x['hs']['2050']['Shanghai']; dh76 = x['hs']['2076']['Dhaka']
-    # Shot windows in take E (chronicle playback; OFF = seconds before Play in the recording).
-    S = lambda a, b: (OFF + a, OFF + b)
     big, mid = font('demi', 64), font('medium', 44)
+    # Everything is cut on the score's two-bar grid (scripts/score.py): the beat drops on
+    # Boston, the orchestra hits on the war, the music falls away for "who should decide?".
+    U = 15.737687 / 4
+    score_file = F / 'score.m4a'
+    if not score_file.exists():
+        subprocess.run([sys.executable, str(ROOT / 'scripts' / 'score.py')], check=True)
+    # Shot windows in take E: chronicle playback starts OFF seconds into the recording.
+    T = lambda a: OFF + a
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
-        parts, hits, t = [], [], 0.0
-        def add(path):
-            nonlocal t
-            parts.append(path); t += duration(path)
-        # Cold open: Malek's clips, or a placeholder.
+        parts = []
+        # Cold open (4 units): Malek's clips in file-name order, or a placeholder.
         clips = sorted(q for q in (F / 'cold-open').glob('*') if q.suffix.lower() in ('.mp4', '.mov', '.m4v')) if (F / 'cold-open').exists() else []
-        if cold_s:
-            if clips:
-                for k, c in enumerate(clips): add(footage(tmp, 90 + k, c, 0, cold_s / len(clips), grade='null'))
-            else:
-                add(encode_frames(lines_card([(f'COLD OPEN · {cold_s:g} s', font('demi', 40), CYAN), ('clips go in footage/cold-open/', font('regular', 30), DIM)], cold_s), tmp / 'cold.mp4'))
-        hits.append(t)
-        add(footage(tmp, 1, E, *S(0.5, 9.5), center_overlay([('In 2026,', font('ultralight', 72), WHITE), ('we gave an AI the world\'s budget.', big, WHITE)])))
-        hits.append(t)
-        add(encode_frames(choice_card(p, 10.0), tmp / 'choice.mp4'))
-        add(encode_frames(lines_card([('It played out 5,000 possible futures.', big, WHITE), ('This is the most likely one.', mid, DIM)], 4.5), tmp / 'futures.mp4'))
+        if clips:
+            share = 4 * U / len(clips)
+            for k, c in enumerate(clips):
+                parts.append(footage(tmp, 90 + k, c, 0, min(share, duration(c)), grade='null', length=share))
+        else:
+            parts.append(encode_frames(lines_card([('COLD OPEN', font('demi', 40), CYAN), ('clips go in footage/cold-open/', font('regular', 30), DIM)], 4 * U), tmp / 'cold.mp4'))
+        parts.append(footage(tmp, 1, E, T(0.5), T(0.5 + 2 * U), center_overlay([('In 2026,', font('ultralight', 72), WHITE), ('we gave an AI the world\'s budget.', big, WHITE)]), length=2 * U))
+        parts.append(encode_frames(choice_card(p, 3 * U), tmp / 'choice.mp4'))
+        parts.append(encode_frames(lines_card([('It played out 5,000 possible futures.', big, WHITE), ('This is the most likely one.', mid, DIM)], U), tmp / 'futures.mp4'))
         chapters = [
-            (S(11.5, 19.5), '2032', 'The world crosses 1.5 °C.', rib(2032), AMBER),
-            (S(21.0, 30.0), '2035', f'A {ev["breakthrough"]["title"].lower()} in {ev["breakthrough"]["place"]}. Emissions fall faster than planned.', rib(2035), GREEN),
-            (S(31.5, 40.5), '2050', f'The sea is {round(rows["2050"]["seaLevelM"] * 100)} cm higher. {sh50:.1f} million people leave Shanghai\'s coast.', rib(2050), AMBER),
-            (S(42.0, 51.0), '2067', f'{ev["war"]["title"]} in {ev["war"]["place"]}. The energy transition slows.', rib(2067), RED),
-            (S(52.5, 62.0), '2076', f'The sea is {round(rows["2076"]["seaLevelM"] * 100)} cm higher. One hurricane is enough to flood Miami Beach.', rib(2076), RED),
-            (S(63.0, 72.0), '2076', f'In Dhaka alone, almost {math.ceil(dh76)} million people have lost their homes to the sea.', rib(2076), RED),
+            (T(11.5), '2032', 'The world crosses 1.5 °C.', rib(2032), AMBER),
+            (T(21.0), '2035', f'A {ev["breakthrough"]["title"].lower()} in {ev["breakthrough"]["place"]}. Emissions fall faster than planned.', rib(2035), GREEN),
+            (T(31.8), '2050', f'The sea is {round(rows["2050"]["seaLevelM"] * 100)} cm higher. {sh50:.1f} million people leave Shanghai\'s coast.', rib(2050), AMBER),
+            (T(42.3), '2067', f'{ev["war"]["title"]} in {ev["war"]["place"]}. The energy transition slows.', rib(2067), RED),
+            (T(53.0), '2076', f'The sea is {round(rows["2076"]["seaLevelM"] * 100)} cm higher. One hurricane is enough to flood Miami Beach.', rib(2076), RED),
+            (T(63.5), '2076', f'In Dhaka alone, almost {math.ceil(dh76)} million people have lost their homes to the sea.', rib(2076), RED),
         ]
-        for n, ((a, b), year, line, ribbon, accent) in enumerate(chapters, start=10):
-            hits.append(t)
-            add(footage(tmp, n, E, a, b, chapter_overlay(year, line, ribbon, accent)))
-        hits.append(t)
+        for n, (a, year, line, ribbon, accent) in enumerate(chapters, start=10):
+            parts.append(footage(tmp, n, E, a, a + 2 * U, chapter_overlay(year, line, ribbon, accent), length=2 * U))
         ai, cl, au = r['AI'], r['Claude'], r['Audience']
-        add(encode_frames(lines_card([(f'The AI kept warming under 2 °C in {ai["p2"]}% of futures.', font('demi', 54), GREEN),
-                                      (f'It forgot {ai["disp"]} million people on the coasts.', font('demi', 54), RED)], 7.0, 'THE TRADE-OFF'), tmp / 'reveal.mp4'))
-        add(encode_frames(lines_card([(f'Claude chose differently:  {cl["p2"]}% under 2 °C,  {cl["disp"]} million displaced.', font('medium', 42), WHITE),
-                                      (f'A people-first choice:  {au["p2"]}% under 2 °C,  {au["disp"]} million displaced.', font('medium', 42), WHITE)], 6.5, 'OTHER CHOICES'), tmp / 'others.mp4'))
-        hits.append(t)
-        add(footage(tmp, 30, E, 74.3, 79.9, center_overlay([('Possible futures, not predictions.', mid, DIM), ('So who should decide?', font('demi', 72), WHITE)])))
-        add(encode_frames(lines_card([('AI RUNS THE PLANET', font('ultralight', 96), WHITE), ('Try to beat the AI.', font('demi', 40), CYAN),
-                                      ('Malek Hassan & Sammy  ·  Macromedia X CODE Hackathon 2026', font('regular', 26), DIM),
-                                      ('God\'s Eye View  ·  CesiumJS  ·  Google Photorealistic 3D Tiles  ·  IPCC AR6  ·  UN WPP 2024', font('regular', 22), DIM)], 5.0), tmp / 'end.mp4'))
+        parts.append(encode_frames(lines_card([(f'The AI kept warming under 2 °C in {ai["p2"]}% of futures.', font('demi', 54), GREEN),
+                                               (f'It forgot {ai["disp"]} million people on the coasts.', font('demi', 54), RED)], 2 * U, 'THE TRADE-OFF'), tmp / 'reveal.mp4'))
+        parts.append(encode_frames(lines_card([(f'Claude chose differently:  {cl["p2"]}% under 2 °C,  {cl["disp"]} million displaced.', font('medium', 42), WHITE),
+                                               (f'A people-first choice:  {au["p2"]}% under 2 °C,  {au["disp"]} million displaced.', font('medium', 42), WHITE)], 2 * U, 'OTHER CHOICES'), tmp / 'others.mp4'))
+        parts.append(footage(tmp, 30, E, 74.3, 79.9, center_overlay([('Possible futures, not predictions.', mid, DIM), ('So who should decide?', font('demi', 72), WHITE)]), length=2 * U))
+        parts.append(encode_frames(lines_card([('AI RUNS THE PLANET', font('ultralight', 96), WHITE), ('Try to beat the AI.', font('demi', 40), CYAN),
+                                               ('Malek Hassan & Sammy  ·  Macromedia X CODE Hackathon 2026', font('regular', 26), DIM),
+                                               ('God\'s Eye View  ·  CesiumJS  ·  Google Photorealistic 3D Tiles  ·  IPCC AR6  ·  UN WPP 2024  ·  Music: Apple Loops', font('regular', 22), DIM)], 119.9 - 28 * U + 0.4), tmp / 'end.mp4'))
         lst = tmp / 'list.txt'
         lst.write_text(''.join(f"file '{q}'\n" for q in parts))
         video = tmp / 'video.mp4'
         run('ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', str(lst), '-c', 'copy', str(video))
-        total = duration(video)
-        audio = tmp / 'score.m4a'
-        score(audio, round(total, 2), [round(h, 2) for h in hits])
-        run('ffmpeg', '-y', '-i', str(video), '-i', str(audio), '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'copy', '-t', '119.9', str(OUT))
+        run('ffmpeg', '-y', '-i', str(video), '-i', str(score_file), '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'copy', '-t', '119.9', str(OUT))
     print(f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s')
 
 if __name__ == '__main__':

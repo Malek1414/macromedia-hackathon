@@ -32,20 +32,25 @@ const assets = {
   'chronicle/miami.geojson': { type: 'FeatureCollection', features: [{ type: 'Feature', id: 'water', properties: { tone: 'water' }, geometry: { type: 'Polygon', coordinates: [ring] } }] },
 };
 
-const clean = { style: 'normal', mapStack: 'photoreal', bloom: { enabled: true, intensity: 22, version: 2 }, hud: { visible: false, variant: 'tactical' } };
+const clean = { style: 'normal', mapStack: 'photoreal', bloom: { enabled: true, intensity: 18, version: 2 }, hud: { visible: false, variant: 'tactical' }, scope: { enabled: false, featherPct: 35 } };
 const shot = (id, title, from, to, secs, packs = []) => ({
   id, title, durationSec: secs, holdSec: 0.5, camera: to, move: { from, easing: 'linear' }, visual: clean, layers: {}, dataPackIds: packs,
 });
 
 const shots = [
-  shot('earth-open', '2026 · the planet', space(12, 70, 30_000_000), space(22, 40, 21_000_000), 10),
-  shot('earth-2032', '2032 · 1.5 °C', space(30, 0, 21_000_000), space(34, -30, 19_000_000), 9),
-  shot('boston', '2035 · Boston', look(42.3555, -71.0640, -23, 290, -28, 2600), look(42.3555, -71.0640, -23, 320, -26, 2200), 10),
-  shot('shanghai', '2050 · Shanghai', look(31.2380, 121.4950, 14, 75, -24, 2600), look(31.2380, 121.4950, 14, 100, -22, 2100), 10),
-  shot('kyiv', '2067 · Eastern Europe', look(50.4501, 30.5234, 197, 160, -32, 3000), look(50.4501, 30.5234, 197, 130, -28, 2500), 10),
-  shot('miami', '2076 · Miami Beach', look(25.7907, -80.1300, SEA_MIAMI, 90, -16, 2200), look(25.7907, -80.1300, SEA_MIAMI, 90, -15, 1500), 10, ['miami']),
-  shot('dhaka', '2076 · Dhaka', look(23.7937, 90.4066, -42.8, 15, -30, 3200), look(23.7937, 90.4066, -42.8, 45, -27, 2600), 10),
-  shot('earth-end', '2076 · the planet', space(24, 90, 2_500_000), space(18, 60, 24_000_000), 10),
+  shot('earth-open', '2026 · the planet', space(12, 70, 32_000_000), space(22, 40, 19_000_000), 10),
+  shot('earth-2032', '2032 · 1.5 °C', space(32, 10, 19_000_000), space(36, -35, 16_000_000), 9),
+  // Boston: low over the Charles River, sweeping round towards downtown.
+  shot('boston', '2035 · Boston', look(42.3555, -71.0640, -23, 250, -18, 3200), look(42.3555, -71.0640, -23, 305, -20, 1500), 10),
+  // Shanghai: across the Huangpu from the Bund towards the Pudong towers.
+  shot('shanghai', '2050 · Shanghai', look(31.2380, 121.4990, 14, 60, -14, 3000), look(31.2380, 121.4990, 14, 95, -16, 1400), 10),
+  // Kyiv: descending over the river towards the centre.
+  shot('kyiv', '2067 · Eastern Europe', look(50.4501, 30.5234, 197, 200, -40, 4200), look(50.4501, 30.5234, 197, 150, -22, 1800), 10),
+  // Miami Beach: low over the bay, pushing in on the flooded streets.
+  shot('miami', '2076 · Miami Beach', look(25.7907, -80.1300, SEA_MIAMI, 80, -12, 2600), look(25.7907, -80.1300, SEA_MIAMI, 100, -14, 1100), 10, ['miami']),
+  // Dhaka: a slow pass over the dense city.
+  shot('dhaka', '2076 · Dhaka', look(23.7937, 90.4066, -42.8, 0, -24, 3400), look(23.7937, 90.4066, -42.8, 60, -20, 1700), 10),
+  shot('earth-end', '2076 · the planet', space(24, 90, 1_500_000), space(18, 60, 26_000_000), 12),
 ];
 
 const document = {
