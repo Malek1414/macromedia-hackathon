@@ -14,15 +14,15 @@ W, H, FPS = 1920, 1080, 30
 
 # (source, start, end) in the raw takes, in order; times mapped from the contact sheets.
 CUTS = [
-    (A, 0, 14),          # 0:00 hook: title screen, hand over
-    (B, 0, 11),          # 0:14 tried: God's Eye View, today's world
-    (A, 14, 31),         # 0:25 thing: the AI's pick, futures appear, playback
-    (A, 31, 39),         # 0:42 works: event banners
-    (A, 60, 70),         #       heat dome, pandemic
-    (A, 39, 51),         # 1:00 proof: the AI's 2076 report, then the audience sets its levers
-    (A, 71.36, 83.36),   # 1:12 the face-off
-    (B, 12, 34),         # 1:24 means: GEV plays the scariest future
-    (A, 73.36, 83.36),   # 1:46 ask: back on the face-off
+    (A, 0, 7),           # 0:00 hook: title screen
+    (B, 0, 7),           #       the planet today
+    (B, 7, 18),          # 0:14 tried: God's Eye View, today's world
+    (A, 7, 24),          # 0:25 thing: hand over, the AI tests futures, sliders glide, starved levers flagged
+    (A, 24, 42),         # 0:42 works: playback with event banners, into the AI's 2076 report
+    (A, 41.6, 53.6),     # 1:00 proof: the AI's report, then the audience sets its levers
+    (A, 76.4, 88.4),     # 1:12 end of the audience run, the face-off
+    (B, 18, 40),         # 1:24 means: GEV plays the scariest future
+    (A, 78.4, 88.4),     # 1:46 ask: back on the face-off
 ]
 END_CARD_S = 4
 
