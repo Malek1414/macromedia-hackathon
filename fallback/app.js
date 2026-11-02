@@ -449,6 +449,31 @@ function closeIntro() { $('intro').classList.add('gone'); }
 $('intro-go').addEventListener('click', () => { closeIntro(); letAiDecide(); });
 $('intro-skip').addEventListener('click', () => { closeIntro(); setMode('human'); });
 
+/** AI vs audience, head to head on the most likely future, once both have run. */
+function duel() {
+  const { ai, human } = state.results;
+  if (!ai || !human) return '';
+  const rows = [
+    ['Warming by 2076', ai.stats.medianWarming, human.stats.medianWarming, (v) => `${v} °C`, 'low'],
+    ['Futures below 2 °C', ai.stats.p2C * 100, human.stats.p2C * 100, (v) => `${Math.round(v)}%`, 'high'],
+    ['Flooded out', ai.likely.final.displacedM, human.likely.final.displacedM, (v) => `${Math.round(v)}M`, 'low'],
+    ['Deaths', ai.likely.final.deathsM, human.likely.final.deathsM, (v) => `${Math.round(v)}M`, 'low'],
+  ];
+  let aiWins = 0;
+  const html = rows.map(([label, a, h, fmt, better]) => {
+    const max = Math.max(a, h) || 1;
+    const aWin = better === 'low' ? a < h : a > h;
+    const tie = a === h;
+    if (aWin && !tie) aiWins++;
+    return `<div class="duel-row"><span class="duel-label">${label}</span>
+      <div class="duel-bar ai ${aWin && !tie ? 'win' : ''}"><i style="width:${(a / max) * 100}%"></i><b>${fmt(a)}</b></div>
+      <div class="duel-bar human ${!aWin && !tie ? 'win' : ''}"><i style="width:${(h / max) * 100}%"></i><b>${fmt(h)}</b></div></div>`;
+  }).join('');
+  const verdict = aiWins > rows.length / 2 ? 'The AI wins' : aiWins < rows.length / 2 ? 'The audience wins' : 'A draw';
+  return `<div class="duel"><div class="duel-head"><span>${verdict} ${Math.max(aiWins, rows.length - aiWins)} to ${Math.min(aiWins, rows.length - aiWins)}</span>
+    <span class="legend"><i class="ai"></i>AI <i class="human"></i>Audience</span></div>${html}</div>`;
+}
+
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
 function showReport() {
@@ -474,11 +499,13 @@ function showReport() {
     <p class="line">${plural(bad, 'disaster')}, ${plural(good, 'breakthrough')}. Across all ${res.runs.toLocaleString('en')} futures,
       <b>${Math.round(res.stats.p2C * 100)}%</b> stay below 2 °C.
       ${who === 'The AI' ? `It spent least on ${low.label.toLowerCase()} (${low.v}).` : ''}</p>
+    ${duel()}
     <div class="actions">
       <button class="primary" id="report-again">Watch another future</button>
       <button class="secondary" id="report-beat">${state.mode === 'ai' ? 'Try to beat the AI' : 'Compare with the AI'}</button>
     </div>
     <p class="fine">Possible futures, not predictions.</p>`;
+  $('report').classList.toggle('compact', Boolean(state.results.ai && state.results.human));
   $('report').classList.remove('hidden');
   document.body.classList.add('reporting');
   $('report-again').onclick = () => {
