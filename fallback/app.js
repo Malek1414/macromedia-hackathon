@@ -6,11 +6,23 @@ if (!window.cesiumReady) await new Promise((resolve) => document.addEventListene
 const $ = (id) => document.getElementById(id);
 const COLORS = { best: '#3ee08f', likely: '#ffc53d', worst: '#ff4d5e' };
 
+// Claude's own choice, made through God's Eye View's simulate_future MCP tool
+// (results/claude-in-charge.txt), with its reasons in its own words.
+const CLAUDE = {
+  policies: normalizePolicies({ energy: 80, carbonPrice: 70, adaptation: 50, food: 30, cooperation: 60, tech: 70 }),
+  why: 'I front-loaded decarbonization (energy, carbonPrice, tech) since it has the most leverage on bending the warming curve, backed by cooperation to keep nations aligned and adaptation to shield people from warming already locked in, with food getting the smallest share.',
+};
+const WHO = { ai: 'The AI optimizer', claude: 'Claude', human: 'The audience' };
+
 const state = {
   mode: 'ai',
-  policies: { ai: normalizePolicies({ energy: 60, carbonPrice: 60, adaptation: 60, food: 60, cooperation: 60, tech: 60 }), human: normalizePolicies({ energy: 60, carbonPrice: 60, adaptation: 60, food: 60, cooperation: 60, tech: 60 }) },
-  results: { ai: null, human: null },
-  rationale: { ai: [], human: [] },
+  policies: {
+    ai: normalizePolicies({ energy: 60, carbonPrice: 60, adaptation: 60, food: 60, cooperation: 60, tech: 60 }),
+    claude: CLAUDE.policies,
+    human: normalizePolicies({ energy: 60, carbonPrice: 60, adaptation: 60, food: 60, cooperation: 60, tech: 60 }),
+  },
+  results: { ai: null, claude: null, human: null },
+  rationale: { ai: [], claude: [CLAUDE.why], human: [] },
   which: 'likely',
   year: START_YEAR,
   playing: null,
@@ -328,7 +340,7 @@ document.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target
 // ---------- levers ----------
 function drawLevers() {
   const p = state.policies[state.mode];
-  const locked = state.mode === 'ai';
+  const locked = state.mode !== 'human';
   $('levers').innerHTML = LEVERS.map(({ key, label, help }) => `
     <div class="lever ${locked && state.results.ai && p[key] <= 5 ? 'starved' : ''}">
       <div class="row"><span>${label}</span><b id="v-${key}">${p[key]}</b></div>
@@ -336,10 +348,13 @@ function drawLevers() {
       <input type="range" min="0" max="100" value="${p[key]}" data-key="${key}" ${locked ? 'disabled' : ''} />
     </div>`).join('');
   drawBudget();
-  $('btn-ai').classList.toggle('hidden', !locked);
+  $('btn-ai').classList.toggle('hidden', state.mode !== 'ai');
+  $('btn-run').textContent = state.mode === 'claude' ? "Run Claude's 5,000 futures" : 'Run 5,000 futures';
   const reasons = state.rationale.ai;
-  $('who-hint').classList.toggle('reason', locked && reasons.length > 0);
-  $('who-hint').innerHTML = locked && reasons.length
+  $('who-hint').classList.toggle('reason', state.mode === 'claude' || (locked && reasons.length > 0));
+  $('who-hint').innerHTML = state.mode === 'claude'
+    ? `<b>Claude chose these levers itself</b>, through the God's Eye View tools: “${CLAUDE.why}”`
+    : locked && reasons.length
     ? `<b>The AI's reasoning:</b> ${reasons[0]} ${reasons[1]}`
     : locked
     ? 'The AI gets the same budget as humanity: <b>360 points</b> across six levers. It tests every mix on hundreds of futures and keeps the one with the best typical outcome and the least bad worst case.'
@@ -365,14 +380,14 @@ $('levers').addEventListener('input', (e) => {
 function setMode(mode) {
   state.mode = mode;
   setLeftCollapsed(false);
-  $('tab-ai').classList.toggle('active', mode === 'ai');
-  $('tab-human').classList.toggle('active', mode === 'human');
+  for (const m of ['ai', 'claude', 'human']) $(`tab-${m === 'human' ? 'human' : m}`).classList.toggle('active', mode === m);
   drawLevers();
   drawResults();
   setYear(state.year);
 }
 $('tab-ai').addEventListener('click', () => setMode('ai'));
 $('tab-human').addEventListener('click', () => setMode('human'));
+$('tab-claude').addEventListener('click', () => { setMode('claude'); if (!state.results.claude) runFutures('claude'); });
 
 // ---------- worker ----------
 const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
@@ -403,7 +418,7 @@ async function runFutures(mode) {
   state.policies[mode] = policies;
   const { futures, rationale } = await job({ type: 'run', policies });
   state.results[mode] = futures;
-  state.rationale[mode] = mode === 'ai' ? state.rationale.ai : rationale;
+  if (mode === 'human') state.rationale.human = rationale;
   afterResult();
 }
 
@@ -463,7 +478,7 @@ function afterResult() {
   drawResults();
   setYear(START_YEAR);
   // Leave the choice and its reasons on screen for a moment, then give the globe the stage.
-  const linger = state.mode === 'ai' ? 3200 : 1200;
+  const linger = state.mode === 'human' ? 1200 : 3200;
   setTimeout(() => setLeftCollapsed(true), linger);
   autoplay(linger + 500);
 }
@@ -535,29 +550,31 @@ function closeIntro() { $('intro').classList.add('gone'); }
 $('intro-go').addEventListener('click', () => { closeIntro(); letAiDecide(); });
 $('intro-skip').addEventListener('click', () => { closeIntro(); setMode('human'); });
 
-/** AI vs audience, head to head on the most likely future, once both have run. */
+/** Everyone who has run, head to head on the most likely future (needs two). */
 function duel() {
-  const { ai, human } = state.results;
-  if (!ai || !human) return '';
-  const rows = [
-    ['Warming by 2076', ai.stats.medianWarming, human.stats.medianWarming, (v) => `${v} °C`, 'low'],
-    ['Futures below 2 °C', ai.stats.p2C * 100, human.stats.p2C * 100, (v) => `${Math.round(v)}%`, 'high'],
-    ['Flooded out', ai.likely.final.displacedM, human.likely.final.displacedM, (v) => `${Math.round(v)}M`, 'low'],
-    ['Deaths', ai.likely.final.deathsM, human.likely.final.deathsM, (v) => `${Math.round(v)}M`, 'low'],
+  const players = ['ai', 'claude', 'human'].filter((m) => state.results[m]);
+  if (players.length < 2) return '';
+  const metrics = [
+    ['Warming by 2076', (r) => r.stats.medianWarming, (v) => `${v} °C`, 'low'],
+    ['Futures below 2 °C', (r) => r.stats.p2C * 100, (v) => `${Math.round(v)}%`, 'high'],
+    ['Flooded out', (r) => r.likely.final.displacedM, (v) => `${Math.round(v)}M`, 'low'],
+    ['Deaths', (r) => r.likely.final.deathsM, (v) => `${Math.round(v)}M`, 'low'],
   ];
-  let aiWins = 0;
-  const html = rows.map(([label, a, h, fmt, better]) => {
-    const max = Math.max(a, h) || 1;
-    const aWin = better === 'low' ? a < h : a > h;
-    const tie = a === h;
-    if (aWin && !tie) aiWins++;
-    return `<div class="duel-row"><span class="duel-label">${label}</span>
-      <div class="duel-bar ai ${aWin && !tie ? 'win' : ''}"><i style="width:${(a / max) * 100}%"></i><b>${fmt(a)}</b></div>
-      <div class="duel-bar human ${!aWin && !tie ? 'win' : ''}"><i style="width:${(h / max) * 100}%"></i><b>${fmt(h)}</b></div></div>`;
+  const wins = Object.fromEntries(players.map((m) => [m, 0]));
+  const html = metrics.map(([label, get, fmt, better]) => {
+    const vals = players.map((m) => get(state.results[m]));
+    const max = Math.max(...vals) || 1;
+    const best = better === 'low' ? Math.min(...vals) : Math.max(...vals);
+    const winners = players.filter((m, i) => vals[i] === best);
+    if (winners.length === 1) wins[winners[0]]++;
+    return `<div class="duel-row n${players.length}"><span class="duel-label">${label}</span>${players.map((m, i) =>
+      `<div class="duel-bar ${m} ${winners.length === 1 && winners[0] === m ? 'win' : ''}"><i style="width:${(vals[i] / max) * 100}%"></i><b>${fmt(vals[i])}</b></div>`).join('')}</div>`;
   }).join('');
-  const verdict = aiWins > rows.length / 2 ? 'The AI wins' : aiWins < rows.length / 2 ? 'The audience wins' : 'A draw';
-  return `<div class="duel"><div class="duel-head"><span>${verdict} ${Math.max(aiWins, rows.length - aiWins)} to ${Math.min(aiWins, rows.length - aiWins)}</span>
-    <span class="legend"><i class="ai"></i>AI <i class="human"></i>Audience</span></div>${html}</div>`;
+  const ranked = [...players].sort((a, b) => wins[b] - wins[a]);
+  const verdict = wins[ranked[0]] === wins[ranked[1]] ? 'No clear winner' : `${WHO[ranked[0]]} wins ${wins[ranked[0]]} of ${metrics.length}`;
+  const names = { ai: 'AI', claude: 'Claude', human: 'Audience' };
+  return `<div class="duel"><div class="duel-head"><span>${verdict}</span>
+    <span class="legend">${players.map((m) => `<i class="${m}"></i>${names[m]}`).join(' ')}</span></div>${html}</div>`;
 }
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
@@ -567,7 +584,7 @@ function showReport() {
   const run = currentRun();
   if (!res || !run) return;
   const f = run.final;
-  const who = state.mode === 'ai' ? 'The AI' : 'The audience';
+  const who = WHO[state.mode];
   const color = { best: 'var(--good)', likely: 'var(--mid)', worst: 'var(--bad)' }[state.which];
   const bad = run.events.filter((e) => e.kind === 'bad').length;
   const good = run.events.filter((e) => e.kind === 'good').length;
@@ -584,14 +601,14 @@ function showReport() {
     </div>
     <p class="line">${plural(bad, 'disaster')}, ${plural(good, 'breakthrough')}. Across all ${res.runs.toLocaleString('en')} futures,
       <b>${Math.round(res.stats.p2C * 100)}%</b> stay below 2 °C.
-      ${who === 'The AI' ? `It spent least on ${low.label.toLowerCase()} (${low.v}).` : ''}</p>
+      ${state.mode === 'ai' ? `It spent least on ${low.label.toLowerCase()} (${low.v}).` : ''}</p>
     ${duel()}
     <div class="actions">
       <button class="primary" id="report-again">Watch another future</button>
-      <button class="secondary" id="report-beat">${state.mode === 'ai' ? 'Try to beat the AI' : 'Compare with the AI'}</button>
+      <button class="secondary" id="report-beat">${{ ai: 'Try to beat the AI', claude: 'Try to beat both', human: state.results.claude ? 'Back to the AI' : 'See what Claude would do' }[state.mode]}</button>
     </div>
     <p class="fine">Possible futures, not predictions.</p>`;
-  $('report').classList.toggle('compact', Boolean(state.results.ai && state.results.human));
+  $('report').classList.toggle('compact', ['ai', 'claude', 'human'].filter((m) => state.results[m]).length >= 2);
   $('report').classList.remove('hidden');
   document.body.classList.add('reporting');
   $('report-again').onclick = () => {
@@ -601,7 +618,8 @@ function showReport() {
   };
   $('report-beat').onclick = () => {
     hideReport();
-    if (state.mode === 'ai') setMode('human');
+    if (state.mode !== 'human') setMode('human');
+    else if (!state.results.claude) { setMode('claude'); runFutures('claude'); }
     else { setMode('ai'); if (!state.results.ai) letAiDecide(); }
   };
 }

@@ -52,6 +52,7 @@ Possible futures, not predictions. Warming and sea level follow IPCC AR6 SSP pat
   - But in its most likely future, 31 million people are pushed out by the sea.
   - A people-first audience mix gets only 8 million displaced, but 0% of its futures stay below 2 °C.
 - **That tension is the pitch:** "the AI saved the climate and forgot the coast".
+- **Claude as a third player:** Claude chose its own levers through GEV's `simulate_future` MCP tool (`results/claude-in-charge.txt`): energy 80, carbon 70, tech 70, cooperation 60, coastal 50, food 30. It lands in the middle: 2.11 °C median, 26% of futures below 2 °C, 18M flooded out. The page has an **AI · Claude · Audience** tab bar, and the 2076 report compares all three.
 - **Two front-ends show the same engine:**
   - a keyless Cesium page (safe demo);
   - a God's Eye View fork, where Claude can be "in charge" through MCP tools.

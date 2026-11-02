@@ -7,6 +7,10 @@ import { optimizePolicies, runMonteCarlo, normalizePolicies, LEVERS } from '../e
 const ai = optimizePolicies({ seed: 2026 });
 const audiencePolicies = normalizePolicies({ energy: 20, carbonPrice: 20, adaptation: 100, food: 100, cooperation: 20, tech: 100 });
 const audience = runMonteCarlo(audiencePolicies, { runs: 5000, seed: 2026 });
+// Claude's own choice, made through the God's Eye View MCP tool simulate_future
+// (results/claude-in-charge.txt): it picked the levers and gave its reasons.
+const claudePolicies = normalizePolicies({ energy: 80, carbonPrice: 70, adaptation: 50, food: 30, cooperation: 60, tech: 70 });
+const claude = runMonteCarlo(claudePolicies, { runs: 5000, seed: 2026 });
 const pct = (x) => `${Math.round(x * 100)}%`;
 const row = (label, f) =>
   `| ${label} | ${f.stats.medianWarming} °C | ${pct(f.stats.p2C)} | ${pct(f.stats.tippingShare)} | ` +
@@ -26,11 +30,16 @@ ${ai.rationale.map((r) => `> ${r}`).join('\n')}
 
 ${LEVERS.map((l) => `- ${l.label}: ${audiencePolicies[l.key]}`).join('\n')}
 
+## Claude's choice (through the MCP tool)
+
+${LEVERS.map((l) => `- ${l.label}: ${claudePolicies[l.key]}`).join('\n')}
+
 ## Side by side
 
 | Who decides | Median warming by 2076 | Futures below 2 °C | Futures with a tipping point | Deaths in the most likely future | Displaced by the sea (most likely) |
 |---|---|---|---|---|---|
 ${row('AI', ai.futures)}
+${row('Claude', claude)}
 ${row('Audience', audience)}
 
 ## In plain words
@@ -38,6 +47,7 @@ ${row('Audience', audience)}
 - With the AI's policies, ${pct(ai.futures.stats.p2C)} of futures stay below 2 °C; with the audience mix, ${pct(audience.stats.p2C)} do.
 - With the audience mix, median warming by 2076 is ${audience.stats.medianWarming} °C.
 - The AI put ${ai.policies.adaptation} point into coastal and heat adaptation.
+- Claude, choosing for itself, keeps ${pct(claude.stats.p2C)} of futures below 2 °C (median ${claude.stats.medianWarming} °C), with ${Math.round(claude.likely.final.displacedM)} million people displaced by the sea in its most likely future.
 - In the AI's most likely future, ${Math.round(ai.futures.likely.final.displacedM)} million people are displaced by the sea; with the audience mix, ${Math.round(audience.likely.final.displacedM)} million.
 `;
 mkdirSync('results', { recursive: true });

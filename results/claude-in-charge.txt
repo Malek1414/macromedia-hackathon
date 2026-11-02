@@ -1,0 +1,4 @@
+LEVERS: energy=80, carbonPrice=70, adaptation=50, food=30, cooperation=60, tech=70
+WHY: I front-loaded decarbonization (energy, carbonPrice, tech) since it has the most leverage on bending the warming curve, backed by cooperation to keep nations aligned and adaptation to shield people from warming already locked in, with food getting the smallest share.
+RESULT: In the most likely future, median warming reaches 1.96°C by 2076 with 26% of futures staying below 2°C, and roughly 17.5 million people end up displaced by rising seas.
+NOTE: Claude's RESULT line quotes the warming of its single most-likely run (1.96 °C). Across all 5,000 futures the median is 2.11 °C with 26% below 2 °C (results/ai-vs-audience.md).
