@@ -184,6 +184,7 @@ Good demo prompt: *"You are in charge of the world from 2026 to 2076 with 360 po
 - **Script:** [`docs/pitch-script.md`](docs/pitch-script.md), 1:56 spoken, one voice (Malek).
   - Built with the `pitch` skill: every figure is tied to a quote in `results/` or this README (`pitch/ai-runs-the-planet/facts.json`, checked by code).
   - Three zero-context test judges each retold who it's for, what's broken, what changes, and the proof.
+- **Rough cut:** `python3 scripts/rough-cut.py` builds `footage/rough-cut-v0.mp4` (2:00) from the raw takes in `footage/` with a temporary computer voice at the script's timecodes. It's a timing guide for the real voice-over, and a fallback submission. The takes and the cut are attached to the GitHub release `rough-cut-v0` (video files are not committed).
 - **Video:** [`docs/video-spec.md`](docs/video-spec.md) is a 2:00 screen recording of the live product, with the voice-over recorded on top. It covers the shot list per timecode, overlays, the recording steps and the pre-export checklist.
 - **3-minute live pitch flow** (if we present on stage):
   1. **Hook:** "Most of you will be alive in 2076."
