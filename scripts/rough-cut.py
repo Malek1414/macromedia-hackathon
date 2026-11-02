@@ -31,12 +31,12 @@ def opening(cold_s):
 CUTS = [
     (A2, 8.0, 21.0),     # 0:25 thing: hand over, the AI tests futures, sliders glide, starved levers flagged
     (A2, 21.0, 38.0),    # 0:38 works: playback with banners, arcs, ripples, heat glows
-    (A2, 44.7, 54.7),    # 0:55 proof: the AI's 2076 report (numbers count up)
-    (A2, 132.6, 140.6),  #       Claude's own levers and reasoning
-    (A2, 99.8, 105.8),   #       the audience's future ends
-    (A2, 162.2, 169.2),  #       the three-way face-off (bars grow in)
+    (A2, 41.8, 51.8),    # 0:55 proof: the AI's 2076 report (numbers count up)
+    (A2, 110.9, 118.9),  #       Claude's own levers and reasoning
+    (A2, 88.2, 94.2),    #       the audience's future ends
+    (A2, 138.8, 145.8),  #       the three-way face-off (bars grow in)
     (B, 18, 40),         # 1:26 means: GEV plays the scariest future
-    (A2, 162.4, 170.4),  # 1:48 ask: back on the face-off
+    (A2, 139.0, 147.0),  # 1:48 ask: back on the face-off
 ]
 END_CARD_S = 4
 
