@@ -176,6 +176,77 @@ def placeholder_parts(tmp, cold_s):
         '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', str(part))
     return [part]
 
+# Sound. Music: footage/score.m4a, scored from Apple's "Epoch" Apple Loops (royalty-free in videos, see
+# docs/cold-open-sources.md). Effects are synthesised here with ffmpeg (no third-party audio).
+SCORE = ROOT / 'footage/score.m4a'
+TOTAL_S = 119.9
+MUSIC_DB = -9.6       # score is -14.4 LUFS as rendered; this brings it to about -24 LUFS
+DUCK_DB = 8           # target reduction of the music while the voice speaks (checked with ebur128 in the PR)
+
+# Effects: (kind, cut index, source time in that cut's take, lead seconds). The time is mapped to the cut's
+# timeline from CUTS, so re-mapping a cut moves its effects. Banner times were read off a 2 fps sheet of take A2.
+EFFECTS = [
+    ('hit', 1, 24.0),      # green breakthrough banner in the playback
+    ('whoosh', 1, 24.4),   # camera flight with arcs
+    ('hit', 1, 37.4),      # MAJOR WAR banner
+    ('rise', 2, 41.8),     # rise into the 2076 report, landing on its first frame
+    ('hit', 2, 41.8),      # the report lands
+    ('whoosh', 6, 18.0),   # GEV flies into the scariest future
+    ('whoosh', 7, 139.0),  # back to the face-off
+]
+SFX_SRC = {
+    # low sub hit: 45 Hz sine with a fast decay, plus a short noise thump
+    'hit': "aevalsrc='0.9*sin(2*PI*45*t)*exp(-3.2*t)+0.25*random(0)*exp(-30*t)':d=1.6:s=48000,lowpass=f=220",
+    # whoosh: pink noise swelling and fading, band-limited
+    'whoosh': "anoisesrc=d=1.3:c=pink:r=48000,highpass=f=300,lowpass=f=5000,afade=t=in:d=0.7,afade=t=out:st=0.7:d=0.6,volume=1.4",
+    # rise: a sweeping tone plus noise that grows for 2.5 s
+    'rise': "aevalsrc='0.35*sin(2*PI*(110*t+90*t*t))+0.25*random(0)':d=2.5:s=48000,highpass=f=100,lowpass=f=6000,"
+            "afade=t=in:d=2.4:curve=exp",
+    # the cold open's long swell, 5.8 s, quieter
+    'swell': "aevalsrc='0.22*sin(2*PI*(80*t+30*t*t))+0.12*random(0)':d=5.8:s=48000,lowpass=f=3000,afade=t=in:d=5.6:curve=exp",
+}
+SFX_LEN = {'hit': 1.6, 'whoosh': 1.3, 'rise': 2.5, 'swell': 5.8}
+
+def effect_times(cold_s):
+    """(kind, time in the cut) for every effect."""
+    seg_start, t = {}, cold_s + (25 - cold_s)     # opening() fills the time up to 0:25
+    for i, (src, a, b) in enumerate(CUTS):
+        seg_start[i] = t
+        t += b - a
+    out = [('hit', 0.0), ('swell', CARD1_S)]
+    for kind, i, take_t in EFFECTS:
+        at = seg_start[i] + (take_t - CUTS[i][1])
+        if kind == 'rise': at -= SFX_LEN['rise']
+        if kind == 'whoosh': at -= 0.3
+        out.append((kind, at))
+    return out
+
+def sfx(cold_s, first_input):
+    """ffmpeg lavfi inputs and delay filters for the effects; returns (inputs, filters, count)."""
+    inputs, filters = [], []
+    times = effect_times(cold_s)
+    for n, (kind, at) in enumerate(times):
+        inputs += ['-f', 'lavfi', '-i', SFX_SRC[kind]]
+        ms = max(0, int(at * 1000))
+        filters.append(f'[{first_input + n}:a]aformat=sample_fmts=fltp:channel_layouts=mono,aresample=48000,adelay={ms}|{ms}[x{n}]')
+    return inputs, filters, len(times)
+
+def sound_filters(score_idx, sfx_filters, n_sfx):
+    """Score at about -24 LUFS, ducked under the voice by sidechain compression, plus effects, then master to -14 LUFS."""
+    f = list(sfx_filters)
+    xs = ''.join(f'[x{n}]' for n in range(n_sfx))
+    f.append(f'{xs}amix=inputs={n_sfx}:normalize=0,apad,atrim=0:{TOTAL_S}[fx]')
+    f.append('[voice]asplit=2[v1][v2]')
+    f.append(f'[{score_idx}:a]aresample=48000,aformat=channel_layouts=mono,volume={MUSIC_DB}dB,'
+             f'asetpts=PTS-STARTPTS[mus]')
+    # measured with ebur128 on the temporary voice: music -23.9 LUFS plain, -32.5 under the voice (about 8 dB)
+    f.append('[mus][v1]sidechaincompress=threshold=0.05:ratio=3:attack=40:release=500:makeup=1[ducked]')
+    f.append('[ducked][v2][fx]amix=inputs=3:normalize=0:duration=first,'
+             # the 6 black frames before the title screen are silent
+             f"volume=enable='between(t,{COLD_OPEN_S - BLACK_S:.2f},{COLD_OPEN_S:.2f})':volume=0,"
+             'loudnorm=I=-14:TP=-1.5:LRA=11,alimiter=limit=0.8:level=0[master]')
+    return f
+
 def main():
     import sys
     cold_s = COLD_OPEN_S
@@ -224,9 +295,16 @@ def main():
             ms = int(starts[beat['id']] * 1000)
             filters.append(f'[{n + 1}:a]adelay={ms}|{ms},aresample=48000[a{n}]')
         mix = ''.join(f'[a{n}]' for n in range(len(beats)))
-        filters.append(f'{mix}amix=inputs={len(beats)}:normalize=0,apad[aout]')
+        filters.append(f'{mix}amix=inputs={len(beats)}:normalize=0,apad,atrim=0:{TOTAL_S}[voice]')
+        # Score + effects + ducking + master, see sound_filters().
+        n_in = len(beats) + 1
+        inputs += ['-i', str(SCORE)]
+        score_idx = n_in
+        sfx_inputs, sfx_filters, n_sfx = sfx(cold_s, n_in + 1)
+        inputs += sfx_inputs
+        filters += sound_filters(score_idx, sfx_filters, n_sfx)
         run('ffmpeg', '-y', '-i', str(video), *inputs, '-filter_complex', ';'.join(filters),
-            '-map', '0:v', '-map', '[aout]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-t', '119.9', str(OUT))
+            '-map', '0:v', '-map', '[master]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-t', str(TOTAL_S), str(OUT))
     print(f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s, cold open {cold_s:g} s '
           f'({n_clips} clips from footage/cold-open)' if n_clips else
           f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s, cold open {cold_s:g} s (placeholder: add clips to footage/cold-open)')
