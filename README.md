@@ -78,6 +78,15 @@ cd ../macromedia-hackathon
 node scripts/write-scene.mjs                      # AI picks, writes 3 scenes + 18 GeoJSON packs into GEV
 # GEV: AUTHORING > import out/ai-runs-the-planet.scenes.json > "Apply import" > pick a future > Play
 
+# 2b. Claude's own future (Claude picks the levers; out/claude.scenes.json is committed)
+node scripts/write-scene.mjs --policies '{"energy":80,"carbonPrice":70,"adaptation":50,"food":30,"cooperation":60,"tech":70}'
+cp out/ai-runs-the-planet.scenes.json out/claude.scenes.json   # that run overwrote the AI's file ...
+node scripts/write-scene.mjs                                   # ... so run the default again to restore it
+# For the take, import Claude's file while Claude's packs are in GEV (re-run the --policies command, then):
+# GEV (UI is German): ERSTELLUNG > IMPORTIEREN > out/claude.scenes.json > "Import anwenden" >
+#   scene dropdown "Most likely" > START. Record 40 s with macOS Shift+Cmd+5, save as footage/take-D-gev-claude-raw.mp4.
+# Both files use the same pack paths, so GEV shows whichever run wrote the packs last.
+
 # 3. Claude in charge
 claude mcp add -s user gods-eye-view -- "$(which node)" "$(cd ../gods-eye-view && pwd)/server/mcp/stdio.js" --api-base http://localhost:4173
 # restart Claude Code, then ask: "You run the world 2026-2076. Use simulate_future, explain your
