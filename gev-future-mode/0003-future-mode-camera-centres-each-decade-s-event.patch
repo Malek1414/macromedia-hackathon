@@ -1,7 +1,7 @@
 From 817f5d3edd0debedf9ed59b8cd066b9fcb3221cb Mon Sep 17 00:00:00 2001
 From: Malek Hassan <malek.hassan@rwth-aachen.de>
 Date: Mon, 2 Nov 2026 13:13:14 +0100
-Subject: [PATCH 3/3] future mode: camera centres each decade's event
+Subject: [PATCH 3/4] future mode: camera centres each decade's event
 
 Co-Authored-By: WOZCODE <contact@withwoz.com>
 Claude-Session: https://claude.ai/code/session_01T5GAsiSvUNCk2US4QqTgrk

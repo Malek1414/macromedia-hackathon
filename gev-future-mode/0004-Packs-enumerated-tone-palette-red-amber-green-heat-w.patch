@@ -1,0 +1,165 @@
+From c5eecfdf7b6f0476a8346e0e0289634393877b6f Mon Sep 17 00:00:00 2001
+From: Malek Hassan <malek.hassan@rwth-aachen.de>
+Date: Mon, 2 Nov 2026 16:20:48 +0100
+Subject: [PATCH 4/4] Packs: enumerated tone palette (red, amber, green, heat,
+ water); deep-dive scene assets
+
+Co-Authored-By: WOZCODE <contact@withwoz.com>
+Claude-Session: https://claude.ai/code/session_01T5GAsiSvUNCk2US4QqTgrk
+---
+ .../scene-assets/deep/deep-dive.scenes.json   |  1 +
+ public/scene-assets/deep/la-heat.geojson      |  1 +
+ public/scene-assets/deep/miami-surge.geojson  |  1 +
+ public/scene-assets/deep/pandemic.geojson     |  1 +
+ public/scene-assets/deep/strait.geojson       |  1 +
+ src/director/packs/geojson.js                 |  6 ++++-
+ src/director/packs/packs.test.mjs             |  8 ++++++-
+ src/scenes/dataPacks/geometry.js              | 22 ++++++++++++++-----
+ 8 files changed, 34 insertions(+), 7 deletions(-)
+ create mode 100644 public/scene-assets/deep/deep-dive.scenes.json
+ create mode 100644 public/scene-assets/deep/la-heat.geojson
+ create mode 100644 public/scene-assets/deep/miami-surge.geojson
+ create mode 100644 public/scene-assets/deep/pandemic.geojson
+ create mode 100644 public/scene-assets/deep/strait.geojson
+
+diff --git a/public/scene-assets/deep/deep-dive.scenes.json b/public/scene-assets/deep/deep-dive.scenes.json
+new file mode 100644
+index 0000000..a03e07a
+--- /dev/null
++++ b/public/scene-assets/deep/deep-dive.scenes.json
+@@ -0,0 +1 @@
++{"version":5,"scenes":[{"id":"deep-dive","title":"AI Runs the Planet · Deep dive","dataPacks":[{"id":"pandemic","version":1,"format":"geojson","source":{"adapter":"assets","path":"deep/pandemic.geojson"},"attribution":{"text":"New pandemic spreading from its origin to the world's air hubs. Simulated future, not a prediction. Anchored to IPCC AR6 and UN WPP 2024.","license":"CC BY 4.0"},"placement":{"altitudeReference":"ellipsoid"}},{"id":"miami-surge","version":1,"format":"geojson","source":{"adapter":"assets","path":"deep/miami-surge.geojson"},"attribution":{"text":"Water at 28 cm of 2076 sea-level rise (the AI's most likely future) plus a 2.5 m hurricane surge like Irma's. Simulated future, not a prediction. Anchored to IPCC AR6 and UN WPP 2024.","license":"CC BY 4.0"},"placement":{"altitudeReference":"ellipsoid"}},{"id":"la-heat","version":1,"format":"geojson","source":{"adapter":"assets","path":"deep/la-heat.geojson"},"attribution":{"text":"Heat in the audience's future: 2.89 °C above pre-industrial by 2076. Simulated future, not a prediction. Anchored to IPCC AR6 and UN WPP 2024.","license":"CC BY 4.0"},"placement":{"altitudeReference":"ellipsoid"}},{"id":"strait","version":1,"format":"geojson","source":{"adapter":"assets","path":"deep/strait.geojson"},"attribution":{"text":"A major war is one of the shocks in the scariest futures. Simulated future, not a prediction. Anchored to IPCC AR6 and UN WPP 2024.","license":"CC BY 4.0"},"placement":{"altitudeReference":"ellipsoid"}}],"shots":[{"id":"today","title":"2026 · The planet today, live: every aircraft in the sky right now","durationSec":7,"holdSec":1,"camera":{"lat":28,"lon":20,"alt":14000000,"heading":0,"pitch":-90,"roll":0,"altitudeReference":"ellipsoid"},"move":{"from":{"lat":10,"lon":-20,"alt":26000000,"heading":0,"pitch":-90,"roll":0,"altitudeReference":"ellipsoid"},"easing":"cubic-in-out"},"visual":{"style":"normal","bloom":{"enabled":true,"intensity":45,"version":2},"hud":{"visible":true,"variant":"tactical"}},"layers":{"flights":{"enabled":true}},"dataPackIds":[]},{"id":"pandemic","title":"2056 · A new pandemic reaches London (scariest future) · live TfL cameras and flights","durationSec":9,"holdSec":5,"camera":{"lat":51.4885,"lon":-0.129,"alt":700.6,"heading":8,"pitch":-27,"roll":0,"altitudeReference":"ellipsoid"},"move":{"from":{"lat":47,"lon":-0.13,"alt":1400000,"heading":0,"pitch":-70,"roll":0,"altitudeReference":"ellipsoid"},"easing":"cubic-in-out"},"visual":{"style":"normal","bloom":{"enabled":true,"intensity":55,"version":2},"hud":{"visible":true,"variant":"tactical"}},"layers":{"cctv":{"enabled":true},"flights":{"enabled":true}},"dataPackIds":["pandemic"]},{"id":"miami","title":"2076 · Miami Beach: +28 cm of sea plus an Irma-sized surge (the AI's most likely future)","durationSec":9,"holdSec":6,"camera":{"lat":25.7907,"lon":-80.1424,"alt":392.7,"heading":90,"pitch":-18,"roll":0,"altitudeReference":"ellipsoid"},"move":{"from":{"lat":25.35,"lon":-80.6,"alt":220000,"heading":45,"pitch":-55,"roll":0,"altitudeReference":"ellipsoid"},"easing":"cubic-in-out"},"visual":{"style":"normal","bloom":{"enabled":true,"intensity":50,"version":2},"hud":{"visible":true,"variant":"tactical"}},"layers":{"flights":{"enabled":true}},"dataPackIds":["miami-surge"]},{"id":"heat","title":"2076 · Los Angeles through a thermal camera: 2.89 °C in the audience's future · live Caltrans cameras","durationSec":8,"holdSec":3,"camera":{"lat":34.0413,"lon":-118.2303,"alt":901.6,"heading":315,"pitch":-26,"roll":0,"altitudeReference":"ellipsoid"},"move":{"from":{"lat":34.0413,"lon":-118.2571,"alt":901.6,"heading":45,"pitch":-26,"roll":0,"altitudeReference":"ellipsoid"},"easing":"cubic-in-out"},"visual":{"style":"thermal","bloom":{"enabled":true,"intensity":60,"version":2},"hud":{"visible":true,"variant":"tactical"}},"layers":{"cctv":{"enabled":true},"flights":{"enabled":true}},"dataPackIds":["la-heat"]},{"id":"strait","title":"Scariest futures · major-war risk in the Taiwan Strait · live military aircraft","durationSec":8,"holdSec":4,"camera":{"lat":21.6,"lon":117.4,"alt":650000,"heading":30,"pitch":-42,"roll":0,"altitudeReference":"ellipsoid"},"move":{"from":{"lat":15,"lon":112,"alt":2500000,"heading":20,"pitch":-70,"roll":0,"altitudeReference":"ellipsoid"},"easing":"cubic-in-out"},"visual":{"style":"normal","bloom":{"enabled":true,"intensity":55,"version":2},"hud":{"visible":true,"variant":"tactical"}},"layers":{"military":{"enabled":true},"flights":{"enabled":true}},"dataPackIds":["strait"]},{"id":"planet","title":"Possible futures, not predictions. One world.","durationSec":8,"holdSec":3,"camera":{"lat":20,"lon":30,"alt":24000000,"heading":0,"pitch":-90,"roll":0,"altitudeReference":"ellipsoid"},"move":{"from":{"lat":21.6,"lon":117.4,"alt":650000,"heading":30,"pitch":-42,"roll":0,"altitudeReference":"ellipsoid"},"easing":"cubic-in-out"},"visual":{"style":"normal","bloom":{"enabled":true,"intensity":45,"version":2},"hud":{"visible":true,"variant":"tactical"}},"layers":{"flights":{"enabled":true}},"dataPackIds":[]}]}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/deep/la-heat.geojson b/public/scene-assets/deep/la-heat.geojson
+new file mode 100644
+index 0000000..1502473
+--- /dev/null
++++ b/public/scene-assets/deep/la-heat.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"downtown","properties":{"tone":"heat"},"geometry":{"type":"Point","coordinates":[-118.2437,34.0522,400]}},{"type":"Feature","id":"valley","properties":{"tone":"heat"},"geometry":{"type":"Point","coordinates":[-118.45,34.2,600]}},{"type":"Feature","id":"inland","properties":{"tone":"heat"},"geometry":{"type":"Point","coordinates":[-117.6,34.06,700]}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/deep/miami-surge.geojson b/public/scene-assets/deep/miami-surge.geojson
+new file mode 100644
+index 0000000..99e6cc7
+--- /dev/null
++++ b/public/scene-assets/deep/miami-surge.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"water","properties":{"tone":"water"},"geometry":{"type":"Polygon","coordinates":[[[-80.175,25.755,-24.52],[-80.115,25.755,-24.52],[-80.115,25.83,-24.52],[-80.175,25.83,-24.52],[-80.175,25.755,-24.52]]]}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/deep/pandemic.geojson b/public/scene-assets/deep/pandemic.geojson
+new file mode 100644
+index 0000000..6f8af59
+--- /dev/null
++++ b/public/scene-assets/deep/pandemic.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"arc-0","properties":{"tone":"red"},"geometry":{"type":"LineString","coordinates":[[114.31,30.59,100],[112.6052,32.6256,130901],[110.8215,34.6371,260442],[108.9497,36.6213,387476],[106.9797,38.5748,510780],[104.9007,40.4933,629165],[102.7005,42.3725,741492],[100.3662,44.207,846679],[97.884,45.9909,943713],[95.2392,47.7176,1031660],[92.4167,49.3794,1109672],[89.4011,50.9678,1176998],[86.1778,52.4731,1232990],[82.7337,53.8847,1277109],[79.0581,55.191,1308929],[75.1451,56.3795,1328145],[70.9946,57.4372,1334571],[66.6144,58.3507,1328145],[62.0223,59.1072,1308929],[57.2468,59.6947,1277109],[52.3273,60.1032,1232990],[47.3128,60.3252,1176998],[42.2593,60.3566,1109672],[37.2257,60.1966,1031660],[32.2693,59.8485,943713],[27.4418,59.3186,846679],[22.786,58.6162,741492],[18.334,57.7527,629165],[14.107,56.7407,510780],[10.1159,55.5935,387476],[6.3631,54.3244,260442],[2.8442,52.9459,130901],[-0.45,51.47,100]]}},{"type":"Feature","id":"arc-1","properties":{"tone":"red"},"geometry":{"type":"LineString","coordinates":[[114.31,30.59,100],[114.7692,33.9545,147126],[115.2662,37.3171,292735],[115.8098,40.6774,435527],[116.4112,44.035,574125],[117.0848,47.389,707195],[117.8501,50.7385,833455],[118.7333,54.0822,951690],[119.7712,57.4184,1060760],[121.0172,60.7442,1159616],[122.5509,64.0559,1247304],[124.4971,67.3471,1322982],[127.0617,70.6073,1385919],[130.6071,73.8177,1435511],[135.8211,76.9416,1471278],[144.1235,79.8983,1492877],[158.5742,82.4876,1500100],[-175.7821,84.1953,1492877],[-141.8375,84.1843,1471278],[-116.3375,82.4622,1435511],[-101.9815,79.8668,1385919],[-93.7262,76.9075,1322982],[-88.5366,73.7823,1247304],[-85.0052,70.5711,1159616],[-82.449,67.3105,1060760],[-80.5083,64.0191,951690],[-78.9784,60.7072,833455],[-77.7352,57.3812,707195],[-76.6992,54.045,574125],[-75.8175,50.7012,435527],[-75.0534,47.3516,292735],[-74.3807,43.9976,147126],[-73.78,40.64,100]]}},{"type":"Feature","id":"arc-2","properties":{"tone":"red"},"geometry":{"type":"LineString","coordinates":[[114.31,30.59,100],[115.0575,30.8203,35815],[115.8085,31.0463,71187],[116.5631,31.2679,105874],[117.3211,31.4851,139542],[118.0827,31.6979,171867],[118.8477,31.906,202538],[119.6162,32.1096,231259],[120.3881,32.3085,257755],[121.1633,32.5027,281768],[121.9418,32.6921,303070],[122.7236,32.8767,321453],[123.5086,33.0564,336742],[124.2968,33.2311,348789],[125.0881,33.4009,357477],[125.8825,33.5656,362724],[126.6798,33.7253,364479],[127.4801,33.8798,362724],[128.2832,34.0291,357477],[129.0891,34.1731,348789],[129.8977,34.3119,336742],[130.7089,34.4454,321453],[131.5227,34.5734,303070],[132.3389,34.6961,281768],[133.1575,34.8133,257755],[133.9784,34.925,231259],[134.8015,35.0312,202538],[135.6266,35.1318,171867],[136.4537,35.2267,139542],[137.2828,35.3161,105874],[138.1135,35.3998,71187],[138.946,35.4777,35815],[139.78,35.55,100]]}},{"type":"Feature","id":"arc-3","properties":{"tone":"red"},"geometry":{"type":"LineString","coordinates":[[114.31,30.59,100],[108.6497,32.0337,147126],[102.8247,33.2185,292735],[96.8591,34.1251,435527],[90.7855,34.7378,574125],[84.644,35.0454,707195],[78.4797,35.0421,833455],[72.3392,34.7279,951690],[66.2675,34.1088,1060760],[60.3046,33.196,1159616],[54.483,32.0055,1247304],[48.8263,30.5565,1322982],[43.3493,28.8707,1385919],[38.0578,26.9709,1435511],[32.9504,24.8805,1471278],[28.0195,22.6222,1492877],[23.253,20.2184,1500100],[18.6351,17.69,1492877],[14.148,15.0569,1471278],[9.7722,12.3378,1435511],[5.4874,9.5505,1385919],[1.2729,6.7116,1322982],[-2.8926,3.8372,1247304],[-7.0299,0.9427,1159616],[-11.1604,-1.9567,1060760],[-15.3052,-4.8459,951690],[-19.4854,-7.7097,833455],[-23.7222,-10.5324,707195],[-28.0365,-13.2978,574125],[-32.4489,-15.9888,435527],[-36.9796,-18.5875,292735],[-41.6476,-21.0746,147126],[-46.47,-23.43,100]]}},{"type":"Feature","id":"arc-4","properties":{"tone":"red"},"geometry":{"type":"LineString","coordinates":[[114.31,30.59,100],[113.1433,30.6898,52872],[111.9744,30.7791,105136],[110.8033,30.8579,156389],[109.6305,30.9261,206136],[108.4562,30.9838,253899],[107.2805,31.0308,299218],[106.1039,31.0672,341656],[104.9264,31.0928,380805],[103.7485,31.1078,416288],[102.5703,31.112,447762],[101.3922,31.1055,474925],[100.2143,31.0884,497515],[99.037,31.0605,515315],[97.8605,31.0219,528153],[96.6851,30.9727,535906],[95.5111,30.9128,538498],[94.3386,30.8424,535906],[93.168,30.7614,528153],[91.9995,30.6699,515315],[90.8333,30.568,497515],[89.6697,30.4557,474925],[88.5089,30.3331,447762],[87.3512,30.2003,416288],[86.1966,30.0573,380805],[85.0455,29.9043,341656],[83.8981,29.7413,299218],[82.7545,29.5685,253899],[81.6149,29.3858,206136],[80.4795,29.1936,156389],[79.3484,28.9918,105136],[78.2219,28.7805,52872],[77.1,28.56,100]]}},{"type":"Feature","id":"arc-5","properties":{"tone":"red"},"geometry":{"type":"LineString","coordinates":[[114.31,30.59,100],[110.6483,31.4805,147126],[106.9205,32.2648,292735],[103.1324,32.9378,435527],[99.2913,33.4949,574125],[95.4058,33.9322,707195],[91.486,34.2462,833455],[87.5427,34.4347,951690],[83.5875,34.4962,1060760],[79.6326,34.4303,1159616],[75.6899,34.2374,1247304],[71.7711,33.919,1322982],[67.887,33.4775,1385919],[64.0476,32.9162,1435511],[60.2615,32.2392,1471278],[56.536,31.4511,1492877],[52.8766,30.5571,1500100],[49.2878,29.5626,1492877],[45.7722,28.4737,1471278],[42.3312,27.2963,1435511],[38.9649,26.0364,1385919],[35.6722,24.7003,1322982],[32.4512,23.2939,1247304],[29.2991,21.8231,1159616],[26.2124,20.2938,1060760],[23.187,18.7114,951690],[20.2186,17.0814,833455],[17.3022,15.409,707195],[14.4329,13.6992,574125],[11.6054,11.9568,435527],[8.8144,10.1864,292735],[6.0545,8.3927,147126],[3.32,6.58,100]]}},{"type":"Feature","id":"arc-6","properties":{"tone":"red"},"geometry":{"type":"LineString","coordinates":[[114.31,30.59,100],[112.9375,31.969,94810],[111.5233,33.3328,188608],[110.0645,34.68,280590],[108.5577,36.0093,369871],[106.9996,37.3191,455591],[105.3867,38.6078,536924],[103.7153,39.8735,613087],[101.9817,41.1143,683347],[100.1821,42.3281,747027],[98.3125,43.5128,803514],[96.369,44.6657,852263],[94.3479,45.7844,892806],[92.2454,46.8659,924751],[90.0581,47.9075,947791],[87.7829,48.9058,961705],[85.4171,49.8575,966358],[82.9589,50.7592,961705],[80.407,51.6073,947791],[77.7613,52.3979,924751],[75.0229,53.1274,892806],[72.1942,53.792,852263],[69.2793,54.3879,803514],[66.2838,54.9117,747027],[63.2151,55.3599,683347],[60.0823,55.7296,613087],[56.8964,56.0182,536924],[53.6694,56.2236,455591],[50.4148,56.3441,369871],[47.147,56.379,280590],[43.8806,56.3279,188608],[40.6302,56.1912,94810],[37.41,55.97,100]]}},{"type":"Feature","id":"origin","properties":{"tone":"red"},"geometry":{"type":"Point","coordinates":[114.31,30.59,200]}},{"type":"Feature","id":"hub-0","properties":{"tone":"red"},"geometry":{"type":"Point","coordinates":[-0.45,51.47,200]}},{"type":"Feature","id":"hub-1","properties":{"tone":"red"},"geometry":{"type":"Point","coordinates":[-73.78,40.64,200]}},{"type":"Feature","id":"hub-2","properties":{"tone":"red"},"geometry":{"type":"Point","coordinates":[139.78,35.55,200]}},{"type":"Feature","id":"hub-3","properties":{"tone":"red"},"geometry":{"type":"Point","coordinates":[-46.47,-23.43,200]}},{"type":"Feature","id":"hub-4","properties":{"tone":"red"},"geometry":{"type":"Point","coordinates":[77.1,28.56,200]}},{"type":"Feature","id":"hub-5","properties":{"tone":"red"},"geometry":{"type":"Point","coordinates":[3.32,6.58,200]}},{"type":"Feature","id":"hub-6","properties":{"tone":"red"},"geometry":{"type":"Point","coordinates":[37.41,55.97,200]}}]}
+\ No newline at end of file
+diff --git a/public/scene-assets/deep/strait.geojson b/public/scene-assets/deep/strait.geojson
+new file mode 100644
+index 0000000..5da8d60
+--- /dev/null
++++ b/public/scene-assets/deep/strait.geojson
+@@ -0,0 +1 @@
++{"type":"FeatureCollection","features":[{"type":"Feature","id":"flashpoint","properties":{"tone":"red"},"geometry":{"type":"Point","coordinates":[119.5,24.5,2000]}},{"type":"Feature","id":"line","properties":{"tone":"red"},"geometry":{"type":"LineString","coordinates":[[118.2,23,3000],[120.6,26,3000]]}}]}
+\ No newline at end of file
+diff --git a/src/director/packs/geojson.js b/src/director/packs/geojson.js
+index 49f9f0f..a977f9a 100644
+--- a/src/director/packs/geojson.js
++++ b/src/director/packs/geojson.js
+@@ -1,5 +1,8 @@
+ import { PACK_LIMITS } from './manifest.js';
+ 
++/** Named tones a feature may ask for. Only these names pass; nothing else from properties is read. */
++export const PACK_TONES = Object.freeze(['cyan', 'red', 'amber', 'green', 'heat', 'water']);
++
+ /** Decode a bounded geometry-only GeoJSON collection; properties never become HTML, styles or URLs. */
+ export function decodePackGeoJSON(bytes) {
+   const value = JSON.parse(
+@@ -57,6 +60,7 @@ export function decodePackGeoJSON(bytes) {
+     )
+       coordinates = g.coordinates.map((ring) => line(ring, true));
+     else throw new Error('Unsupported geometry');
+-    return { id, type: g.type, coordinates };
++    const tone = PACK_TONES.includes(feature.properties?.tone) ? feature.properties.tone : 'cyan';
++    return { id, type: g.type, coordinates, tone };
+   });
+ }
+diff --git a/src/director/packs/packs.test.mjs b/src/director/packs/packs.test.mjs
+index ed5d425..63766bd 100644
+--- a/src/director/packs/packs.test.mjs
++++ b/src/director/packs/packs.test.mjs
+@@ -155,9 +155,15 @@ test('GeoJSON preserves stable geometry IDs but never properties or remote style
+   };
+   const decode = () =>
+     decodePackGeoJSON(new TextEncoder().encode(JSON.stringify(data)));
++  // Only the enumerated tone survives; everything else in properties is dropped.
+   assert.deepEqual(decode(), [
+-    { id: 'p', type: 'Point', coordinates: [-97, 30, 300] },
++    { id: 'p', type: 'Point', coordinates: [-97, 30, 300], tone: 'cyan' },
+   ]);
++  data.features[0].properties.tone = 'water';
++  assert.equal(decode()[0].tone, 'water');
++  data.features[0].properties.tone = 'url(https://bad.example/x)';
++  assert.equal(decode()[0].tone, 'cyan');
++  delete data.features[0].properties.tone;
+   data.features.push(data.features[0]);
+   assert.throws(decode, /IDs/);
+   data.features.pop();
+diff --git a/src/scenes/dataPacks/geometry.js b/src/scenes/dataPacks/geometry.js
+index f81b1e5..43f4acd 100644
+--- a/src/scenes/dataPacks/geometry.js
++++ b/src/scenes/dataPacks/geometry.js
+@@ -2,6 +2,18 @@ import * as Cesium from 'cesium';
+ import { decodePackGeoJSON } from '../../director/packs/geojson.js';
+ const xyz = (p) => Cesium.Cartesian3.fromDegrees(...p);
+ 
++// Colours for the named tones a pack feature may choose (see PACK_TONES).
++const TONE = {
++  cyan: { css: '#00ffff', alpha: 0.35 },
++  red: { css: '#ff3b4e', alpha: 0.45 },
++  amber: { css: '#ffb020', alpha: 0.45 },
++  green: { css: '#3ee08f', alpha: 0.45 },
++  heat: { css: '#ff6a1a', alpha: 0.3 },
++  water: { css: '#2f8cff', alpha: 0.42 },
++};
++const toneColor = (tone, alpha) =>
++  Cesium.Color.fromCssColorString(TONE[tone]?.css ?? TONE.cyan.css).withAlpha(alpha ?? 1);
++
+ /** Render a bounded geometry pack in owned batches; no asynchronous entity geometry or update loop. */
+ export function renderPackGeometry({ asset, pack }, handle) {
+   if (!['application/json', 'application/geo+json'].includes(asset.mimeType))
+@@ -16,8 +28,8 @@ export function renderPackGeometry({ asset, pack }, handle) {
+         name: `${pack.id} / ${feature.id}`,
+         position: xyz(feature.coordinates),
+         point: {
+-          pixelSize: 12,
+-          color: Cesium.Color.CYAN,
++          pixelSize: feature.tone === 'cyan' ? 12 : 16,
++          color: toneColor(feature.tone),
+           outlineColor: Cesium.Color.BLACK,
+           outlineWidth: 2,
+         },
+@@ -32,9 +44,9 @@ export function renderPackGeometry({ asset, pack }, handle) {
+       lines.add({
+         id,
+         positions: feature.coordinates.map(xyz),
+-        width: 4,
++        width: feature.tone === 'cyan' ? 4 : 6,
+         material: Cesium.Material.fromType('Color', {
+-          color: Cesium.Color.CYAN,
++          color: toneColor(feature.tone),
+         }),
+       });
+     } else {
+@@ -55,7 +67,7 @@ export function renderPackGeometry({ asset, pack }, handle) {
+           }),
+           attributes: {
+             color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+-              Cesium.Color.CYAN.withAlpha(0.35),
++              toneColor(feature.tone, TONE[feature.tone]?.alpha ?? 0.35),
+             ),
+           },
+         }),
+-- 
+2.39.5 (Apple Git-154)
+

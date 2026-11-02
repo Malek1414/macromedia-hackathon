@@ -1,0 +1,364 @@
+{
+  "version": 5,
+  "scenes": [
+    {
+      "id": "deep-dive",
+      "title": "AI Runs the Planet · Deep dive",
+      "dataPacks": [
+        {
+          "id": "pandemic",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "deep/pandemic.geojson"
+          },
+          "attribution": {
+            "text": "New pandemic spreading from its origin to the world's air hubs. Simulated future, not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "miami-surge",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "deep/miami-surge.geojson"
+          },
+          "attribution": {
+            "text": "Water at 28 cm of 2076 sea-level rise (the AI's most likely future) plus a 2.5 m hurricane surge like Irma's. Simulated future, not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "la-heat",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "deep/la-heat.geojson"
+          },
+          "attribution": {
+            "text": "Heat in the audience's future: 2.89 °C above pre-industrial by 2076. Simulated future, not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "strait",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "deep/strait.geojson"
+          },
+          "attribution": {
+            "text": "A major war is one of the shocks in the scariest futures. Simulated future, not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        }
+      ],
+      "shots": [
+        {
+          "id": "today",
+          "title": "2026 · The planet today, live: every aircraft in the sky right now",
+          "durationSec": 7,
+          "holdSec": 1,
+          "camera": {
+            "lat": 28,
+            "lon": 20,
+            "alt": 14000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 10,
+              "lon": -20,
+              "alt": 26000000,
+              "heading": 0,
+              "pitch": -90,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "cubic-in-out"
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 45,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "layers": {
+            "flights": {
+              "enabled": true
+            }
+          },
+          "dataPackIds": []
+        },
+        {
+          "id": "pandemic",
+          "title": "2056 · A new pandemic reaches London (scariest future) · live TfL cameras and flights",
+          "durationSec": 9,
+          "holdSec": 5,
+          "camera": {
+            "lat": 51.4885,
+            "lon": -0.129,
+            "alt": 700.6,
+            "heading": 8,
+            "pitch": -27,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 47,
+              "lon": -0.13,
+              "alt": 1400000,
+              "heading": 0,
+              "pitch": -70,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "cubic-in-out"
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "layers": {
+            "cctv": {
+              "enabled": true
+            },
+            "flights": {
+              "enabled": true
+            }
+          },
+          "dataPackIds": [
+            "pandemic"
+          ]
+        },
+        {
+          "id": "miami",
+          "title": "2076 · Miami Beach: +28 cm of sea plus an Irma-sized surge (the AI's most likely future)",
+          "durationSec": 9,
+          "holdSec": 6,
+          "camera": {
+            "lat": 25.7907,
+            "lon": -80.1424,
+            "alt": 392.7,
+            "heading": 90,
+            "pitch": -18,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 25.35,
+              "lon": -80.6,
+              "alt": 220000,
+              "heading": 45,
+              "pitch": -55,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "cubic-in-out"
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 50,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "layers": {
+            "flights": {
+              "enabled": true
+            }
+          },
+          "dataPackIds": [
+            "miami-surge"
+          ]
+        },
+        {
+          "id": "heat",
+          "title": "2076 · Los Angeles through a thermal camera: 2.89 °C in the audience's future · live Caltrans cameras",
+          "durationSec": 8,
+          "holdSec": 3,
+          "camera": {
+            "lat": 34.0413,
+            "lon": -118.2303,
+            "alt": 901.6,
+            "heading": 315,
+            "pitch": -26,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 34.0413,
+              "lon": -118.2571,
+              "alt": 901.6,
+              "heading": 45,
+              "pitch": -26,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "cubic-in-out"
+          },
+          "visual": {
+            "style": "thermal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 60,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "layers": {
+            "cctv": {
+              "enabled": true
+            },
+            "flights": {
+              "enabled": true
+            }
+          },
+          "dataPackIds": [
+            "la-heat"
+          ]
+        },
+        {
+          "id": "strait",
+          "title": "Scariest futures · major-war risk in the Taiwan Strait · live military aircraft",
+          "durationSec": 8,
+          "holdSec": 4,
+          "camera": {
+            "lat": 21.6,
+            "lon": 117.4,
+            "alt": 650000,
+            "heading": 30,
+            "pitch": -42,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 15,
+              "lon": 112,
+              "alt": 2500000,
+              "heading": 20,
+              "pitch": -70,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "cubic-in-out"
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "layers": {
+            "military": {
+              "enabled": true
+            },
+            "flights": {
+              "enabled": true
+            }
+          },
+          "dataPackIds": [
+            "strait"
+          ]
+        },
+        {
+          "id": "planet",
+          "title": "Possible futures, not predictions. One world.",
+          "durationSec": 8,
+          "holdSec": 3,
+          "camera": {
+            "lat": 20,
+            "lon": 30,
+            "alt": 24000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 21.6,
+              "lon": 117.4,
+              "alt": 650000,
+              "heading": 30,
+              "pitch": -42,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "cubic-in-out"
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 45,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "layers": {
+            "flights": {
+              "enabled": true
+            }
+          },
+          "dataPackIds": []
+        }
+      ]
+    }
+  ]
+}
