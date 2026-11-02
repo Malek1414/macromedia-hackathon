@@ -86,13 +86,7 @@ button:disabled { opacity: 0.5; cursor: progress; }
 .ticker { font-size: 12px; min-height: 17px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ticker .bad { color: var(--bad); } .ticker .good { color: var(--good); }
 
-@media (max-width: 900px) {
-  .panel { position: static; width: auto !important; margin: 8px; max-height: none; }
-  body { overflow: auto; }
-  #globe { position: relative; height: 60vh; }
-  .hud { position: static; transform: none; flex-wrap: wrap; margin: 8px; }
-  .timeline { position: static; margin: 8px; }
-}
+
 
 /* ---------- visual pass ---------- */
 :root { --panel: rgba(4, 7, 13, 0.62); --line: rgba(140, 190, 255, 0.14); }
@@ -185,3 +179,39 @@ body.reporting .panel.right, body.reporting .panel.left { opacity: 0; pointer-ev
 .report.compact .duel { margin-bottom: 12px; padding: 10px 12px; }
 .report.compact .duel-row { margin-bottom: 5px; }
 .report.compact .fine { margin-top: 8px; }
+
+/* ---------- phones ---------- */
+@media (max-width: 760px) {
+  .hud { left: 8px; right: 8px; top: 8px; transform: none; padding: 8px 12px; gap: 0; }
+  .brand { display: none; }
+  .readouts { width: 100%; justify-content: space-between; gap: 6px; }
+  .readouts div { min-width: 0; }
+  .readouts div:nth-child(4), .readouts div:nth-child(6) { display: none; }
+  .readouts b { font-size: 15px; }
+  .readouts label { font-size: 8px; }
+
+  .banner { top: 70px; left: 8px; right: 8px; transform: translateY(-12px); white-space: normal; flex-wrap: wrap; gap: 4px 10px; padding: 10px 14px; }
+  .banner.show { transform: none; }
+  .banner b { font-size: 17px; }
+
+  .timeline { left: 8px; right: 8px; bottom: 8px; }
+
+  .panel { top: auto; width: auto !important; left: 8px; right: 8px; border-radius: 14px; }
+  .panel.left { bottom: 92px; max-height: 58vh; }
+  .panel.left.collapsed { transform: translateY(calc(100% - 34px)); }
+  .panel.left.collapsed > *:not(.collapse) { opacity: 0; }
+  .panel.right { bottom: 92px; max-height: 34vh; padding: 10px 12px; }
+  .panel.right h3, .panel.right h4, .panel.right .histogram, .panel.right .stats, .panel.right .disclaimer { display: none; }
+  .panel.right #cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .panel.right .card { margin: 0; padding: 8px; }
+  .panel.right .card .title small, .panel.right .card .events { display: none; }
+  .panel.right .card .nums { font-size: 11px; }
+  body:not(.reporting) .panel.left:not(.collapsed) ~ .panel.right { opacity: 0; pointer-events: none; }
+
+  .report { padding: 18px; }
+  .report h2 { font-size: 22px; }
+  .report .big b { font-size: 18px; }
+  .duel-row { grid-template-columns: 92px 1fr; }
+  .report .actions { flex-direction: column; }
+  .credit-line { display: none; }
+}
