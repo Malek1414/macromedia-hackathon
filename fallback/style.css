@@ -217,3 +217,11 @@ body.reporting .panel.right, body.reporting .panel.left { opacity: 0; pointer-ev
 }
 .legend-row { display: flex; gap: 14px; font-size: 10.5px; color: var(--muted); margin-top: 2px; flex-wrap: wrap; }
 .legend-row i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; box-shadow: 0 0 8px currentColor; }
+.lever.starved .row span { color: #ff8a95; }
+.lever.starved .row b { color: var(--bad); }
+.lever.starved .row b::after { content: '  almost nothing'; font: 600 9px Inter, sans-serif; letter-spacing: .08em; text-transform: uppercase; margin-left: 6px;
+  padding: 2px 5px; border-radius: 4px; background: rgba(255, 77, 94, 0.15); }
+.lever.starved input { accent-color: var(--bad); }
+.lever .row { gap: 8px; }
+.lever.starved .row b { white-space: nowrap; }
+.hint.reason { color: var(--text); border-left: 2px solid var(--accent); padding-left: 10px; }

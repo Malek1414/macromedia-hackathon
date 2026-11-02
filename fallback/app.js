@@ -330,14 +330,18 @@ function drawLevers() {
   const p = state.policies[state.mode];
   const locked = state.mode === 'ai';
   $('levers').innerHTML = LEVERS.map(({ key, label, help }) => `
-    <div class="lever">
+    <div class="lever ${locked && state.results.ai && p[key] <= 5 ? 'starved' : ''}">
       <div class="row"><span>${label}</span><b id="v-${key}">${p[key]}</b></div>
       <small>${help}</small>
       <input type="range" min="0" max="100" value="${p[key]}" data-key="${key}" ${locked ? 'disabled' : ''} />
     </div>`).join('');
   drawBudget();
   $('btn-ai').classList.toggle('hidden', !locked);
-  $('who-hint').innerHTML = locked
+  const reasons = state.rationale.ai;
+  $('who-hint').classList.toggle('reason', locked && reasons.length > 0);
+  $('who-hint').innerHTML = locked && reasons.length
+    ? `<b>The AI's reasoning:</b> ${reasons[0]} ${reasons[1]}`
+    : locked
     ? 'The AI gets the same budget as humanity: <b>360 points</b> across six levers. It tests every mix on hundreds of futures and keeps the one with the best typical outcome and the least bad worst case.'
     : 'Your turn. Spend the same <b>360 points</b>. Then compare your future with the AI\'s.';
   const list = state.rationale[state.mode];
@@ -438,7 +442,9 @@ async function letAiDecide() {
   const t0 = performance.now();
   await new Promise((done) => {
     const step = () => {
-      const k = Math.min(1, (performance.now() - t0) / 900);
+      // Eased, and slow enough to read: this is the moment the AI makes its choice.
+      const x = Math.min(1, (performance.now() - t0) / 2000);
+      const k = 1 - Math.pow(1 - x, 3);
       for (const { key } of LEVERS) state.policies.ai[key] = Math.round(from[key] + (policies[key] - from[key]) * k);
       drawLevers();
       k < 1 ? requestAnimationFrame(step) : done();
@@ -453,11 +459,13 @@ async function letAiDecide() {
 
 function afterResult() {
   state.which = 'likely';
-  setLeftCollapsed(true);
   drawLevers();
   drawResults();
   setYear(START_YEAR);
-  autoplay(600);
+  // Leave the choice and its reasons on screen for a moment, then give the globe the stage.
+  const linger = state.mode === 'ai' ? 3200 : 1200;
+  setTimeout(() => setLeftCollapsed(true), linger);
+  autoplay(linger + 500);
 }
 
 $('btn-ai').addEventListener('click', letAiDecide);
