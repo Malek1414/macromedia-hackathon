@@ -14,7 +14,7 @@
 | Motion | the globe's own camera flights only; no zoom/pan added in edit except the two proof zooms below |
 | Sound | voice-over at -16 LUFS; quiet ambient bed at -32 LUFS, ducked under the voice; no music with lyrics |
 
-## Cold open (first 10 s, over Malek's first line)
+## Cold open (first 10-20 s, over Malek's first line)
 
 The hook beat's voice ("In 2076, I'll still be here. Most of you in this room will be too.") plays over a hard-cut montage. Then everything goes black for a moment, and the title screen and globe drop in.
 
@@ -40,20 +40,24 @@ The hook beat's voice ("In 2076, I'll still be here. Most of you in this room wi
 - **Colour:** dystopia shots graded teal-and-red, utopia shots warm. This matches the app's red/green.
 - **Typography:** title cards in Inter Bold, white on black, letter-spacing 0.05em. No other fonts.
 - **Sound:** a low sub hit on the first card, a rising swell through the montage, silence for the 6 black frames, then the music drops in with the title. The voice-over starts at 1.2 s.
-- **Room for it:** trim the take-A title hold (0:00-0:07) to 3 s, so the hook stays 14 s and the total stays ≤ 2:00.
+- **Room for it:** `rough-cut.py --cold-open N` (10-20 s) shortens the title and God's Eye View shots after it, so the total stays ≤ 2:00.
 
-## Shot list (timecodes match the script)
+## Shot list (what the rough cut contains; timecodes match the script)
 
-| Time | Beat | On screen | Source | Overlay |
-|---|---|---|---|---|
-| 0:00-0:14 | Hook | Title screen "What if AI ran the planet?" over the turning globe, then today's planet in God's Eye View | take A 0-7, take B 0-7 | (the title is the overlay) |
-| 0:14-0:25 | Tried | God's Eye View, today's world, slow drift | take B 7-18 | "Opinions. No odds." |
-| 0:25-0:38 | Thing | **Hand over the planet** → "AI is testing futures…" → sliders glide to energy 100, cooperation 99, tech 84, carbon 69; food 4 and coastal 1 turn red "ALMOST NOTHING"; the AI's reasoning on top | take A 7-20 | "360 points · 6 levers" |
-| 0:38-0:55 | Works | Three future cards; playback with event banners, shockwaves, heat zones, flooded coasts | take A 20-37 | "5,000 futures" |
-| 0:55-1:26 | Proof | AI's 2076 report (92% below 2 °C, coastal 1, 31M flooded out) → Claude's tab with its own levers and quoted reasoning → the audience's future ending → the **three-way face-off** (AI · Claude · Audience) | take A 37.6-47.6, take C 0-8, take A 76.4-82.4, take C 26.8-33.8 | "92% below 2 °C" → "Coastal: 1 point" → "31 million" → "Claude: 26%, 18 million" → "Audience: 8 million, 0%" |
-| 1:26-1:48 | Means | God's Eye View playing the *Scariest* Director scene | take B 18-40 | "Possible futures, not predictions" |
-| 1:48-1:56 | Ask | The face-off, cursor on **Try to beat both** | take C 25.8-33.8 | "Beat the AI." |
-| 1:56-2:00 | End card | Title, names, credits | rough-cut.py | |
+| Time | Beat (voice) | On screen | Source |
+|---|---|---|---|
+| 0:00-0:15 | Hook ("In 2076, I'll still be here…") | **Cold open: Malek's clips** (placeholder card until `footage/cold-open/` has them) | your clips |
+| 0:14-0:19.5 | Tried ("Online, people argue…") | Title screen "What if AI ran the planet?" over the night-side globe | take A2 0-4.5 |
+| 0:19.5-0:25 | | Today's planet in God's Eye View | take B 7-12.5 |
+| 0:25-0:38 | Product ("So we built AI Runs the Planet…") | **Hand over the planet** → "AI is testing futures…" → sliders glide to energy 100, cooperation 99, tech 84, carbon 69; coastal 1 and food 4 turn red "ALMOST NOTHING"; the AI's reasoning on top | take A2 8-21 |
+| 0:38-0:55 | Demo ("I press Let AI decide…") | Future cards slide in; playback with event banners, arcs, ripples, soft heat glows, flooded coasts | take A2 21-38 |
+| 0:55-1:05 | Proof: the AI | 2076 report counts up: "The AI optimizer ran the planet for 50 years", 92% below 2 °C, 31M flooded out, "spent least on coastal (1)" | take A2 41.8-51.8 |
+| 1:05-1:13 | Proof: Claude | Claude's tab: its own levers and its reasoning quoted | take A2 110.9-118.9 |
+| 1:13-1:19 | Proof: the audience | The audience's hot future ending: red vignette, heat glows, pandemic arcs | take A2 88.2-94.2 |
+| 1:19-1:26 | Proof: face-off | Three-way face-off, bars growing in: AI · Claude · Audience | take A2 138.8-145.8 |
+| 1:26-1:48 | What it means | God's Eye View playing the *Scariest* Director scene, decade by decade | take B 18-40 |
+| 1:48-1:56 | Ask ("Try to beat the AI…") | Face-off, **Try to beat both** | take A2 139-147 |
+| 1:56-2:00 | | End card: title, names, credits | rough-cut.py |
 
 The raw takes (A2 = the whole fallback flow with the motion pass, AI → audience → Claude; B = God's Eye View) and a rough cut with a temporary voice are on the GitHub release `rough-cut-v0`; `python3 scripts/rough-cut.py` rebuilds the cut from `footage/` with these exact in/out points.
 
