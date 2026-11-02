@@ -1,0 +1,367 @@
+{
+  "version": 5,
+  "scenes": [
+    {
+      "id": "chronicle",
+      "title": "AI Runs the Planet · Chronicle",
+      "dataPacks": [
+        {
+          "id": "miami",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "chronicle/miami.geojson"
+          },
+          "attribution": {
+            "text": "Water at 28 cm of 2076 sea-level rise plus a 2.5 m hurricane surge. Simulated, not a prediction.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        }
+      ],
+      "shots": [
+        {
+          "id": "earth-open",
+          "title": "2026 · the planet",
+          "durationSec": 10,
+          "holdSec": 0.5,
+          "camera": {
+            "lat": 22,
+            "lon": 40,
+            "alt": 21000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 12,
+              "lon": 70,
+              "alt": 30000000,
+              "heading": 0,
+              "pitch": -90,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "linear"
+          },
+          "visual": {
+            "style": "normal",
+            "mapStack": "photoreal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 22,
+              "version": 2
+            },
+            "hud": {
+              "visible": false,
+              "variant": "tactical"
+            }
+          },
+          "layers": {},
+          "dataPackIds": []
+        },
+        {
+          "id": "earth-2032",
+          "title": "2032 · 1.5 °C",
+          "durationSec": 9,
+          "holdSec": 0.5,
+          "camera": {
+            "lat": 34,
+            "lon": -30,
+            "alt": 19000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 30,
+              "lon": 0,
+              "alt": 21000000,
+              "heading": 0,
+              "pitch": -90,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "linear"
+          },
+          "visual": {
+            "style": "normal",
+            "mapStack": "photoreal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 22,
+              "version": 2
+            },
+            "hud": {
+              "visible": false,
+              "variant": "tactical"
+            }
+          },
+          "layers": {},
+          "dataPackIds": []
+        },
+        {
+          "id": "boston",
+          "title": "2035 · Boston",
+          "durationSec": 10,
+          "holdSec": 0.5,
+          "camera": {
+            "lat": 42.34189,
+            "lon": -71.04855,
+            "alt": 941,
+            "heading": 320,
+            "pitch": -26,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 42.34845,
+              "lon": -71.03778,
+              "alt": 1198,
+              "heading": 290,
+              "pitch": -28,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "linear"
+          },
+          "visual": {
+            "style": "normal",
+            "mapStack": "photoreal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 22,
+              "version": 2
+            },
+            "hud": {
+              "visible": false,
+              "variant": "tactical"
+            }
+          },
+          "layers": {},
+          "dataPackIds": []
+        },
+        {
+          "id": "shanghai",
+          "title": "2050 · Shanghai",
+          "durationSec": 10,
+          "holdSec": 0.5,
+          "camera": {
+            "lat": 31.24104,
+            "lon": 121.47485,
+            "alt": 801,
+            "heading": 100,
+            "pitch": -22,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 31.23248,
+              "lon": 121.4709,
+              "alt": 1072,
+              "heading": 75,
+              "pitch": -24,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "linear"
+          },
+          "visual": {
+            "style": "normal",
+            "mapStack": "photoreal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 22,
+              "version": 2
+            },
+            "hud": {
+              "visible": false,
+              "variant": "tactical"
+            }
+          },
+          "layers": {},
+          "dataPackIds": []
+        },
+        {
+          "id": "kyiv",
+          "title": "2067 · Eastern Europe",
+          "durationSec": 10,
+          "holdSec": 0.5,
+          "camera": {
+            "lat": 50.46285,
+            "lon": 30.49954,
+            "alt": 1371,
+            "heading": 130,
+            "pitch": -28,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 50.47158,
+              "lon": 30.51112,
+              "alt": 1787,
+              "heading": 160,
+              "pitch": -32,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "linear"
+          },
+          "visual": {
+            "style": "normal",
+            "mapStack": "photoreal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 22,
+              "version": 2
+            },
+            "hud": {
+              "visible": false,
+              "variant": "tactical"
+            }
+          },
+          "layers": {},
+          "dataPackIds": []
+        },
+        {
+          "id": "miami",
+          "title": "2076 · Miami Beach",
+          "durationSec": 10,
+          "holdSec": 0.5,
+          "camera": {
+            "lat": 25.7907,
+            "lon": -80.14446,
+            "alt": 361,
+            "heading": 90,
+            "pitch": -15,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 25.7907,
+              "lon": -80.1511,
+              "alt": 579,
+              "heading": 90,
+              "pitch": -16,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "linear"
+          },
+          "visual": {
+            "style": "normal",
+            "mapStack": "photoreal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 22,
+              "version": 2
+            },
+            "hud": {
+              "visible": false,
+              "variant": "tactical"
+            }
+          },
+          "layers": {},
+          "dataPackIds": [
+            "miami"
+          ]
+        },
+        {
+          "id": "dhaka",
+          "title": "2076 · Dhaka",
+          "durationSec": 10,
+          "holdSec": 0.5,
+          "camera": {
+            "lat": 23.77898,
+            "lon": 90.39052,
+            "alt": 1138,
+            "heading": 45,
+            "pitch": -27,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 23.76965,
+              "lon": 90.39956,
+              "alt": 1557,
+              "heading": 15,
+              "pitch": -30,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "linear"
+          },
+          "visual": {
+            "style": "normal",
+            "mapStack": "photoreal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 22,
+              "version": 2
+            },
+            "hud": {
+              "visible": false,
+              "variant": "tactical"
+            }
+          },
+          "layers": {},
+          "dataPackIds": []
+        },
+        {
+          "id": "earth-end",
+          "title": "2076 · the planet",
+          "durationSec": 10,
+          "holdSec": 0.5,
+          "camera": {
+            "lat": 18,
+            "lon": 60,
+            "alt": 24000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0,
+            "altitudeReference": "ellipsoid"
+          },
+          "move": {
+            "from": {
+              "lat": 24,
+              "lon": 90,
+              "alt": 2500000,
+              "heading": 0,
+              "pitch": -90,
+              "roll": 0,
+              "altitudeReference": "ellipsoid"
+            },
+            "easing": "linear"
+          },
+          "visual": {
+            "style": "normal",
+            "mapStack": "photoreal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 22,
+              "version": 2
+            },
+            "hud": {
+              "visible": false,
+              "variant": "tactical"
+            }
+          },
+          "layers": {},
+          "dataPackIds": []
+        }
+      ]
+    }
+  ]
+}
