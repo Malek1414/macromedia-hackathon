@@ -68,7 +68,7 @@ npm test                                          # engine, 11 tests
 
 # 1. Fallback globe (no keys, no install)
 ./scripts/vendor-cesium.sh                        # once: local CesiumJS, so the globe loads without Wi-Fi
-python3 -m http.server 5180 --bind 127.0.0.1
+python3 scripts/serve.py                         # serves on 127.0.0.1:5180 with caching off
 open http://127.0.0.1:5180/fallback/              # add ?offline to force the built-in map if the venue Wi-Fi is bad
 
 # 2. God's Eye View fork (clones GEV next to this repo and applies our patch)

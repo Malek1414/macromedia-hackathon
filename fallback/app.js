@@ -309,12 +309,15 @@ function play() {
   $('btn-play').textContent = '❚❚';
   let lastFly = -10;
   let quietStop = 0;
+  const playingMode = state.mode;
   state.playing = setInterval(() => {
+    // The tab changed or its future is gone: stop instead of playing something else.
+    if (state.mode !== playingMode || !currentRun()) return stop();
     if (state.year >= END_YEAR) {
       stop();
       // End on the whole planet.
       flyToPoint(30, 15, 17_000_000, -90, 2.5);
-      setTimeout(showReport, 1800);
+      setTimeout(() => { if (state.mode === playingMode && !state.playing) showReport(); }, 1800);
       return;
     }
     const next = state.year + 1;
@@ -378,6 +381,9 @@ $('levers').addEventListener('input', (e) => {
 });
 
 function setMode(mode) {
+  stop();
+  clearTimeout(autoplayTimer);
+  hideReport();
   state.mode = mode;
   setLeftCollapsed(false);
   for (const m of ['ai', 'claude', 'human']) $(`tab-${m === 'human' ? 'human' : m}`).classList.toggle('active', mode === m);
@@ -447,7 +453,13 @@ async function thinking(promise, minMs = 1800) {
   return result;
 }
 
+let deciding = false;
 async function letAiDecide() {
+  if (deciding) return;
+  deciding = true;
+  try { await decide(); } finally { deciding = false; }
+}
+async function decide() {
   stop();
   clearTimeout(autoplayTimer);
   const { policies, futures, rationale } = await thinking(aiChoice);
