@@ -102,7 +102,7 @@ def main():
         mix = ''.join(f'[a{n}]' for n in range(len(beats)))
         filters.append(f'{mix}amix=inputs={len(beats)}:normalize=0,apad[aout]')
         run('ffmpeg', '-y', '-i', str(video), *inputs, '-filter_complex', ';'.join(filters),
-            '-map', '0:v', '-map', '[aout]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-t', '120', str(OUT))
+            '-map', '0:v', '-map', '[aout]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-t', '119.9', str(OUT))
     print(f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s')
 
 if __name__ == '__main__':
