@@ -202,7 +202,8 @@ In priority order:
 - [ ] **Submission:** form URL unknown yet. Check the Luma event page / organiser messages.
 - [ ] On the demo machine: `./scripts/vendor-cesium.sh` once (offline globe), GEV running with the scenes imported, `?offline` ready if the Wi-Fi is bad.
 - [ ] **Only one 3D globe tab rendering at a time.** With the GEV tab open in the background, the fallback drops to about 8 fps; alone it runs at about 37 fps. Close or blank the other tab before showing either one.
-- [ ] Optional: Google Maps key in GEV for photoreal 3D (local `.env` only, never committed).
+- [x] Photoreal 3D in GEV: a free Cesium ion token in `gods-eye-view/.env` as `CESIUM_ION_TOKEN=` (local only, never committed). Malek's machine has it; Sammy needs his own free token for the deep dive.
+- **Deep dive:** `node scripts/write-deep-dive.mjs`, import `out/deep-dive.scenes.json` in GEV, play once to warm the 3D tiles, then record (macOS native capture). `python3 scripts/cut-v2.py` builds the captioned video (no voice-over) from `footage/`.
 - [ ] Nice to have: host the fallback (GitHub Pages or similar) so judges can try it on their phones; the phone layout is ready. **Ask Malek before publishing anything.**
 
 Done since the first handover: NASA satellite globe with day/night and city lights, event banners and shockwaves, heat-stress zones, title screen, 2076 report card, AI · Claude · Audience face-off, instant AI choice, phone layout, offline mode, raw takes A/B/C and a 2:00 rough cut.

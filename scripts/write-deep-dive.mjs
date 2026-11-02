@@ -85,7 +85,7 @@ const strait = pack('strait', [
 ], 'A major war is one of the shocks in the scariest futures.');
 
 const layers = (ids) => Object.fromEntries(ids.map((id) => [id, { enabled: true }]));
-const visual = (style = 'normal', bloom = 55) => ({ style, bloom: { enabled: true, intensity: bloom, version: 2 }, hud: { visible: true, variant: 'tactical' } });
+const visual = (style = 'normal', bloom = 55) => ({ style, mapStack: 'photoreal', bloom: { enabled: true, intensity: bloom, version: 2 }, hud: { visible: true, variant: 'tactical' } });
 
 const shots = [
   {

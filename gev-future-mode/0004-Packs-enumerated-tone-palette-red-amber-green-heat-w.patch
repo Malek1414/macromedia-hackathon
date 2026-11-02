@@ -1,7 +1,7 @@
 From c5eecfdf7b6f0476a8346e0e0289634393877b6f Mon Sep 17 00:00:00 2001
 From: Malek Hassan <malek.hassan@rwth-aachen.de>
 Date: Mon, 2 Nov 2026 16:20:48 +0100
-Subject: [PATCH 4/4] Packs: enumerated tone palette (red, amber, green, heat,
+Subject: [PATCH 4/5] Packs: enumerated tone palette (red, amber, green, heat,
  water); deep-dive scene assets
 
 Co-Authored-By: WOZCODE <contact@withwoz.com>

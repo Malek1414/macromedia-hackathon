@@ -1,7 +1,7 @@
 From 6b616cf49c99e135c769d743c4c37b42176623d8 Mon Sep 17 00:00:00 2001
 From: Malek Hassan <malek.hassan@rwth-aachen.de>
 Date: Mon, 2 Nov 2026 12:50:01 +0100
-Subject: [PATCH 2/4] future mode: per-future visuals (bloom, tactical HUD),
+Subject: [PATCH 2/5] future mode: per-future visuals (bloom, tactical HUD),
  updated scene file
 
 Co-Authored-By: WOZCODE <contact@withwoz.com>

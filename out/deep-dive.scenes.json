@@ -99,6 +99,7 @@
           },
           "visual": {
             "style": "normal",
+            "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
               "intensity": 45,
@@ -144,6 +145,7 @@
           },
           "visual": {
             "style": "normal",
+            "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
               "intensity": 55,
@@ -194,6 +196,7 @@
           },
           "visual": {
             "style": "normal",
+            "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
               "intensity": 50,
@@ -241,6 +244,7 @@
           },
           "visual": {
             "style": "thermal",
+            "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
               "intensity": 60,
@@ -291,6 +295,7 @@
           },
           "visual": {
             "style": "normal",
+            "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
               "intensity": 55,
@@ -341,6 +346,7 @@
           },
           "visual": {
             "style": "normal",
+            "mapStack": "photoreal",
             "bloom": {
               "enabled": true,
               "intensity": 45,

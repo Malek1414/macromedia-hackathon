@@ -53,7 +53,7 @@ def caption_png(path, text, kicker=None, accent=(90, 209, 255), boxed=False):
         ImageDraw.Draw(band).rectangle([0, H - 300, W, H], fill=(2, 4, 9, 170))
         img.alpha_composite(band.filter(ImageFilter.GaussianBlur(40)))
     d = ImageDraw.Draw(img)
-    big, small = (font(44), font(22)) if boxed else (font(54), font(26))
+    big, small = (font(38), font(20)) if boxed else (font(54), font(26))
     # wrap the line to at most 2 rows within 1500 px
     words, lines, cur = text.split(), [], ''
     for w in words:
@@ -65,7 +65,7 @@ def caption_png(path, text, kicker=None, accent=(90, 209, 255), boxed=False):
     if boxed:
         x0 = (W - BOX_W) // 2 + 8
         y = BOX_TOP + BOX_H + 22 + (34 if kicker else 0)
-        if len(lines) > 1: y -= 10
+        if len(lines) > 1: y -= 22
     else:
         x0, y = 120, H - 110 - len(lines) * step
     if kicker:
@@ -122,7 +122,8 @@ def main():
     x = facts()
     deep = D if D.exists() else B
     # Deep-dive shot windows in take D (start, end). With take B as a stand-in, its playback is used instead.
-    deep_shots = [(2, 9), (12, 24), (26, 38), (40, 50), (52, 60)] if D.exists() else [(0, 7), (12, 22), (22, 30), (30, 36), (36, 42)]
+    # Recording 2 Nov (native 60 fps, Chrome cropped away): globe 0-8, London 8-24, Miami 24-40, LA 40-52, strait 52-60.
+    deep_shots = [(1, 8), (12, 24), (27, 40), (41, 51), (52, 60)] if D.exists() else [(0, 7), (12, 22), (22, 30), (30, 36), (36, 42)]
     GREEN, AMBER, RED, CYAN = (62, 224, 143), (255, 197, 61), (255, 77, 94), (90, 209, 255)
 
     plan = [
