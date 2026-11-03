@@ -327,6 +327,83 @@ def split_piece(tmp, n, src, a, b, real, overlay, year, length):
         '-c:v', 'libx264', '-preset', 'medium', '-crf', '14', str(out))
     return out
 
+DESK = Path.home() / 'Desktop'
+MOVIES = [  # (recording, start s, crop w:h:x:y, label) - Malek's screen recordings, cropped clear of UI
+    [('Screen Recording 2026-11-03 at 11.58.03.mov', 8.0, '850:1434:677:0', 'I, Robot (2004)'),
+     ('Screen Recording 2026-11-03 at 11.59.29.mov', 94.0, '593:1000:805:217', 'Ex Machina (2014)'),
+     ('Screen Recording 2026-11-03 at 12.05.35.mov', 23.5, '593:1000:805:217', 'Transcendence (2014)')],
+    [('Screen Recording 2026-11-03 at 11.56.36.mov', 5.0, '735:1240:300:97', ''),
+     ('Screen Recording 2026-11-03 at 11.59.29.mov', 10.0, '593:1000:805:217', 'Ex Machina (2014)'),
+     ('Screen Recording 2026-11-03 at 12.05.35.mov', 88.5, '593:1000:805:217', 'Transcendence (2014)')],
+]
+
+def triptych(tmp, n, panels, L):
+    """Three film clips side by side, thin dividers, small title under each."""
+    out = tmp / f'p{n:02d}.mp4'
+    ov = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(ov)
+    for k, (_, _, _, label) in enumerate(panels):
+        if label:
+            f = font('medium', 24); w = d.textlength(label, font=f)
+            d.text((k * 640 + (640 - w) / 2, H - 70), label, font=f, fill=(238, 242, 248, 210))
+    for x in (640, 1280):
+        d.line([(x, 0), (x, H)], fill=(3, 5, 10, 255), width=6)
+    png = tmp / f'o{n:02d}.png'; ov.save(png)
+    ins, fc = [], ''
+    for k, (src, ss, crop, _) in enumerate(panels):
+        ins += ['-ss', str(ss), '-t', f'{L + 0.2:.3f}', '-i', str(DESK / src)]
+        fc += f'[{k}]crop={crop},scale=640:1080:flags=lanczos,fps={FPS},trim=0:{L:.3f},setpts=PTS-STARTPTS,eq=contrast=1.1:saturation=0.85:gamma=0.95[v{k}];'
+    fc += (f'[v0][v1][v2]hstack=inputs=3[v];[3]format=rgba[o];[v][o]overlay=0:0:shortest=1,'
+           f'fade=t=in:st=0:d=0.2,fade=t=out:st={L - 0.2:.3f}:d=0.2,format=yuv420p')
+    run('ffmpeg', '-y', *ins, '-loop', '1', '-t', f'{L:.3f}', '-i', str(png), '-filter_complex', fc,
+        '-r', str(FPS), '-c:v', 'libx264', '-preset', 'medium', '-crf', '14', str(out))
+    return out
+
+def vo_segments(vo):
+    """Speech segments of the voice-over take, split at pauses of 0.9 s or more."""
+    err = subprocess.run(['ffmpeg', '-i', str(vo), '-af', 'silencedetect=noise=-38dB:d=0.9', '-f', 'null', '-'],
+                         capture_output=True, text=True).stderr
+    starts = [float(x) for x in re.findall(r'silence_start: ([\d.]+)', err)]
+    ends = [float(x) for x in re.findall(r'silence_end: ([\d.]+)', err)]
+    total = duration(vo); segs, t = [], 0.0
+    if ends and starts and ends[0] < starts[0]:
+        pass
+    edges = sorted([(a, 's') for a in starts] + [(b, 'e') for b in ends])
+    cur = 0.0
+    for v, kind in edges:
+        if kind == 's':
+            if v - cur > 0.4: segs.append((max(0, cur - 0.08), v + 0.15))
+        else:
+            cur = v
+    if total - cur > 0.4: segs.append((max(0, cur - 0.08), total))
+    return segs
+
+def mix_audio(video, out, U):
+    """Score under the voice-over (ducked), each VO line placed at its shot; aura pass on the picture."""
+    vo = next((F / f'voiceover{e}' for e in ('.m4a', '.wav', '.mp3', '.aiff', '.mov') if (F / f'voiceover{e}').exists()), None)
+    vf = ('format=gbrp,split[a][b];[b]scale=480:-1,gblur=sigma=6,scale=1920:1080,format=gbrp[g];'
+          '[a][g]blend=all_mode=screen:all_opacity=0.16,format=yuv420p,vignette=angle=PI/5,noise=alls=3:allf=t,format=yuv420p')
+    slots = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 27, 29]
+    score_file = F / 'score.m4a'
+    if vo:
+        segs = vo_segments(vo)
+        print(f'voice-over: {len(segs)} lines found (expected 16)')
+        place, t_end = [], 0.0
+        for k, (a, b) in enumerate(segs[:16]):
+            at = max(slots[min(k, 15)] * U + 0.25, t_end + 0.25)
+            place.append((a, b, at)); t_end = at + (b - a)
+        tempo = min(1.12, max(1.0, t_end / 119.0))
+        fc = f'[1]asplit={len(place)}' + ''.join(f'[s{k}]' for k in range(len(place))) + ';'
+        for k, (a, b, at) in enumerate(place):
+            fc += f'[s{k}]atrim={a:.3f}:{b:.3f},asetpts=PTS-STARTPTS,atempo={tempo:.3f},adelay={int(at / tempo * 1000)}|{int(at / tempo * 1000)}[d{k}];'
+        fc += ''.join(f'[d{k}]' for k in range(len(place))) + f'amix=inputs={len(place)}:normalize=0,highpass=f=80,acompressor=threshold=-20dB:ratio=3,volume=1.6,asplit[vo][key];'
+        fc += '[2]volume=0.9[m];[m][key]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[duck];[duck][vo]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5[aout];'
+        fc += f'[0:v]{vf}[vout]'
+        run('ffmpeg', '-y', '-i', str(video), '-i', str(vo), '-i', str(score_file), '-filter_complex', fc,
+            '-map', '[vout]', '-map', '[aout]', '-c:v', 'libx264', '-preset', 'medium', '-crf', '15', '-c:a', 'aac', '-b:a', '256k', '-t', '119.9', str(out))
+    else:
+        run('ffmpeg', '-y', '-i', str(video), '-i', str(score_file), '-filter_complex', f'[0:v]{vf}[vout]',
+            '-map', '[vout]', '-map', '1:a', '-c:v', 'libx264', '-preset', 'medium', '-crf', '15', '-c:a', 'copy', '-t', '119.9', str(out))
+
 def score(out, total, hits):
     """A slow ambient drone (A minor, 55/82/110 Hz) with air, and a soft low hit at each chapter."""
     hit = '+'.join(f'0.55*sin(2*PI*46*(t-{h}))*exp(-2.6*(t-{h}))*gte(t,{h})' for h in hits)
@@ -349,6 +426,8 @@ def main():
     # Everything is cut on the score's two-bar grid (scripts/score.py): the beat drops on
     # Boston, the orchestra hits on the war, the music falls away for "who should decide?".
     U = 15.737687 / 4
+    if '--mix-only' in sys.argv:
+        mix_audio(F / 'film-picture.mp4', OUT, U); print(f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s'); return
     score_file = F / 'score.m4a'
     if not score_file.exists():
         subprocess.run([sys.executable, str(ROOT / 'scripts' / 'score.py')], check=True)
@@ -360,13 +439,15 @@ def main():
         parts = []
         # Cold open (4 units): free-licence clips under the problem, in two halves.
         clips = sorted(q for q in (F / 'cold-open').glob('*') if q.suffix.lower() in ('.mp4', '.mov', '.m4v')) if (F / 'cold-open').exists() else []
-        problem = [center_overlay([('Everyone has an opinion about the future.', big, WHITE)]),
-                   center_overlay([('Nobody shows the odds.', big, WHITE), ('And now anything can be faked.', mid, WHITE)])]
         if clips:
             share = 4 * U / len(clips)
-            for k, c in enumerate(clips):
-                ov = problem[0] if k == 0 else problem[1] if k == len(clips) // 2 + 1 else None
-                parts.append(footage(tmp, 90 + k, c, 0, min(share, duration(c)), ov, grade='null', length=share))
+            movies = all((DESK / m[0]).exists() for set_ in MOVIES for m in set_)
+            keep = clips[:len(clips) // 2] if movies else clips
+            for k, c in enumerate(keep):
+                parts.append(footage(tmp, 90 + k, c, 0, min(share, duration(c)), grade='null', length=share))
+            if movies:
+                for k, set_ in enumerate(MOVIES):
+                    parts.append(triptych(tmp, 96 + k, set_, U))
         else:
             parts.append(encode_frames(lines_card([('COLD OPEN', font('demi', 40), CYAN), ('clips go in footage/cold-open/', font('regular', 30), DIM)], 4 * U), tmp / 'cold.mp4'))
         parts.append(footage(tmp, 1, E, T(0.5), T(0.5 + 2 * U), center_overlay([('In 2026,', font('ultralight', 72), WHITE), ('we gave an AI the world\'s budget.', big, WHITE)]), length=2 * U))
@@ -407,7 +488,8 @@ def main():
         lst.write_text(''.join(f"file '{q}'\n" for q in parts))
         video = tmp / 'video.mp4'
         run('ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', str(lst), '-an', '-r', str(FPS), '-c:v', 'libx264', '-preset', 'fast', '-crf', '16', '-pix_fmt', 'yuv420p', str(video))
-        run('ffmpeg', '-y', '-i', str(video), '-i', str(score_file), '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'copy', '-t', '119.9', str(OUT))
+        import shutil; shutil.copy(video, F / 'film-picture.mp4')
+        mix_audio(video, OUT, U)
     print(f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s')
 
 if __name__ == '__main__':
