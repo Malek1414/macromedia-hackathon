@@ -1,0 +1,839 @@
+{
+  "version": 5,
+  "scenes": [
+    {
+      "id": "future-best",
+      "title": "AI Runs the Planet: Best case (top 5% of futures)",
+      "dataPacks": [
+        {
+          "id": "future-best-2026",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-best-2026.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607503), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-best-2036",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-best-2036.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607503), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-best-2046",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-best-2046.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607503), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-best-2056",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-best-2056.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607503), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-best-2066",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-best-2066.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607503), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-best-2076",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-best-2076.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607503), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        }
+      ],
+      "shots": [
+        {
+          "id": "future-best-2026",
+          "title": "2026: 1.35 °C, sea +0 cm, 8.2 bn people, 0M displaced by the sea",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 20,
+            "lon": 20,
+            "alt": 18000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-best-2026"
+          ]
+        },
+        {
+          "id": "future-best-2036",
+          "title": "2036: 1.54 °C, sea +4 cm, 8.88 bn people, 2.31M displaced by the sea. New pandemic, Delhi",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 17.146627416568908,
+            "lon": 77.21,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-best-2036"
+          ]
+        },
+        {
+          "id": "future-best-2046",
+          "title": "2046: 1.65 °C, sea +8 cm, 9.43 bn people, 5.52M displaced by the sea",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 20,
+            "lon": 20,
+            "alt": 18000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-best-2046"
+          ]
+        },
+        {
+          "id": "future-best-2056",
+          "title": "2056: 1.8 °C, sea +14 cm, 9.83 bn people, 9.24M displaced by the sea. AI science boom, Beijing",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 28.436627416568907,
+            "lon": 116.4,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-best-2056"
+          ]
+        },
+        {
+          "id": "future-best-2066",
+          "title": "2066: 1.82 °C, sea +20 cm, 10.13 bn people, 13.29M displaced by the sea. Global climate treaty, Nairobi",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": -12.75337258343109,
+            "lon": 36.82,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-best-2066"
+          ]
+        },
+        {
+          "id": "future-best-2076",
+          "title": "2076: 1.93 °C, sea +26 cm, 10.23 bn people, 17.49M displaced by the sea",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 20,
+            "lon": 20,
+            "alt": 18000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 40,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-best-2076"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "future-likely",
+      "title": "AI Runs the Planet: Most likely (the middle of all futures)",
+      "dataPacks": [
+        {
+          "id": "future-likely-2026",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-likely-2026.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202606157), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-likely-2036",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-likely-2036.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202606157), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-likely-2046",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-likely-2046.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202606157), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-likely-2056",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-likely-2056.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202606157), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-likely-2066",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-likely-2066.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202606157), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-likely-2076",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-likely-2076.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202606157), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        }
+      ],
+      "shots": [
+        {
+          "id": "future-likely-2026",
+          "title": "2026: 1.46 °C, sea +0 cm, 8.2 bn people, 0M displaced by the sea",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 20,
+            "lon": 20,
+            "alt": 18000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-likely-2026"
+          ]
+        },
+        {
+          "id": "future-likely-2036",
+          "title": "2036: 1.57 °C, sea +3 cm, 8.9 bn people, 2.24M displaced by the sea. Deadly heat dome, Phoenix",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 21.98662741656891,
+            "lon": -112.07,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-likely-2036"
+          ]
+        },
+        {
+          "id": "future-likely-2046",
+          "title": "2046: 1.64 °C, sea +8 cm, 9.45 bn people, 5.49M displaced by the sea. Clean-energy breakthrough, Cadarache (ITER)",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 32.24662741656891,
+            "lon": 5.76,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-likely-2046"
+          ]
+        },
+        {
+          "id": "future-likely-2056",
+          "title": "2056: 1.83 °C, sea +14 cm, 9.85 bn people, 9.09M displaced by the sea",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 20,
+            "lon": 20,
+            "alt": 18000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-likely-2056"
+          ]
+        },
+        {
+          "id": "future-likely-2066",
+          "title": "2066: 1.85 °C, sea +20 cm, 10.14 bn people, 13.1M displaced by the sea. Deadly heat dome, Karachi",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 13.396627416568908,
+            "lon": 67,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-likely-2066"
+          ]
+        },
+        {
+          "id": "future-likely-2076",
+          "title": "2076: 1.96 °C, sea +26 cm, 10.23 bn people, 17.52M displaced by the sea. Major war, Taiwan Strait",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 13.036627416568908,
+            "lon": 119.5,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 55,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-likely-2076"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "future-worst",
+      "title": "AI Runs the Planet: Scariest (worst 5% of futures)",
+      "dataPacks": [
+        {
+          "id": "future-worst-2026",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-worst-2026.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607928), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-worst-2036",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-worst-2036.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607928), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-worst-2046",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-worst-2046.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607928), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-worst-2056",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-worst-2056.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607928), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-worst-2066",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-worst-2066.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607928), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        },
+        {
+          "id": "future-worst-2076",
+          "version": 1,
+          "format": "geojson",
+          "source": {
+            "adapter": "assets",
+            "path": "future/future-worst-2076.geojson"
+          },
+          "attribution": {
+            "text": "Simulated future (seed 202607928), not a prediction. Anchored to IPCC AR6 and UN WPP 2024.",
+            "license": "CC BY 4.0"
+          },
+          "placement": {
+            "altitudeReference": "ellipsoid"
+          }
+        }
+      ],
+      "shots": [
+        {
+          "id": "future-worst-2026",
+          "title": "2026: 1.46 °C, sea +0 cm, 8.2 bn people, 0M displaced by the sea",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 20,
+            "lon": 20,
+            "alt": 18000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-worst-2026"
+          ]
+        },
+        {
+          "id": "future-worst-2036",
+          "title": "2036: 1.49 °C, sea +4 cm, 8.87 bn people, 2.41M displaced by the sea. New pandemic, São Paulo",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": -35.01337258343109,
+            "lon": -46.63,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-worst-2036"
+          ]
+        },
+        {
+          "id": "future-worst-2046",
+          "title": "2046: 1.74 °C, sea +9 cm, 9.42 bn people, 5.95M displaced by the sea. AI science boom, Bengaluru",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 1.506627416568909,
+            "lon": 77.59,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-worst-2046"
+          ]
+        },
+        {
+          "id": "future-worst-2056",
+          "title": "2056: 1.89 °C, sea +15 cm, 9.81 bn people, 10.02M displaced by the sea. Major war, Eastern Europe",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 37.536627416568905,
+            "lon": 32,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-worst-2056"
+          ]
+        },
+        {
+          "id": "future-worst-2066",
+          "title": "2066: 2.17 °C, sea +23 cm, 10.09 bn people, 15.03M displaced by the sea. New pandemic, Wuhan",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 19.12662741656891,
+            "lon": 114.31,
+            "alt": 2400000,
+            "heading": 0,
+            "pitch": -62,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-worst-2066"
+          ]
+        },
+        {
+          "id": "future-worst-2076",
+          "title": "2076: 2.41 °C, sea +34 cm, 10.19 bn people, 22.39M displaced by the sea",
+          "durationSec": 4,
+          "holdSec": 3,
+          "camera": {
+            "lat": 20,
+            "lon": 20,
+            "alt": 18000000,
+            "heading": 0,
+            "pitch": -90,
+            "roll": 0
+          },
+          "visual": {
+            "style": "normal",
+            "bloom": {
+              "enabled": true,
+              "intensity": 75,
+              "version": 2
+            },
+            "hud": {
+              "visible": true,
+              "variant": "tactical"
+            }
+          },
+          "dataPackIds": [
+            "future-worst-2076"
+          ]
+        }
+      ]
+    }
+  ]
+}
