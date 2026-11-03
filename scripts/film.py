@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 F = ROOT / 'footage'
-E = F / 'take-E-chronicle.mov'
+E = F / 'take-E-chronicle-hq.mp4' if (F / 'take-E-chronicle-hq.mp4').exists() else F / 'take-E-chronicle.mov'
 OUT = F / 'film.mp4'
 W, H, FPS = 1920, 1080, 30
 BAR = 138                                   # letterbox bars (2.39:1)
@@ -170,6 +170,91 @@ def chapter_overlay(year, line, ribbon, accent):
         y += 44
     return img
 
+def mc_card(mc, secs):
+    """Monte Carlo: 5,000 real warming paths from the engine pile up into a cloud; the 2 °C line,
+    a live counter, then the best, most likely and scariest paths light up."""
+    import numpy as np
+    global BACK
+    BACK = BACK or backdrop()
+    sm = lambda a: np.apply_along_axis(lambda r: np.convolve(np.pad(r, 2, mode='edge'), np.ones(5) / 5, 'valid'), -1, np.asarray(a, float))
+    raw = np.array(mc['tr']); tr = sm(raw); N, Y = tr.shape
+    x0, x1, y0, y1 = 220, W - 160, 230, H - 190            # plot box
+    lo, hi = 1.2, 2.8
+    X = np.linspace(x0, x1, Y)
+    py = lambda v: y1 - (np.asarray(v) - lo) / (hi - lo) * (y1 - y0)
+    order = np.random.RandomState(3).permutation(N)
+    acc = np.zeros((H, W), np.float32)
+    n = int(secs * FPS); drawn = 0
+    fin = raw[:, -1]
+    for i in range(n):
+        t = i / FPS
+        target = int(N * ease(min(1.0, t / (secs * 0.62))) ** 1.6) if t > 0.3 else 0
+        if target > drawn:
+            layer = Image.new('L', (W, H), 0); d = ImageDraw.Draw(layer)
+            for j in order[drawn:target]:
+                d.line(list(zip(X, py(tr[j]))), fill=7, width=2)
+            acc += np.asarray(layer, np.float32); drawn = target
+        out = max(0.0, min(1.0, (secs - t) / 0.4))
+        dens = np.clip(np.log1p(acc / 25) / np.log1p(60), 0, 1)
+        img = np.asarray(BACK, np.float32).copy()
+        col = np.array([110, 214, 255], np.float32)
+        img = img * (1 - dens[..., None] * 0.85) + col * dens[..., None] * 0.85 + (dens[..., None] ** 4) * 60
+        im = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8)).convert('RGBA')
+        layer = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(layer)
+        a = ease((t - 0.1) / 0.6) * out
+        # axes
+        for v in (1.5, 2.0, 2.5):
+            yy = float(py(v)); dash = v == 2.0
+            for xx in range(x0, x1, 18 if dash else 6):
+                d.line([(xx, yy), (xx + (10 if dash else 2), yy)], fill=(255, 196, 70, int((200 if dash else 60) * a)), width=3 if dash else 1)
+            d.text((x0 - 120, yy - 18), f'{v:.1f} °C', font=font('medium', 28), fill=(255, 196, 70, int(255 * a)) if dash else DIM + (int(255 * a),))
+        for yr in (2026, 2050, 2076):
+            xx = x0 + (yr - 2026) / 50 * (x1 - x0)
+            d.text((xx - 34, y1 + 18), str(yr), font=font('medium', 28), fill=DIM + (int(255 * a),))
+        d.text((x0, 120), 'THE AI\'S CHOICE, PLAYED 5,000 TIMES', font=font('demi', 24), fill=CYAN + (int(255 * a),))
+        d.text((x0, 152), f'{drawn:,} possible futures', font=font('demi', 56), fill=WHITE + (int(255 * a),))
+        if drawn:
+            below = int(round((fin[order[:drawn]] < 2).mean() * 100))
+            txt = f'{below}% stay below 2 °C'
+            d.text((x1 - d.textlength(txt, font=font('demi', 44)), 162), txt, font=font('demi', 44), fill=GREEN + (int(255 * a),))
+        # highlight the three futures at the end
+        h = ease((t - secs * 0.66) / 0.9) * out
+        if h > 0:
+            for key, c, label in (('lk', WHITE, 'Most likely'),):
+                pts = list(zip(X, py(sm(mc[key]))))
+                d.line(pts, fill=c + (int(255 * h),), width=5)
+                d.text((x1 + 14, pts[-1][1] - 16), label, font=font('demi', 26), fill=c + (int(255 * h),))
+        im.alpha_composite(layer)
+        yield finish(im, i)
+
+def stars_card(stars, forks, secs):
+    """Cutaway: the open-source globe we built on, its GitHub stars counting up (live from the API)."""
+    global BACK
+    BACK = BACK or backdrop()
+    n = int(secs * FPS)
+    def star(d, cx, cy, r, fill):
+        pts = []
+        for k in range(10):
+            ang = -math.pi / 2 + k * math.pi / 5
+            rr = r if k % 2 == 0 else r * 0.45
+            pts.append((cx + rr * math.cos(ang), cy + rr * math.sin(ang)))
+        d.polygon(pts, fill=fill)
+    for i in range(n):
+        t = i / FPS
+        out = max(0.0, min(1.0, (secs - t) / 0.4)); a = ease((t - 0.05) / 0.4) * out
+        c = ease(min(1.0, t / (secs * 0.7)))
+        img = BACK.copy().convert('RGBA'); layer = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(layer)
+        text_center(d, 250, 'BUILT ON AN OPEN-SOURCE GLOBE', font('demi', 24), CYAN, a)
+        text_center(d, 300, 'github.com/bilawalsidhu/gods-eye-view', font('medium', 40), DIM, a)
+        num = f'{int(stars * c):,}'
+        f = font('demi', 190); w = d.textlength(num, font=f)
+        star(d, (W - w) / 2 - 120, 520, 72, (255, 196, 70, int(255 * a)))
+        d.text(((W - w) / 2 + 10, 410), num, font=f, fill=WHITE + (int(255 * a),))
+        text_center(d, 660, 'stars on GitHub', font('medium', 48), WHITE, a)
+        text_center(d, 740, f'{int(forks * c):,} forks  ·  we added the future', font('medium', 36), DIM, a)
+        img.alpha_composite(layer)
+        yield finish(img, i)
+
 def center_overlay(lines):
     """Big centred lines over footage (opening and closing), on the same letterbox."""
     img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
@@ -213,11 +298,33 @@ def footage(tmp, n, src, a, b, overlay=None, grade=None, length=None):
         fc = (f'[0]{speed}scale={W}:{H},{g},trim=0:{L:.3f},setpts=PTS-STARTPTS[v];[1]format=rgba,fade=t=in:st=0.2:d=0.5:alpha=1[o];'
               f'[v][o]overlay=0:0:shortest=1,{fades},format=yuv420p')
         run('ffmpeg', '-y', '-ss', str(a), '-t', f'{b - a:.3f}', '-i', str(src), '-loop', '1', '-t', f'{L:.3f}', '-i', str(png),
-            '-filter_complex', fc, '-r', str(FPS), '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', str(out))
+            '-filter_complex', fc, '-r', str(FPS), '-c:v', 'libx264', '-preset', 'medium', '-crf', '14', str(out))
     else:
         run('ffmpeg', '-y', '-ss', str(a), '-t', f'{b - a:.3f}', '-i', str(src), '-vf',
             f'{speed}scale={W}:{H},{g},trim=0:{L:.3f},setpts=PTS-STARTPTS,{fades},format=yuv420p',
-            '-r', str(FPS), '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', str(out))
+            '-r', str(FPS), '-c:v', 'libx264', '-preset', 'medium', '-crf', '14', str(out))
+    return out
+
+def split_piece(tmp, n, src, a, b, real, overlay, year, length):
+    """Split view: the simulated future in 3D on the left, real footage of the same city today on the right."""
+    out = tmp / f'p{n:02d}.mp4'
+    L = length; k = L / (b - a)
+    ov = overlay.copy(); d = ImageDraw.Draw(ov)
+    for x, label, col in ((60, f'SIMULATED  ·  {year}', CYAN), (W // 2 + 60, 'REAL  ·  TODAY', WHITE)):
+        f = font('demi', 26); w = d.textlength(label, font=f)
+        d.rounded_rectangle([x - 16, H - BAR - 78, x + w + 16, H - BAR - 30], 10, fill=(3, 5, 10, 170))
+        d.text((x, H - BAR - 70), label, font=f, fill=col + (255,))
+    d.line([(W // 2, BAR), (W // 2, H - BAR)], fill=(238, 242, 248, 200), width=3)
+    png = tmp / f'o{n:02d}.png'; ov.save(png)
+    rd = duration(real); rs = max(0.0, min(2.0, rd - L - 0.1)); k2 = max(1.0, (L + 0.1) / max(0.5, rd - rs))
+    g = 'eq=contrast=1.08:saturation=1.1:gamma=0.96'
+    fc = (f'[0]setpts={k:.4f}*PTS,scale={W}:{H}:flags=lanczos,crop={W // 2}:{H}:{W // 4}:0,trim=0:{L:.3f},setpts=PTS-STARTPTS,{g}[l];'
+          f'[1]setpts={k2:.4f}*PTS,scale={W // 2}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W // 2}:{H},fps={FPS},trim=0:{L:.3f},setpts=PTS-STARTPTS,eq=contrast=1.05:saturation=1.05[r];'
+          f'[l][r]hstack=inputs=2[v];[2]format=rgba,fade=t=in:st=0.2:d=0.5:alpha=1[o];'
+          f'[v][o]overlay=0:0:shortest=1,fade=t=in:st=0:d=0.25,fade=t=out:st={L - 0.25:.3f}:d=0.25,format=yuv420p')
+    run('ffmpeg', '-y', '-ss', str(a), '-t', f'{b - a:.3f}', '-i', str(src), '-ss', f'{rs:.2f}', '-i', str(real),
+        '-loop', '1', '-t', f'{L:.3f}', '-i', str(png), '-filter_complex', fc, '-r', str(FPS),
+        '-c:v', 'libx264', '-preset', 'medium', '-crf', '14', str(out))
     return out
 
 def score(out, total, hits):
@@ -263,8 +370,8 @@ def main():
         else:
             parts.append(encode_frames(lines_card([('COLD OPEN', font('demi', 40), CYAN), ('clips go in footage/cold-open/', font('regular', 30), DIM)], 4 * U), tmp / 'cold.mp4'))
         parts.append(footage(tmp, 1, E, T(0.5), T(0.5 + 2 * U), center_overlay([('In 2026,', font('ultralight', 72), WHITE), ('we gave an AI the world\'s budget.', big, WHITE)]), length=2 * U))
-        parts.append(encode_frames(choice_card(p, 3 * U), tmp / 'choice.mp4'))
-        parts.append(encode_frames(lines_card([('It played out 5,000 possible futures.', big, WHITE), ('This is the most likely one.', mid, DIM)], U), tmp / 'futures.mp4'))
+        parts.append(encode_frames(choice_card(p, 2 * U), tmp / 'choice.mp4'))
+        parts.append(encode_frames(mc_card(json.loads((F / 'mc.json').read_text()), 2 * U), tmp / 'futures.mp4'))
         chapters = [
             (T(11.5), '2032', 'The world crosses 1.5 °C.', rib(2032), AMBER),
             (T(21.0), '2035', f'A {ev["breakthrough"]["title"].lower()} in {ev["breakthrough"]["place"]}. Emissions fall faster than planned.', rib(2035), GREEN),
@@ -273,8 +380,13 @@ def main():
             (T(53.0), '2076', f'The sea is {round(rows["2076"]["seaLevelM"] * 100)} cm higher. One hurricane is enough to flood Miami Beach.', rib(2076), RED),
             (T(63.5), '2076', f'In Dhaka alone, almost {math.ceil(dh76)} million people have lost their homes to the sea.', rib(2076), RED),
         ]
-        for n, (a, year, line, ribbon, accent) in enumerate(chapters, start=10):
-            parts.append(footage(tmp, n, E, a, a + 2 * U, chapter_overlay(year, line, ribbon, accent), length=2 * U))
+        cities = [None, 'boston', 'shanghai', 'kyiv', 'miami', 'dhaka']
+        for n, ((a, year, line, ribbon, accent), city) in enumerate(zip(chapters, cities), start=10):
+            real = F / 'cities' / f'{city}.mp4' if city else None
+            if real and real.exists():
+                parts.append(split_piece(tmp, n, E, a, a + 2 * U, real, chapter_overlay(year, line, ribbon, accent), year, 2 * U))
+            else:
+                parts.append(footage(tmp, n, E, a, a + 2 * U, chapter_overlay(year, line, ribbon, accent), length=2 * U))
         ai, au = r['AI'], r['Audience']
         parts.append(encode_frames(lines_card([(f'The AI kept warming under 2 °C in {ai["p2"]}% of futures.', font('demi', 54), GREEN),
                                                (f'It forgot {ai["disp"]} million people on the coasts.', font('demi', 54), RED),
@@ -282,13 +394,15 @@ def main():
         # What it becomes (script v3): the truth layer, on the globe, then the claim, then the end card.
         parts.append(footage(tmp, 30, E, 74.3, 79.9, center_overlay([('What it becomes:', mid, DIM), ('one shared source of truth for the world,', font('demi', 64), WHITE),
                                                                       ('checked against reality, played forward.', font('demi', 64), WHITE)]), length=2 * U))
+        gh = json.loads(subprocess.run(['gh', 'api', 'repos/bilawalsidhu/gods-eye-view'], capture_output=True, text=True).stdout or '{}')
+        parts.append(encode_frames(stars_card(gh.get('stargazers_count', 62417), gh.get('forks_count', 12208), U), tmp / 'stars.mp4'))
         parts.append(encode_frames(lines_card([('A video can be faked.', font('demi', 54), WHITE),
                                                ('Thousands of sensors agreeing are much harder to fake.', font('demi', 54), CYAN),
                                                ('Truth backed by reality ends fear and doubt.', font('medium', 40), DIM)], 2 * U, 'WHY IT MATTERS'), tmp / 'truth.mp4'))
         parts.append(encode_frames(lines_card([('AI RUNS THE PLANET', font('ultralight', 96), WHITE), ('See the world as it is. See where it\'s going.', font('demi', 40), CYAN),
                                                ('Frontier AI will fit in your pocket. Soon, on every phone, for everyone.', font('medium', 32), WHITE),
                                                ('Malek Hassan & Sammy  ·  Macromedia X CODE Hackathon 2026', font('regular', 26), DIM),
-                                               ('God\'s Eye View (Bilawal Sidhu, MIT)  ·  CesiumJS  ·  Google Photorealistic 3D Tiles  ·  IPCC AR6  ·  UN WPP 2024  ·  Music: Apple Loops  ·  Cold open: Mixkit', font('regular', 22), DIM)], 119.9 - 28 * U + 0.4), tmp / 'end.mp4'))
+                                               ('God\'s Eye View (Bilawal Sidhu, MIT)  ·  CesiumJS  ·  Google Photorealistic 3D Tiles  ·  IPCC AR6  ·  UN WPP 2024  ·  Music: Apple Loops  ·  Footage: Mixkit, Pexels', font('regular', 22), DIM)], 119.9 - 29 * U + 0.4), tmp / 'end.mp4'))
         lst = tmp / 'list.txt'
         lst.write_text(''.join(f"file '{q}'\n" for q in parts))
         video = tmp / 'video.mp4'
