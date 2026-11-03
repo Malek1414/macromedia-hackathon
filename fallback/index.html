@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Runs the Planet</title>
+  <meta name="description" content="An AI, Claude and the audience each get the same budget to run the world from 2026 to 2076. 5,000 Monte Carlo futures on a 3D globe. Possible futures, not predictions." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="style.css" rel="stylesheet" />
+  <script>
+    // Cesium from the local copy (scripts/vendor-cesium.sh) so the demo survives bad Wi-Fi; the CDN otherwise.
+    (function () {
+      var bases = ['vendor/cesium/', 'https://cdn.jsdelivr.net/npm/cesium@1.123.0/Build/Cesium/'];
+      function load(i) {
+        var base = bases[i];
+        var s = document.createElement('script');
+        s.src = base + 'Cesium.js';
+        s.onload = function () {
+          window.CESIUM_BASE_URL = base;
+          var l = document.createElement('link');
+          l.rel = 'stylesheet';
+          l.href = base + 'Widgets/widgets.css';
+          document.head.appendChild(l);
+          window.cesiumReady = true;
+          document.dispatchEvent(new Event('cesium-ready'));
+        };
+        s.onerror = function () { if (i + 1 < bases.length) load(i + 1); };
+        window.CESIUM_BASE_URL = base;
+        document.head.appendChild(s);
+      }
+      load(0);
+    })();
+  </script>
+</head>
+<body>
+  <div id="globe"></div>
+  <div id="heatveil" aria-hidden="true"></div>
+
+  <header class="hud">
+    <div class="brand">AI RUNS THE PLANET <span>2026 → 2076</span></div>
+    <div class="readouts">
+      <div><label>YEAR</label><b id="hud-year">2026</b></div>
+      <div><label>WARMING</label><b id="hud-warm">1.4 °C</b></div>
+      <div><label>SEA LEVEL</label><b id="hud-sea">+0 cm</b></div>
+      <div><label>PEOPLE</label><b id="hud-pop">8.2 bn</b></div>
+      <div><label>DISPLACED</label><b id="hud-disp">0</b></div>
+      <div><label>WELLBEING</label><b id="hud-wb">62</b></div>
+    </div>
+  </header>
+
+  <div id="banner" class="banner" aria-live="polite"></div>
+
+  <section id="intro" class="intro">
+    <p class="kicker">2026 → 2076 · 5,000 futures</p>
+    <h1>What if AI ran the planet?</h1>
+    <p class="sub">An AI gets the same budget as humanity. It picks the policies. We watch the next 50 years.</p>
+    <button id="intro-go" class="primary">Hand over the planet</button>
+    <button id="intro-skip" class="link">or set the levers yourself</button>
+    <p class="fine">Possible futures, not predictions · IPCC AR6 · UN WPP 2024</p>
+  </section>
+
+  <section id="report" class="report hidden" aria-live="polite"></section>
+
+  <aside class="panel left" id="left">
+    <button id="collapse" class="collapse" aria-label="Show or hide the levers">‹</button>
+    <div class="tabs">
+      <button id="tab-ai" class="active">AI</button>
+      <button id="tab-claude">Claude</button>
+      <button id="tab-human">Audience</button>
+    </div>
+    <p class="hint" id="who-hint">The AI gets the same budget as humanity: <b>360 points</b> across six levers. It runs thousands of futures for every mix it tries.</p>
+    <div id="levers"></div>
+    <div class="budget"><div id="budget-bar"></div><span id="budget-text">0 / 360</span></div>
+    <button id="btn-ai" class="primary">Let AI decide</button>
+    <button id="btn-run" class="secondary">Run 5,000 futures</button>
+    <div id="progress" class="progress hidden"><div></div></div>
+    <ul id="rationale" class="rationale"></ul>
+  </aside>
+
+  <aside class="panel right">
+    <h3>Three futures out of <span id="runs">5,000</span></h3>
+    <div id="cards"></div>
+    <h4>All futures, worst → best</h4>
+    <div id="histogram" class="histogram"></div>
+    <div id="stats" class="stats"></div>
+    <div id="compare" class="compare hidden"></div>
+    <p class="disclaimer">Possible futures, not predictions. Anchored to IPCC AR6 (warming, sea level by SSP) and UN World Population Prospects 2024; events and effects are simplified.</p>
+  </aside>
+
+  <footer class="timeline">
+    <button id="btn-play" aria-label="Play">▶</button>
+    <input id="year" type="range" min="2026" max="2076" value="2026" step="1" />
+    <div class="ticks"><span>2026</span><span>2036</span><span>2046</span><span>2056</span><span>2066</span><span>2076</span></div>
+    <div id="ticker" class="ticker"></div>
+    <div class="legend-row"><span><i style="background:#ff3b4e"></i>disaster</span><span><i style="background:#3ee08f"></i>breakthrough</span><span><i style="background:#ffb020"></i>coast flooding out</span><span><i style="background:#ff6a1a"></i>heat stress</span></div>
+  </footer>
+
+  <div class="credit-line">Imagery: NASA GIBS (Blue Marble, Black Marble) · CesiumJS</div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
