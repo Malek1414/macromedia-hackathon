@@ -8,7 +8,7 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link href="style.css?v=3" rel="stylesheet" />
+  <link href="style.css?v=4" rel="stylesheet" />
   <script>
     // Cesium from the local copy (scripts/vendor-cesium.sh) so the demo survives bad Wi-Fi; the CDN otherwise.
     (function () {
@@ -106,6 +106,9 @@
         const p = ((r.value - r.min) / (r.max - r.min)) * 100 + '%';
         if (r.style.getPropertyValue('--p') !== p) r.style.setProperty('--p', p);
       }
+      // Panels sit above the timeline, whatever height it wraps to on a phone.
+      const tl = document.querySelector('.timeline');
+      if (tl) { const h = tl.offsetHeight + 'px'; if (document.documentElement.style.getPropertyValue('--tl') !== h) document.documentElement.style.setProperty('--tl', h); }
       requestAnimationFrame(tick);
     })();
   </script>
