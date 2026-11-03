@@ -258,3 +258,32 @@ body.reporting .panel.right, body.reporting .panel.left { opacity: 0; pointer-ev
 #heatveil { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0; transition: opacity .6s ease;
   background: radial-gradient(ellipse at center, rgba(255,60,20,0) 45%, rgba(255,60,20,.28) 80%, rgba(160,10,0,.55) 100%);
   mix-blend-mode: screen; }
+
+/* ---------- sliders: custom track with fill, bigger touch thumb ---------- */
+.lever input, #year { -webkit-appearance: none; appearance: none; height: 28px; background: transparent; --p: 50%; --c: var(--accent); cursor: pointer; }
+.lever.starved input { --c: var(--bad); }
+.lever input::-webkit-slider-runnable-track, #year::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 999px;
+  background: linear-gradient(90deg, var(--c) 0 var(--p), rgba(255, 255, 255, 0.13) var(--p) 100%); }
+.lever input::-webkit-slider-thumb, #year::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px; margin-top: -7px; border-radius: 50%;
+  background: #eef7ff; border: 3px solid var(--c);
+  box-shadow: 0 0 0 4px rgba(90, 209, 255, 0.16), 0 2px 8px rgba(0, 0, 0, 0.55);
+  transition: transform .15s ease, box-shadow .2s ease; }
+.lever input:active::-webkit-slider-thumb, #year:active::-webkit-slider-thumb,
+.lever input:focus-visible::-webkit-slider-thumb, #year:focus-visible::-webkit-slider-thumb {
+  transform: scale(1.18); box-shadow: 0 0 0 9px rgba(90, 209, 255, 0.2), 0 2px 10px rgba(0, 0, 0, 0.6); }
+.lever input::-moz-range-track, #year::-moz-range-track { height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.13); }
+.lever input::-moz-range-progress, #year::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--c); }
+.lever input::-moz-range-thumb, #year::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #eef7ff; border: 3px solid var(--c);
+  box-shadow: 0 0 0 4px rgba(90, 209, 255, 0.16), 0 2px 8px rgba(0, 0, 0, 0.55); }
+.lever input:focus, #year:focus { outline: none; }
+
+/* ---------- phone fixes that must come after the motion pass ---------- */
+@media (max-width: 760px) {
+  .banner { transform: translateY(-14px) scale(.96); max-width: none; }
+  .banner.show { transform: none; }
+  .readouts label { font-size: 10px; letter-spacing: 0.08em; }
+  .lever input::-webkit-slider-thumb, #year::-webkit-slider-thumb { width: 24px; height: 24px; margin-top: -9px; }
+  .lever input, #year { height: 34px; }
+}
