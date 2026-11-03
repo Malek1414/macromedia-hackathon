@@ -16,14 +16,29 @@ OUT = ROOT / 'footage/rough-cut-v0.mp4'
 W, H, FPS = 1920, 1080, 30
 
 # (source, start, end) in the raw takes, in order; times mapped from the contact sheets.
-# Cold open: Malek's clips in footage/cold-open/ (any .mp4/.mov, played in file-name
-# order, each trimmed to an equal share of the slot). Without clips, a placeholder card.
-# The first beats' voice plays over it; the hook visuals shrink to make room.
+# Cold open (docs/video-spec.md): a 9.4 s hard-cut montage of free-licence clips
+# (licences in docs/cold-open-sources.md) between two title cards, before take A's title
+# screen. The clips are not committed; docs/cold-open-sources.md says where each comes from.
 COLD = ROOT / 'footage/cold-open'
-COLD_OPEN_S = 15          # 10-20; override with --cold-open N
+# (file, start in clip, seconds shown, grade); grade: dark = teal-and-red, warm = utopia, cool = AI/neutral
+COLD_OPEN = [
+    ('01-neon-city.mp4', 1.0, 1.0, 'dark'),
+    ('02-solar-farm.mp4', 2.0, 0.9, 'warm'),
+    ('03-robot-arm.mp4', 0.0, 0.8, 'cool'),
+    ('04-flood.mp4', 5.0, 0.8, 'dark'),
+    ('05-child.mp4', 2.0, 0.8, 'warm'),
+    ('06-server-room.mp4', 3.0, 0.8, 'cool'),
+    ('07-wildfire.mp4', 6.0, 0.7, 'dark'),
+]
+COLD_EARTH = ('08-earth.mp4', 5.0, 1.0, 'cool')
+CARD1_S, CARD2_S, BLACK_S = 1.2, 1.2, 0.2   # first card, "I, Robot ..." card, black frames before the title screen
+COLD_OPEN_S = CARD1_S + sum(c[2] for c in COLD_OPEN) + CARD2_S + COLD_EARTH[2] + BLACK_S   # 9.4
+GRADES = {'dark': 'colorbalance=rs=-.12:bs=.14:rm=.10:bm=.06,eq=saturation=1.1:contrast=1.08',
+          'warm': 'colorbalance=rs=.12:bs=-.12:rm=.08:bm=-.08,eq=saturation=1.1',
+          'cool': 'eq=contrast=1.05'}
 
 def opening(cold_s):
-    """Hook and tried visuals for the 25 s before beat 3, after the cold open."""
+    """Hook and tried visuals up to 0:25 (beat 3), after the cold open."""
     rest = 25 - cold_s
     title = min(6.0, rest * 0.45)
     return [(A2, 0, title), (B, 7, 7 + rest - title)]
@@ -38,7 +53,7 @@ CUTS = [
     (B, 18, 40),         # 1:26 means: GEV plays the scariest future
     (A2, 139.0, 147.0),  # 1:48 ask: back on the face-off
 ]
-END_CARD_S = 4
+END_CARD_S = 3.9   # the cut is capped at 119.9 s
 
 def run(*cmd):
     subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -78,21 +93,79 @@ def end_card(path):
         y += f.size + 40
     img.save(path)
 
+def title_font(size):
+    for f in ['/System/Library/Fonts/Supplemental/Arial Bold.ttf', '/System/Library/Fonts/Helvetica.ttc']:
+        try: return ImageFont.truetype(f, size)
+        except OSError: pass
+    return ImageFont.load_default()
+
+def draw_tracked(d, text, font, y, fill=(255, 255, 255), strike=False, full_text=None):
+    """Text with 0.05 em letter-spacing, centred as if full_text (default: text) were complete; optional strike-through."""
+    gap = font.size * 0.05
+    def width(t): return sum(d.textlength(ch, font=font) for ch in t) + gap * (len(t) - 1)
+    total = width(full_text or text)
+    x = W / 2 - total / 2
+    for ch in text:
+        d.text((x, y), ch, font=font, fill=fill)
+        x += d.textlength(ch, font=font) + gap
+    if strike:
+        ly = y + font.size * 0.62
+        d.line([(W / 2 - total / 2 - 14, ly), (W / 2 + total / 2 + 14, ly)], fill=(255, 70, 70), width=8)
+
+def card_frames(folder, lines, seconds):
+    """Title card frames at FPS. lines: (text, size, y, from_s, until_s, mode); mode 'type' types the line on,
+    'show' shows it, 'strike' shows it struck through."""
+    for i in range(round(seconds * FPS)):
+        t = i / FPS
+        img = Image.new('RGB', (W, H), (0, 0, 0))
+        d = ImageDraw.Draw(img)
+        for text, size, y, a, b, mode in lines:
+            if not (a <= t < b): continue
+            f = title_font(size)
+            if mode == 'type':
+                draw_tracked(d, text[:max(1, int((t - a) * 38))], f, y, full_text=text)
+            else:
+                draw_tracked(d, text, f, y, strike=(mode == 'strike'))
+        img.save(folder / f'f{i:04d}.png')
+
 def cold_open_parts(tmp, cold_s, vf):
-    clips = sorted(p for p in COLD.glob('*') if p.suffix.lower() in ('.mp4', '.mov', '.m4v', '.webm')) if COLD.exists() else []
-    parts = []
-    if clips:
-        each = cold_s / len(clips)
-        for i, clip in enumerate(clips):
-            part = tmp / f'cold{i}.mp4'
-            run('ffmpeg', '-y', '-ss', '0', '-t', f'{each:.3f}', '-i', str(clip), '-an', '-vf', vf,
-                '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p', str(part))
-            parts.append(part)
-        return parts, len(clips)
+    """Cold open per the spec: card, 7 hard-cut clips with a 1.0x to 1.3x speed ramp, typed card, earth, 6 black frames."""
+    need = [c[0] for c in COLD_OPEN] + [COLD_EARTH[0]]
+    if not all((COLD / n).exists() for n in need):
+        return placeholder_parts(tmp, cold_s), 0
+    cover = f'scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1'
+    enc = ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p']
+    def card_part(name, lines, seconds):
+        folder = tmp / name
+        folder.mkdir()
+        card_frames(folder, lines, seconds)
+        out = tmp / (name + '.mp4')
+        run('ffmpeg', '-y', '-framerate', str(FPS), '-i', str(folder / 'f%04d.png'), *enc, str(out))
+        return out
+    parts = [card_part('card1', [("We've imagined this future for 100 years.", 62, 500, 0.15, 99, 'show')], CARD1_S)]
+    for i, (name, ss, secs, grade) in enumerate(COLD_OPEN):
+        speed = 1.0 + 0.3 * i / (len(COLD_OPEN) - 1)     # 1.0x to 1.3x as the montage builds
+        part = tmp / f'cold{i}.mp4'
+        run('ffmpeg', '-y', '-ss', str(ss), '-i', str(COLD / name), '-an', '-vf',
+            f'{cover},{GRADES[grade]},setpts=PTS/{speed:.3f},fps={FPS}', '-t', str(secs), *enc, str(part))
+        parts.append(part)
+    line = "I, Robot. RoboCop. Elysium. Her."
+    parts.append(card_part('card2', [(line, 56, 440, 0.0, 0.55, 'type'), (line, 56, 440, 0.55, 0.8, 'show'),
+                                     (line, 56, 440, 0.8, 99, 'strike'), ("Fiction.", 92, 560, 0.9, 99, 'show')], CARD2_S))
+    name, ss, secs, grade = COLD_EARTH
+    earth = tmp / 'cold_earth.mp4'
+    run('ffmpeg', '-y', '-ss', str(ss), '-i', str(COLD / name), '-an', '-vf', f'{cover},{GRADES[grade]},fps={FPS}',
+        '-t', str(secs), *enc, str(earth))
+    parts.append(earth)
+    black = tmp / 'black.mp4'
+    run('ffmpeg', '-y', '-f', 'lavfi', '-i', f'color=black:s={W}x{H}:r={FPS}', '-t', str(BLACK_S), *enc, str(black))
+    parts.append(black)
+    return parts, len(COLD_OPEN) + 1
+
+def placeholder_parts(tmp, cold_s):
     img = Image.new('RGB', (W, H), (0, 0, 0))
     d = ImageDraw.Draw(img)
-    try: f = ImageFont.truetype('/System/Library/Fonts/Supplemental/Arial Bold.ttf', 64)
-    except OSError: f = ImageFont.load_default()
+    f = title_font(64)
     for text, y in [(f'COLD OPEN · {cold_s:g} s', 470), ('clips go in footage/cold-open/', 560)]:
         w = d.textlength(text, font=f)
         d.text(((W - w) / 2, y), text, font=f, fill=(90, 209, 255) if y < 500 else (138, 151, 171))
@@ -101,14 +174,11 @@ def cold_open_parts(tmp, cold_s, vf):
     part = tmp / 'cold.mp4'
     run('ffmpeg', '-y', '-loop', '1', '-t', str(cold_s), '-i', str(png), '-vf', f'fps={FPS},format=yuv420p',
         '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', str(part))
-    return [part], 0
+    return [part]
 
 def main():
     import sys
     cold_s = COLD_OPEN_S
-    if '--cold-open' in sys.argv:
-        cold_s = float(sys.argv[sys.argv.index('--cold-open') + 1])
-    cold_s = max(0.0, min(20.0, cold_s))
     beats = json.loads((ROOT / 'pitch/ai-runs-the-planet/script.json').read_text())['beats']
     # Beat start times from the gated script (pitch.py script-md writes them).
     starts = {}
@@ -135,7 +205,8 @@ def main():
         listfile = tmp / 'list.txt'
         listfile.write_text(''.join(f"file '{p}'\n" for p in parts))
         video = tmp / 'video.mp4'
-        run('ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', str(listfile), '-c', 'copy', str(video))
+        run('ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', str(listfile), '-vf', f'fps={FPS}',
+            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', str(video))   # re-encode: the parts come from different sources and timebases
 
         # Temporary voice: each beat at its start time, sped up only if it would overrun the next beat.
         order = sorted(starts, key=starts.get)
