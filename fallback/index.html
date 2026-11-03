@@ -99,5 +99,15 @@
 
   <div class="credit-line">Imagery: NASA GIBS (Blue Marble, Black Marble) · CesiumJS</div>
   <script type="module" src="app.js"></script>
+  <script>
+    // Slider fill: keep --p in step with the value, including when the app moves a slider itself.
+    (function tick() {
+      for (const r of document.querySelectorAll('.lever input, #year')) {
+        const p = ((r.value - r.min) / (r.max - r.min)) * 100 + '%';
+        if (r.style.getPropertyValue('--p') !== p) r.style.setProperty('--p', p);
+      }
+      requestAnimationFrame(tick);
+    })();
+  </script>
 </body>
 </html>
