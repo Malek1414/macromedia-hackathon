@@ -390,7 +390,7 @@ def mix_audio(video, out, U):
         tmpd = Path(tempfile.mkdtemp()); parts = []
         for k, (a, b) in enumerate(lines):
             w = tmpd / f'l{k:02d}.wav'
-            tight = ',silenceremove=stop_periods=-1:stop_duration=0.3:stop_silence=0.18:stop_threshold=-40dB' if k >= 12 else ''
+            tight = ',silenceremove=stop_periods=-1:stop_duration=0.2:stop_silence=0.1:stop_threshold=-40dB' if k >= 12 else ''
             run('ffmpeg', '-y', '-i', str(vo), '-af', f'atrim={a}:{b},asetpts=PTS-STARTPTS{tight}', '-ar', '48000', '-ac', '2', str(w))
             parts.append([w, duration(w)])
         # lines 1-12 sit on their shots; lines 13-16 run back to back and are sped up just enough to end by 119.6 s
@@ -399,13 +399,12 @@ def mix_audio(video, out, U):
             at = max(slots[k] * U + 0.25, t_end + 0.25); place.append((k, at, 1.0)); t_end = at + parts[k][1]
         rest = list(range(12, len(parts)))
         if rest:
-            start = max(t_end + 0.3, 24 * U - 1.6)
-            need = sum(parts[k][1] for k in rest); room = 119.6 - start - 0.25 * (len(rest) - 1)
-            tempo = min(1.2, max(1.0, need / room)); t = start
+            start = max(t_end + 0.2, 24 * U - 2.2)
+            need = sum(parts[k][1] for k in rest); room = 119.7 - start - 0.15 * (len(rest) - 1)
+            tempo = min(1.25, max(1.0, need / room)); t = start
             print(f'closing lines tempo {tempo:.3f}')
             for k in rest:
-                t = max(t, slots[k] * U - 3.0) if k == 14 else t
-                place.append((k, t, tempo)); t += parts[k][1] / tempo + 0.25
+                place.append((k, t, tempo)); t += parts[k][1] / tempo + 0.15
         ins = []; fc = ''
         for n, (k, at, tp) in enumerate(place):
             ins += ['-i', str(parts[k][0])]
@@ -416,7 +415,7 @@ def mix_audio(video, out, U):
         fc += f'[{si}]volume=0.9[m];[m][key]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[duck];[duck][vo]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5[aout];'
         fc += f'[0:v]{vf}[vout]'
         run('ffmpeg', '-y', '-i', str(video), *ins, '-i', str(score_file), '-filter_complex', fc,
-            '-map', '[vout]', '-map', '[aout]', '-c:v', 'libx264', '-preset', 'medium', '-crf', '15', '-c:a', 'aac', '-b:a', '256k', '-t', '119.9', str(OUT))
+            '-map', '[vout]', '-map', '[aout]', '-c:v', 'libx264', '-preset', 'fast', '-crf', '15', '-c:a', 'aac', '-b:a', '256k', '-t', '119.9', str(OUT))
     else:
         run('ffmpeg', '-y', '-i', str(video), '-i', str(score_file), '-filter_complex', f'[0:v]{vf}[vout]',
             '-map', '[vout]', '-map', '1:a', '-c:v', 'libx264', '-preset', 'medium', '-crf', '15', '-c:a', 'copy', '-t', '119.9', str(out))
