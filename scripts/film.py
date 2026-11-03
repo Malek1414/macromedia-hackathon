@@ -251,12 +251,15 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         parts = []
-        # Cold open (4 units): Malek's clips in file-name order, or a placeholder.
+        # Cold open (4 units): free-licence clips under the problem, in two halves.
         clips = sorted(q for q in (F / 'cold-open').glob('*') if q.suffix.lower() in ('.mp4', '.mov', '.m4v')) if (F / 'cold-open').exists() else []
+        problem = [center_overlay([('Everyone has an opinion about the future.', big, WHITE)]),
+                   center_overlay([('Nobody shows the odds.', big, WHITE), ('And now anything can be faked.', mid, WHITE)])]
         if clips:
             share = 4 * U / len(clips)
             for k, c in enumerate(clips):
-                parts.append(footage(tmp, 90 + k, c, 0, min(share, duration(c)), grade='null', length=share))
+                ov = problem[0] if k == 0 else problem[1] if k == len(clips) // 2 + 1 else None
+                parts.append(footage(tmp, 90 + k, c, 0, min(share, duration(c)), ov, grade='null', length=share))
         else:
             parts.append(encode_frames(lines_card([('COLD OPEN', font('demi', 40), CYAN), ('clips go in footage/cold-open/', font('regular', 30), DIM)], 4 * U), tmp / 'cold.mp4'))
         parts.append(footage(tmp, 1, E, T(0.5), T(0.5 + 2 * U), center_overlay([('In 2026,', font('ultralight', 72), WHITE), ('we gave an AI the world\'s budget.', big, WHITE)]), length=2 * U))
@@ -272,19 +275,24 @@ def main():
         ]
         for n, (a, year, line, ribbon, accent) in enumerate(chapters, start=10):
             parts.append(footage(tmp, n, E, a, a + 2 * U, chapter_overlay(year, line, ribbon, accent), length=2 * U))
-        ai, cl, au = r['AI'], r['Claude'], r['Audience']
+        ai, au = r['AI'], r['Audience']
         parts.append(encode_frames(lines_card([(f'The AI kept warming under 2 °C in {ai["p2"]}% of futures.', font('demi', 54), GREEN),
-                                               (f'It forgot {ai["disp"]} million people on the coasts.', font('demi', 54), RED)], 2 * U, 'THE TRADE-OFF'), tmp / 'reveal.mp4'))
-        parts.append(encode_frames(lines_card([(f'Claude chose differently:  {cl["p2"]}% under 2 °C,  {cl["disp"]} million displaced.', font('medium', 42), WHITE),
-                                               (f'A people-first choice:  {au["p2"]}% under 2 °C,  {au["disp"]} million displaced.', font('medium', 42), WHITE)], 2 * U, 'OTHER CHOICES'), tmp / 'others.mp4'))
-        parts.append(footage(tmp, 30, E, 74.3, 79.9, center_overlay([('Possible futures, not predictions.', mid, DIM), ('So who should decide?', font('demi', 72), WHITE)]), length=2 * U))
-        parts.append(encode_frames(lines_card([('AI RUNS THE PLANET', font('ultralight', 96), WHITE), ('Try to beat the AI.', font('demi', 40), CYAN),
+                                               (f'It forgot {ai["disp"]} million people on the coasts.', font('demi', 54), RED),
+                                               (f'A people-first choice: {au["disp"]} million, but {au["p2"]}% under 2 °C.', font('medium', 40), WHITE)], 2 * U, 'THE TRADE-OFF'), tmp / 'reveal.mp4'))
+        # What it becomes (script v3): the truth layer, on the globe, then the claim, then the end card.
+        parts.append(footage(tmp, 30, E, 74.3, 79.9, center_overlay([('What it becomes:', mid, DIM), ('one shared source of truth for the world,', font('demi', 64), WHITE),
+                                                                      ('checked against reality, played forward.', font('demi', 64), WHITE)]), length=2 * U))
+        parts.append(encode_frames(lines_card([('A video can be faked.', font('demi', 54), WHITE),
+                                               ('Thousands of sensors agreeing are much harder to fake.', font('demi', 54), CYAN),
+                                               ('Truth backed by reality ends fear and doubt.', font('medium', 40), DIM)], 2 * U, 'WHY IT MATTERS'), tmp / 'truth.mp4'))
+        parts.append(encode_frames(lines_card([('AI RUNS THE PLANET', font('ultralight', 96), WHITE), ('See the world as it is. See where it\'s going.', font('demi', 40), CYAN),
+                                               ('Frontier AI will fit in your pocket. Soon, on every phone, for everyone.', font('medium', 32), WHITE),
                                                ('Malek Hassan & Sammy  ·  Macromedia X CODE Hackathon 2026', font('regular', 26), DIM),
-                                               ('God\'s Eye View  ·  CesiumJS  ·  Google Photorealistic 3D Tiles  ·  IPCC AR6  ·  UN WPP 2024  ·  Music: Apple Loops', font('regular', 22), DIM)], 119.9 - 28 * U + 0.4), tmp / 'end.mp4'))
+                                               ('God\'s Eye View (Bilawal Sidhu, MIT)  ·  CesiumJS  ·  Google Photorealistic 3D Tiles  ·  IPCC AR6  ·  UN WPP 2024  ·  Music: Apple Loops  ·  Cold open: Mixkit', font('regular', 22), DIM)], 119.9 - 28 * U + 0.4), tmp / 'end.mp4'))
         lst = tmp / 'list.txt'
         lst.write_text(''.join(f"file '{q}'\n" for q in parts))
         video = tmp / 'video.mp4'
-        run('ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', str(lst), '-c', 'copy', str(video))
+        run('ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', str(lst), '-an', '-r', str(FPS), '-c:v', 'libx264', '-preset', 'fast', '-crf', '16', '-pix_fmt', 'yuv420p', str(video))
         run('ffmpeg', '-y', '-i', str(video), '-i', str(score_file), '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'copy', '-t', '119.9', str(OUT))
     print(f'{OUT.relative_to(ROOT)}: {duration(OUT):.1f} s')
 
