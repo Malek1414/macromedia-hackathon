@@ -385,21 +385,38 @@ def mix_audio(video, out, U):
     slots = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 27, 29]
     score_file = F / 'score.m4a'
     if vo:
-        segs = vo_segments(vo)
-        print(f'voice-over: {len(segs)} lines found (expected 16)')
+        lines = json.loads((F / 'vo-lines.json').read_text()) if (F / 'vo-lines.json').exists() else vo_segments(vo)
+        print(f'voice-over: {len(lines)} lines')
+        tmpd = Path(tempfile.mkdtemp()); parts = []
+        for k, (a, b) in enumerate(lines):
+            w = tmpd / f'l{k:02d}.wav'
+            tight = ',silenceremove=stop_periods=-1:stop_duration=0.3:stop_silence=0.18:stop_threshold=-40dB' if k >= 12 else ''
+            run('ffmpeg', '-y', '-i', str(vo), '-af', f'atrim={a}:{b},asetpts=PTS-STARTPTS{tight}', '-ar', '48000', '-ac', '2', str(w))
+            parts.append([w, duration(w)])
+        # lines 1-12 sit on their shots; lines 13-16 run back to back and are sped up just enough to end by 119.6 s
         place, t_end = [], 0.0
-        for k, (a, b) in enumerate(segs[:16]):
-            at = max(slots[min(k, 15)] * U + 0.25, t_end + 0.25)
-            place.append((a, b, at)); t_end = at + (b - a)
-        tempo = min(1.12, max(1.0, t_end / 119.0))
-        fc = f'[1]asplit={len(place)}' + ''.join(f'[s{k}]' for k in range(len(place))) + ';'
-        for k, (a, b, at) in enumerate(place):
-            fc += f'[s{k}]atrim={a:.3f}:{b:.3f},asetpts=PTS-STARTPTS,atempo={tempo:.3f},adelay={int(at / tempo * 1000)}|{int(at / tempo * 1000)}[d{k}];'
-        fc += ''.join(f'[d{k}]' for k in range(len(place))) + f'amix=inputs={len(place)}:normalize=0,highpass=f=80,acompressor=threshold=-20dB:ratio=3,volume=1.6,asplit[vo][key];'
-        fc += '[2]volume=0.9[m];[m][key]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[duck];[duck][vo]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5[aout];'
+        for k in range(min(12, len(parts))):
+            at = max(slots[k] * U + 0.25, t_end + 0.25); place.append((k, at, 1.0)); t_end = at + parts[k][1]
+        rest = list(range(12, len(parts)))
+        if rest:
+            start = max(t_end + 0.3, 24 * U - 1.6)
+            need = sum(parts[k][1] for k in rest); room = 119.6 - start - 0.25 * (len(rest) - 1)
+            tempo = min(1.2, max(1.0, need / room)); t = start
+            print(f'closing lines tempo {tempo:.3f}')
+            for k in rest:
+                t = max(t, slots[k] * U - 3.0) if k == 14 else t
+                place.append((k, t, tempo)); t += parts[k][1] / tempo + 0.25
+        ins = []; fc = ''
+        for n, (k, at, tp) in enumerate(place):
+            ins += ['-i', str(parts[k][0])]
+            ms = int(at * 1000)
+            fc += f'[{n + 1}]atempo={tp:.4f},adelay={ms}|{ms}[d{n}];'
+        si = len(place) + 1
+        fc += ''.join(f'[d{n}]' for n in range(len(place))) + f'amix=inputs={len(place)}:normalize=0,highpass=f=80,acompressor=threshold=-20dB:ratio=3,volume=1.6,asplit[vo][key];'
+        fc += f'[{si}]volume=0.9[m];[m][key]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[duck];[duck][vo]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5[aout];'
         fc += f'[0:v]{vf}[vout]'
-        run('ffmpeg', '-y', '-i', str(video), '-i', str(vo), '-i', str(score_file), '-filter_complex', fc,
-            '-map', '[vout]', '-map', '[aout]', '-c:v', 'libx264', '-preset', 'medium', '-crf', '15', '-c:a', 'aac', '-b:a', '256k', '-t', '119.9', str(out))
+        run('ffmpeg', '-y', '-i', str(video), *ins, '-i', str(score_file), '-filter_complex', fc,
+            '-map', '[vout]', '-map', '[aout]', '-c:v', 'libx264', '-preset', 'medium', '-crf', '15', '-c:a', 'aac', '-b:a', '256k', '-t', '119.9', str(OUT))
     else:
         run('ffmpeg', '-y', '-i', str(video), '-i', str(score_file), '-filter_complex', f'[0:v]{vf}[vout]',
             '-map', '[vout]', '-map', '1:a', '-c:v', 'libx264', '-preset', 'medium', '-crf', '15', '-c:a', 'copy', '-t', '119.9', str(out))

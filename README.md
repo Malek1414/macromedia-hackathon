@@ -2,7 +2,9 @@
 
 **Macromedia X CODE Hackathon, Berlin, Nov 2-3 2026.** Theme: *"Reimagine the Future: how can we use AI, technology, and creativity to improve tomorrow's world?"*
 Team: Malek Hassan ([@Malek1414](https://github.com/Malek1414)) and Sammy ([@sami-mag07](https://github.com/sami-mag07)).
-**Deadline: Nov 3, 18:30** at Macromedia Campus, Mehringdamm 33. Top 5 are considered for funding grants and the LEXIE programme.
+Submitted Nov 3 at Macromedia Campus, Mehringdamm 33. Top 5 are considered for funding grants and the LEXIE programme.
+
+> **This is a concept product, not a finished one.** It was built in 48 hours to show an idea. But every part it stands on is in production today: live flight, ship, earthquake, fire and camera feeds on [God's Eye View](https://github.com/bilawalsidhu/gods-eye-view), photoreal 3D cities, IPCC and UN climate and population data, and AI models that can reason over all of it. As those keep getting better and cheaper, the same idea can grow into a tool journalists and anyone else can use to check a claim against what the world's sensors actually recorded, and then see where today's choices lead. That's the promise we're building towards: a shared source of truth that's much harder to fake. The futures shown here are possible futures, not predictions.
 
 What happens if we let an AI run the world for 50 years? It gets the same budget as humanity (360 points across six policy levers), tests every mix on thousands of Monte Carlo futures, and picks one. The globe then plays three of the futures: **best case** (top 5%), **most likely** (median) and **scariest** (worst 5%). Then the audience spends the same budget and we compare.
 
