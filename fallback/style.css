@@ -169,7 +169,7 @@ body.reporting .panel.right, body.reporting .panel.left { opacity: 0; pointer-ev
 .duel-bar i { position: absolute; inset: 0 auto 0 0; border-radius: 4px; opacity: 0.45; }
 .duel-bar.win i { opacity: 1; box-shadow: 0 0 14px currentColor; }
 .duel-bar b { position: relative; font: 600 11px/16px var(--mono); padding-left: 6px; }
-.report { max-height: calc(100vh - 32px); overflow-y: auto; }
+.report { max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain; }
 .report.compact { padding: 20px 26px; }
 .report.compact h2 { font-size: 24px; margin: 6px 0 12px; }
 .report.compact .big { gap: 8px; margin-bottom: 10px; }
@@ -208,7 +208,7 @@ body.reporting .panel.right, body.reporting .panel.left { opacity: 0; pointer-ev
   .panel.right .card .nums { font-size: 11px; }
   body:not(.reporting) .panel.left:not(.collapsed) ~ .panel.right { opacity: 0; pointer-events: none; }
 
-  .report { padding: 18px; }
+  .report { padding: 18px; background: rgba(4, 7, 13, 0.95); }
   .report h2 { font-size: 22px; }
   .report .big b { font-size: 18px; }
   .duel-row { grid-template-columns: 92px 1fr; }
