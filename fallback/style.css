@@ -286,4 +286,6 @@ body.reporting .panel.right, body.reporting .panel.left { opacity: 0; pointer-ev
   .readouts label { font-size: 10px; letter-spacing: 0.08em; }
   .lever input::-webkit-slider-thumb, #year::-webkit-slider-thumb { width: 24px; height: 24px; margin-top: -9px; }
   .lever input, #year { height: 34px; }
+  .panel.left, .panel.right { bottom: calc(var(--tl, 84px) + 16px); }
+  .panel.left { max-height: calc(100vh - var(--tl, 84px) - 96px); max-height: calc(100dvh - var(--tl, 84px) - 96px); }
 }
