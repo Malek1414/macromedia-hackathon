@@ -15,3 +15,12 @@ All clips are from Mixkit under the [Mixkit Free Video License](https://mixkit.c
 | `08-earth.mp4` | https://mixkit.co/free-stock-video/earth-rotating-below-as-seen-from-space-45036/ | Mixkit | Mixkit Free Video License |
 
 Shot order, timing, speed ramp and colour grade are in `COLD_OPEN` in `scripts/rough-cut.py`. Title cards use Arial Bold (Inter is not installed on the build machine); swap `title_font` if Inter is wanted.
+
+## Music and sound
+
+| What | Source | Author | Licence |
+|---|---|---|---|
+| `footage/score.m4a` (committed) | Arranged by `scripts/score.py` from Apple's "Epoch" loop family (Apple Loops, `/Library/Audio/Apple Loops/Apple/01 Hip Hop`) | Apple, arranged by Malek | Apple Loops: royalty-free for use in your own productions and videos, no attribution needed |
+| Sub hits, whooshes, risers, cold-open swell | Synthesised in `scripts/rough-cut.py` (`SFX_SRC`) with ffmpeg `aevalsrc`/`anoisesrc` | generated, no third-party audio | none needed |
+
+The temporary computer voice is macOS `say` (Samantha) and is replaced by the real voice-over.
