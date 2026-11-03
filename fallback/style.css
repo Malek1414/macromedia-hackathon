@@ -185,6 +185,7 @@ body.reporting .panel.right, body.reporting .panel.left { opacity: 0; pointer-ev
   .intro { background: rgba(2, 4, 9, 0.95); padding: 24px 16px; }
   .intro h1 { font-size: 40px; }
   #btn-ai, #btn-run { position: sticky; bottom: 0; z-index: 2; box-shadow: 0 -12px 18px rgba(5, 9, 16, 0.95); }
+  #btn-ai { bottom: 46px; }
   .hud { left: 8px; right: 8px; top: 8px; transform: none; padding: 8px 12px; gap: 0; }
   .brand { display: none; }
   .readouts { width: 100%; justify-content: space-between; gap: 6px; }
